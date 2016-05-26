@@ -46,8 +46,7 @@ def __captureObjects(*args):
 
 
 class JPyInterface:
-    __jsTMVASourceDir = "http://localhost:8888/tree/GSOC/wd/JIMVA/js"
-    #__jsTMVASourceDir = "https://rawgit.com/qati/GSOC16/master/JIMVA/js"
+    __jsTMVASourceDir = "https://rawgit.com/qati/GSOC16/master/JIMVA/js"
     __jsCanvasWidth   = 800
     __jsCanvasHeight  = 600
 
