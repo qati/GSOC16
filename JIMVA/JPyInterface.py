@@ -46,8 +46,8 @@ def __captureObjects(*args):
 
 
 class JPyInterface:
-    __jsTMVASourceDir = "http://localhost:8888/tree/GSOC/wd/JIMVA/js"
-    #__jsTMVASourceDir = "https://rawgit.com/qati/GSOC16/master/JIMVA/js"
+    #__jsTMVASourceDir = "http://localhost:8888/tree/code/GSOC/wd/JIMVA/js"
+    __jsTMVASourceDir = "https://rawgit.com/qati/GSOC16/master/JIMVA/js"
     __jsCanvasWidth   = 800
     __jsCanvasHeight  = 600
 
@@ -62,9 +62,10 @@ class JPyInterface:
         }
     });
     if ((console!==undefined) && (typeof console.log == 'function')){
-        console.log("JsTMVA source_dir="+"$PATH");
+        console.log("JsMVA source_dir="+"$PATH");
     }
     require(['JsMVA'],function(jsmva){
+	console.log(jsmva);
         jsmva.$funcName('$divid','$dat');
     });
 </script>

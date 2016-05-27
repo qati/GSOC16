@@ -4,6 +4,7 @@
 
 (function(factory){
 
+	console.log("ok");
     var jsmva = factory({});
 
     var dir = jsmva.JSROOT_source_dir + "scripts/",
