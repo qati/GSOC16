@@ -2,6 +2,7 @@
 #  Authors: Attila Bagoly <battila93@gmail.com>
 
 from ROOT import TH1F, TMVA
+import JPyInterface
 
 
 def GetInputVariableHist(self, className, variableName, numBin, processTrfs=""):
@@ -51,3 +52,16 @@ def GetInputVariableHist(self, className, variableName, numBin, processTrfs=""):
                 continue
             h.Fill(event.GetValue(ivar))
     return (h)
+
+
+def DrawCorrelationMatrix(dl, className):
+    th2 = dl.GetCorrelationMatrix(className)
+    JPyInterface.JsDraw.Draw(th2, 'drawTH2')
+
+def DrawInputVariable(dl, variableName, numBin=100, processTrfs=""):
+    sig = GetInputVariableHist(dl, "Signal",     variableName, numBin, processTrfs)
+    bkg = GetInputVariableHist(dl, "Background", variableName, numBin, processTrfs)
+    c, l = JPyInterface.JsDraw.sbPlot(sig, bkg, {"xaxis": sig.GetTitle(),
+                                    "yaxis": "N",
+                                    "plot": "Input variable: "+sig.GetTitle()})
+    JPyInterface.JsDraw.Draw(c)

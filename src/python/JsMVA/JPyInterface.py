@@ -9,11 +9,6 @@ import Factory
 
 
 class functions:
-    __dlFunctions      = ["GetInputVariableHist"]
-    __facFunctions     = ["GetOutputDistribution", "GetProbabilityDistribution"]
-    __dlDrawFunctions  = ["DrawCorrelationMatrix", "DrawInputVariable"]
-    __facDrawFunctions = ["DrawROCCurve", "DrawOutputDistribution", "DrawProbabilityDistribution"]
-
     @staticmethod
     def __register(target, source, *args):
         for arg in args:
@@ -28,18 +23,22 @@ class functions:
                 delattr(target, arg)
 
     @staticmethod
+    def __getMethods(module, selector):
+        methods = []
+        for method in dir(module):
+            if method.find(selector)!=-1:
+                methods.append(method)
+        return methods
+
+    @staticmethod
     def register():
-        functions.__register(ROOT.TMVA.DataLoader, DataLoader, *functions.__dlFunctions)
-        functions.__register(ROOT.TMVA.Factory,    Factory,    *functions.__facFunctions)
-        functions.__register(ROOT.TMVA.DataLoader, JsDraw,     *functions.__dlDrawFunctions)
-        functions.__register(ROOT.TMVA.Factory,    JsDraw,     *functions.__facDrawFunctions)
+        functions.__register(ROOT.TMVA.DataLoader, DataLoader, *functions.__getMethods(DataLoader, "Draw"))
+        functions.__register(ROOT.TMVA.Factory,    Factory,    *functions.__getMethods(Factory,    "Draw"))
 
     @staticmethod
     def unregister():
-        functions.__unregister(ROOT.TMVA.DataLoader, DataLoader, *functions.__dlFunctions)
-        functions.__unregister(ROOT.TMVA.Factory,    Factory,    *functions.__facFunctions)
-        functions.__unregister(ROOT.TMVA.DataLoader, JsDraw,     *functions.__dlDrawFunctionss)
-        functions.__unregister(ROOT.TMVA.Factory,    JsDraw,     *functions.__facDrawFunctions)
+        functions.__register(ROOT.TMVA.DataLoader, DataLoader, *functions.__getMethods(DataLoader, "Draw"))
+        functions.__register(ROOT.TMVA.Factory,    Factory,    *functions.__getMethods(Factory,    "Draw"))
 
 
 class JsDraw:
@@ -80,41 +79,6 @@ class JsDraw:
             'height': JsDraw.__jsCanvasHeight
          })));
         JsDraw.__divUID += 1
-
-    @staticmethod
-    def DrawCorrelationMatrix(dl, className):
-        th2 = dl.GetCorrelationMatrix(className)
-        JsDraw.Draw(th2, 'drawTH2')
-
-    @staticmethod
-    def DrawROCCurve(fac, datasetName):
-        canvas = fac.GetROCCurve(datasetName)
-        JsDraw.Draw(canvas)
-
-    @staticmethod
-    def DrawInputVariable(dl, variableName, numBin=100, processTrfs=""):
-        sig = dl.GetInputVariableHist( "Signal",     variableName, numBin, processTrfs)
-        bkg = dl.GetInputVariableHist( "Background", variableName, numBin, processTrfs)
-        c, l = JsDraw.sbPlot(sig, bkg, {"xaxis": sig.GetTitle(),
-                                        "yaxis": "N",
-                                        "plot": "Input variable: "+sig.GetTitle()})
-        JsDraw.Draw(c)
-
-    @staticmethod
-    def DrawOutputDistribution(fac, datasetName, method):
-        sig, bkg =  fac.GetOutputDistribution(datasetName, method)
-        c, l = JsDraw.sbPlot(sig, bkg, {"xaxis": method+" response",
-                                        "yaxis": "(1/N) dN^{ }/^{ }dx",
-                                        "plot": "TMVA response for classifier: "+method})
-        JsDraw.Draw(c)
-
-    @staticmethod
-    def DrawProbabilityDistribution(fac, datasetName, method):
-        sig, bkg = fac.GetProbabilityDistribution(datasetName, method)
-        c, l = JsDraw.sbPlot(sig, bkg, {"xaxis": "Signal probability",
-                                        "yaxis": "(1/N) dN^{ }/^{ }dx",
-                                        "plot": "TMVA probability for classifier: "+method})
-        JsDraw.Draw(c)
 
     @staticmethod
     def sbPlot(sig, bkg, title):
