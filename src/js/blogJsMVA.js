@@ -19,7 +19,7 @@
 
 }(function(blog){
 
-    var datURL = "http://qati.github.io/json/";
+    var datURL = "http://qati.github.io/data/json/";
     var parts  = ["", "part1/"];
 
     var JsMVA;
