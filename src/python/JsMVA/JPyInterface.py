@@ -60,7 +60,6 @@ class JsDraw:
         console.log("JsMVA source_dir="+"$PATH");
     }
     require(['JsMVA'],function(jsmva){
-	console.log(jsmva);
         jsmva.$funcName('$divid','$dat');
     });
 </script>
