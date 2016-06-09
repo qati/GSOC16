@@ -32,10 +32,13 @@ __jsCode = Template("""
 
 
 @staticmethod
-def __Draw(obj, jsDrawMethod="draw"):
+def __Draw(obj, jsDrawMethod="draw", objIsJSON=False):
     global __obj, __jsCode, __jsCanvasWidth, __jsCanvasHeight, __jsTMVASourceDir, __divUID
-    dat = ROOT.TBufferJSON.ConvertToJSON(obj)
-    dat = str(dat).replace("\n","")
+    if objIsJSON:
+        dat = obj
+    else:
+        dat = ROOT.TBufferJSON.ConvertToJSON(obj)
+        dat = str(dat).replace("\n","")
     display(HTML(__jsCode.substitute({
         'funcName': jsDrawMethod,
         'divid':'jstmva_'+str(__divUID),

@@ -43,8 +43,9 @@ class functions:
 
 class JsDraw:
     __jsTMVASourceDir = "https://rawgit.com/qati/GSOC16/master/src/js"
-    __jsCanvasWidth   = 800
-    __jsCanvasHeight  = 600
+
+    jsCanvasWidth   = 800
+    jsCanvasHeight  = 600
 
     __divUID = 1
 
@@ -66,22 +67,25 @@ class JsDraw:
 """)
 
     @staticmethod
-    def Draw(obj, jsDrawMethod='draw'):
-        dat = ROOT.TBufferJSON.ConvertToJSON(obj)
-        dat = str(dat).replace("\n","")
+    def Draw(obj, jsDrawMethod='draw', objIsJSON=False):
+        if objIsJSON:
+            dat = obj
+        else:
+            dat = ROOT.TBufferJSON.ConvertToJSON(obj)
+            dat = str(dat).replace("\n","")
         display(HTML(JsDraw.__jsCode.substitute({
             'funcName': jsDrawMethod,
             'divid':'jstmva_'+str(JsDraw.__divUID),
             'dat': dat,
             'PATH': JsDraw.__jsTMVASourceDir,
-            'width': JsDraw.__jsCanvasWidth,
-            'height': JsDraw.__jsCanvasHeight
+            'width': JsDraw.jsCanvasWidth,
+            'height': JsDraw.jsCanvasHeight
          })));
         JsDraw.__divUID += 1
 
     @staticmethod
     def sbPlot(sig, bkg, title):
-        canvas = ROOT.TCanvas("csbplot", title["plot"], 800, 600)
+        canvas = ROOT.TCanvas("csbplot", title["plot"], JsDraw.jsCanvasWidth, JsDraw.jsCanvasHeight)
         #ROOT.TMVA.TMVAGlob.SetSignalAndBackgroundStyle(sig, bkg)
         #ROOT.TMVA.TMVAGlob.SetFrameStyle(sig, 1.2)
         sig.SetMaximum(ROOT.TMath.Max(sig.GetMaximum(),bkg.GetMaximum()*1.1))

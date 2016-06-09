@@ -5,8 +5,13 @@ from ROOT import TH1F, TMVA
 import JPyInterface
 
 
+def __DefaultDataSetInfo(dl):
+    return dl.AddDataSet(dl.GetName())
+
+
+
 def GetInputVariableHist(self, className, variableName, numBin, processTrfs=""):
-    dsinfo = self.DefaultDataSetInfo()
+    dsinfo = __DefaultDataSetInfo(self)
     vi = 0;
     ivar = 0;
     for i in range(dsinfo.GetNVariables()):

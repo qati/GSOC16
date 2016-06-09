@@ -1,10 +1,12 @@
 # -*- coding: utf-8 -*-
 #  Authors: Attila Bagoly <battila93@gmail.com>
 
-import numpy as np
 import ROOT
 from ROOT import TMVA
 import JPyInterface
+from xml.etree.ElementTree import ElementTree
+import json
+
 
 
 def GetMethodObject(fac, datasetName, methodName):
@@ -19,18 +21,53 @@ def GetMethodObject(fac, datasetName, methodName):
                 break
     if len(method) != 1:
         print("Factory.GetMethodObject: no method object found")
-        return 0
+        return None
     return (method[0])
+
+
+def GetNetwork(xml_file):
+    tree = ElementTree()
+    tree.parse(xml_file)
+    roottree = tree.getroot()
+    network  = {}
+    network["variables"] = []
+    for v in roottree.find("Variables"):
+        network["variables"].append(v.get('Title'))
+    layout = roottree.find("Weights").find("Layout")
+    net    = { "nlayers": layout.get("NLayers") }
+    for layer in layout:
+        neuron_num = int(layer.get("NNeurons"))
+        neurons    = { "nneurons": neuron_num }
+        i = 0
+        for neuron in layer:
+            label = "neuron_"+str(i)
+            i    += 1
+            nsynapses = int(neuron.get('NSynapses'))
+            neurons[label] = {"nsynapses": nsynapses}
+            if nsynapses == 0:
+                break
+            text = str(neuron.text)
+            wall = text.replace("\n","").split(" ")
+            weights = []
+            for w in wall:
+                if w!="":
+                    weights.append(float(w))
+            neurons[label]["weights"] = weights
+        net["layer_"+str(layer.get('Index'))] = neurons
+    network["layout"] = net
+    return json.dumps(network)
+
 
 
 def DrawROCCurve(fac, datasetName):
     canvas = fac.GetROCCurve(datasetName)
     JPyInterface.JsDraw.Draw(canvas)
 
+
 def DrawOutputDistribution(fac, datasetName, methodName):
     method = GetMethodObject(fac, datasetName, methodName)
-    if method==0:
-        return
+    if method==None:
+        return None
     mvaRes = method.Data().GetResults(method.GetMethodName(), TMVA.Types.kTesting, TMVA.Types.kMaxAnalysisType)
     sig    = mvaRes.GetHist("MVA_S")
     bgd    = mvaRes.GetHist("MVA_B")
@@ -38,6 +75,7 @@ def DrawOutputDistribution(fac, datasetName, methodName):
                                     "yaxis": "(1/N) dN^{ }/^{ }dx",
                                     "plot": "TMVA response for classifier: "+methodName})
     JPyInterface.JsDraw.Draw(c)
+
 
 def DrawProbabilityDistribution(fac, datasetName, methodName):
     method = GetMethodObject(fac, datasetName, methodName)
@@ -50,6 +88,7 @@ def DrawProbabilityDistribution(fac, datasetName, methodName):
                                         "yaxis": "(1/N) dN^{ }/^{ }dx",
                                         "plot": "TMVA probability for classifier: "+methodName})
     JPyInterface.JsDraw.Draw(c)
+
 
 #TODO more nice structure here
 #TODO not fixed formule (now S/sqrt{S+B})
@@ -115,7 +154,8 @@ def DrawCutEfficiencies(fac, datasetName, methodName):
     maxSignificanceErr = 0
     sSig.Scale(1/maxSignificance)
 
-    c = ROOT.TCanvas( "canvasCutEff","Cut efficiencies for "+methodName+" classifier", 800,600 )
+    c = ROOT.TCanvas( "canvasCutEff","Cut efficiencies for "+methodName+" classifier", JPyInterface.JsDraw.jsCanvasWidth,
+                      JPyInterface.JsDraw.jsCanvasHeight)
 
     c.SetGrid(1)
     c.SetTickx(0)
@@ -216,3 +256,11 @@ def DrawCutEfficiencies(fac, datasetName, methodName):
     c.Update()
 
     JPyInterface.JsDraw.Draw(c)
+
+
+def DrawNeuralNetwork(fac, datasetName, methodName):
+    m = GetMethodObject(fac, datasetName, methodName)
+    if m==None:
+        return None
+    net = GetNetwork(str(m.GetWeightFileName()))
+    JPyInterface.JsDraw.Draw(net, "drawNeuralNetwork", True)
