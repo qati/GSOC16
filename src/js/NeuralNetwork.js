@@ -14,6 +14,22 @@
     });
 
 }(function(NeuralNetwork, d3) {
+
+    // https://github.com/wbkd/d3-extended
+    d3.selection.prototype.moveToFront = function() {
+        return this.each(function(){
+            this.parentNode.appendChild(this);
+        });
+    };
+    d3.selection.prototype.moveToBack = function() {
+        return this.each(function() {
+            var firstChild = this.parentNode.firstChild;
+            if (firstChild) {
+                this.parentNode.insertBefore(this, firstChild);
+            }
+        });
+    };
+
     var style = {
         "neuron": {
             "colors": {
@@ -40,7 +56,13 @@
             }
         },
         "variables": {
-            "labels_layer0_padding": 20
+            "labels_layer0_padding": 0.03
+        },
+        "legend": {
+            "pos": {"x": -150, "y": 10},
+            "rect": {"width": 10, "height":10},
+            "dy": 20,
+            "padding": 10
         }
     };
 
@@ -61,8 +83,8 @@
                 },
                 "radius": canvas.height/(numn+(numn>5?0:5))/4,
                 "type":  (i==(numn-1) ? "bias" : (layer_index==0 ? "input" : "hidden")),
-                "index": i,
-                "key": "layer"+layer_index+"_neuron"+i
+                "neuron": i,
+                "layer": layer_index,
             };
             if (layer_index==(num_layers-1)){
                 neuronsAttr[i]["type"] = "output";
@@ -97,7 +119,9 @@
         var synapses = Array(weights.length);
         for(var i in weights){
             synapses[i] = {
-                "key": "layer"+layer_index+"_neuron"+neuron+"_layer2neuron"+i,
+                "layer": layer_index,
+                "neuron": neuron,
+                "nextlayer_neuron": i,
                 "pos": [pos, layer2[i].position],
                 "weight": weights[i],
                 "type":   (weights[i]<0 ? "negative" : "positive")
@@ -112,7 +136,7 @@
         var variables = Array(labels.length);
         for(var i in layer0){
             variables[i] = {
-                "x": layer0[i].position.x-style["variables"]["labels_layer0_padding"],
+                "x": layer0[i].position.x-style["variables"]["labels_layer0_padding"]*canvas.width,
                 "y": layer0[i].position.y,
                 "text": labels[i] + ":"
             };
@@ -133,10 +157,10 @@
         } else {
             var dat = d3.zip(neuronsattr, Array(neuronsattr.length));
         }
-        var group = svg.append("g").attr("id", "layer_"+layer_num).selectAll("g")
+        var group = svg.append("g").attr("id", "layer_"+layer_num).attr("class", "layer").selectAll("g")
             .data(dat)
             .enter()
-            .append("g").attr("id", function(d){return "neuron_"+layer_num+""+d[0].index;});
+            .append("g").attr("id", function(d){return "neuron_"+layer_num+""+d[0].neuron;});
         group.append("circle")
             .attr('r',     function(d){return d[0].radius})
             .attr('cx',    function(d){return d[0].position.x;})
@@ -165,7 +189,7 @@
                 .selectAll("path")
                 .data(synapses)
                 .enter()
-                .append("path")
+                .append("path").moveToBack()
                 .attr("d", function(d){return synapse(d.pos);})
                 .attr("stroke", function(d){return style["synapse"]["colors"][d.type]})
                 .attr("stroke-width", function(d){
@@ -179,7 +203,7 @@
         group.on('mouseover', function(d) {
             scaleSynapsisPos.range(style["synapse"]["mouseon"]["width_range"]);
             scaleSynapsisNeg.range(style["synapse"]["mouseon"]["width_range"]);
-            var self = d3.select(this).transition();
+            var self = d3.select(this).moveToFront().transition();
             self.selectAll("path")
                 .style("stroke-opacity", 1)
                 .attr("stroke-width", function(d){
@@ -191,18 +215,18 @@
             self.selectAll("text")
                 .attr("x", function(d){return d[1].x-d[0].radius-this.getComputedTextLength();});
 
-            var allbutnotthis = svg.selectAll("g").selectAll("g")
-                .filter(function(x){return d[0].key!=x[0].key;}).transition();
+            var allbutnotthis = svg.selectAll("g.layer").selectAll("g")
+                .filter(function(x){return !(d[0].neuron==x[0].neuron&&d[0].layer==x[0].layer);}).transition();
+            allbutnotthis.selectAll("circle").filter(function(x){return (d[0].layer+1)!=x[0].layer})
+                .style("fill-opacity", style["neuron"]["mouseon"]["alpha"])
+                .attr("r", function(d){return d[0].radius})
             allbutnotthis.selectAll("path")
                 .style("stroke-opacity", style["synapse"]["mouseon"]["alpha"]);
-            allbutnotthis.selectAll("circle")
-                .style("fill-opacity", style["neuron"]["mouseon"]["alpha"])
-                .attr("r", function(d){return d[0].radius});
             scaleSynapsisPos.range(style["synapse"]["width_range"]);
             scaleSynapsisNeg.range(style["synapse"]["width_range"]);
         });
         group.on('mouseout', function(d){
-            var gg = svg.selectAll("g").selectAll("g").transition();
+            var gg = svg.selectAll("g.layer").selectAll("g").transition();
             gg.selectAll("circle")
                 .style("fill-opacity", 1)
                 .attr("r", function(d){return d[0].radius;});
@@ -214,6 +238,33 @@
             gg.selectAll("text")
                 .attr("x", function(d){return d[1].x-this.getComputedTextLength();});
         });
+    };
+
+    var drawLegend = function(){
+        var labels = [
+            {"c": style["synapse"]["colors"]["positive"], "txt": "Positive weight"},
+            {"c": style["synapse"]["colors"]["negative"], "txt": "Negative weight"}
+        ];
+        var attr = style["legend"];
+        var container = svg.append("g").attr("id", "legend");
+        container.selectAll("g")
+            .data(labels)
+            .enter()
+            .append("g")
+            .each(function(d, i){
+                var g = d3.select(this);
+                g.append("rect")
+                    .attr("x", attr.pos.x)
+                    .attr("y", attr.pos.y+i*attr.dy)
+                    .attr("width", attr.rect.width)
+                    .attr("height", attr.rect.height)
+                    .style("fill", function(d){return d.c;});
+                g.append("text")
+                    .attr("x", attr.pos.x+attr.rect.width+attr.padding)
+                    .attr("y", attr.pos.y+i*attr.dy+attr.rect.height)
+                    .text(function(d){return d.txt;})
+                    .style("fill", function(d){return d.c;});
+            });
     };
 
     NeuralNetwork.draw = function (divid, netobj) {
@@ -230,10 +281,25 @@
             canvas[key] = Number(canvas[key].replace("px",""))
         });
 
+        style.legend.pos.x += canvas.width;
+
         num_layers = Number(net["layout"]["nlayers"]);
 
         scaleSynapsisPos.domain([0,getMinMaxWeight().max]);
         scaleSynapsisNeg.domain([0, Math.abs(getMinMaxWeight().min)]);
+
+        var zoom = d3.behavior.zoom()
+            .scaleExtent([1, 10])
+            .on("zoom", function(){
+                svg.attr("transform", "translate(" + d3.event.translate + ")scale(" + d3.event.scale + ")");
+            });
+        svg = svg
+            .on("dblclick", function(){
+                zoom.scale(1);
+                zoom.translate([0, 0]);
+                svg.transition().attr("transform", "translate(0,0)scale(1)");
+            })
+            .append("g").call(zoom).append("g");
 
         var layers = Array(num_layers);
         for(var i=0;i<num_layers;i++){
@@ -244,8 +310,9 @@
             drawNeurons(layers[i], i, i==0 ? true : undefined);
             drawSynapses(layers[i], i, layers[i + 1]);
         }
+        drawLegend();
     };
-    
+
     Object.seal(NeuralNetwork);
     return NeuralNetwork;
 }));

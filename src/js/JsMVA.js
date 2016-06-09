@@ -8,7 +8,7 @@
 
     var url = "";
     if (require.s.contexts.hasOwnProperty("_")) {
-        url = require.s.contexts._.config.paths["JsMVA"].replace("JsMVA");
+        url = require.s.contexts._.config.paths["JsMVA"].replace("JsMVA","");
     }
     if ((console!==undefined) && (typeof console.log == 'function')) {
         if (url!=""){
