@@ -6,12 +6,22 @@
 
     var JSROOT_source_dir = "https://root.cern.ch/js/notebook/scripts/";
 
-    console.log("source:"+require.toUrl());
+    var url = "";
+    if (require.s.contexts.hasOwnProperty("_")) {
+        url = require.s.contexts._.config.paths["JsMVA"].replace("/JsMVA");
+    }
+    if ((console!==undefined) && (typeof console.log == 'function')) {
+        if (url!=""){
+            console.log("JsMVA source dir:" + url);
+        } else {
+            console.log("JsMVA source dir can't be resolved, requireJS doesn't have context '_', this will be a problem!");
+        }
+    }
 
     require.config({
         paths: {
             'JsRootCore': JSROOT_source_dir+'JSRootCore.min',
-            'nn': 'NeuralNetwork'
+            'nn': url+'/NeuralNetwork'
         }
     });
 
@@ -33,9 +43,10 @@
 
     JsMVA.drawNeuralNetwork = function(divid, dat_json){
         var obj = JSON.parse(dat_json);
-
+        require(['nn'], function(nn){
+            nn.draw(divid, obj);
+        });
     };
 
-    Objec.seal(JsMVA);
     return JsMVA;
 }));

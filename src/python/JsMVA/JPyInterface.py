@@ -42,7 +42,7 @@ class functions:
 
 
 class JsDraw:
-    __jsTMVASourceDir = "https://rawgit.com/qati/GSOC16/master/src/js"
+    __jsMVASourceDir = "https://rawgit.com/qati/GSOC16/master/src/js"
 
     jsCanvasWidth   = 800
     jsCanvasHeight  = 600
@@ -57,9 +57,6 @@ class JsDraw:
             'JsMVA':'$PATH/JsMVA'
         }
     });
-    if ((console!==undefined) && (typeof console.log == 'function')){
-        console.log("JsMVA source_dir="+"$PATH");
-    }
     require(['JsMVA'],function(jsmva){
         jsmva.$funcName('$divid','$dat');
     });
@@ -77,7 +74,7 @@ class JsDraw:
             'funcName': jsDrawMethod,
             'divid':'jstmva_'+str(JsDraw.__divUID),
             'dat': dat,
-            'PATH': JsDraw.__jsTMVASourceDir,
+            'PATH': JsDraw.__jsMVASourceDir,
             'width': JsDraw.jsCanvasWidth,
             'height': JsDraw.jsCanvasHeight
          })));
