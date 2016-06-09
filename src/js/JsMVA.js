@@ -4,42 +4,38 @@
 
 (function(factory){
 
-    var jsmva = factory({});
+    var JSROOT_source_dir = "https://root.cern.ch/js/notebook/scripts/";
 
-    var dir = jsmva.JSROOT_source_dir + "scripts/",
-        ext = jsmva.JSROOT_source_min ? ".min" : "";
+    console.log("source:"+require.toUrl());
 
     require.config({
         paths: {
-            'JsRootCore': dir+'JSRootCore'+ext
+            'JsRootCore': JSROOT_source_dir+'JSRootCore.min',
+            'nn': 'NeuralNetwork'
         }
     });
 
     define(['JsRootCore'], function(jsroot){
-        jsmva.set_JSROOT(jsroot);
-        return jsmva;
+        return factory({}, jsroot);
     });
 
-}(function(JsMVA){
-
-    JsMVA.JSROOT_source_dir = "https://root.cern.ch/js/notebook/";
-    JsMVA.JSROOT_source_min = true;
-
-    var JSROOT;
-
-    JsMVA.set_JSROOT = function(jsroot){
-        JSROOT = jsroot;
-    }
+}(function(JsMVA, JSROOT){
 
     JsMVA.drawTH2 = function(divid, dat_json){
         var obj = JSROOT.parse(dat_json);
         JSROOT.draw(divid, obj, "colz");
-    }
+    };
 
     JsMVA.draw = function(divid, dat_json){
         var obj = JSROOT.parse(dat_json);
         JSROOT.draw(divid, obj);
-    }
+    };
 
+    JsMVA.drawNeuralNetwork = function(divid, dat_json){
+        var obj = JSON.parse(dat_json);
+
+    };
+
+    Objec.seal(JsMVA);
     return JsMVA;
 }));
