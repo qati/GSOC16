@@ -45,7 +45,7 @@ class JsDraw:
     __jsMVASourceDir = "https://rawgit.com/qati/GSOC16/master/src/js"
 
     jsCanvasWidth   = 800
-    jsCanvasHeight  = 600
+    jsCanvasHeight  = 450
 
     __divUID = 1
 
