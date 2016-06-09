@@ -5,6 +5,10 @@ from ROOT import TH1F, TMVA
 import JPyInterface
 
 
+__fLogger = TMVA.MsgLogger("JsMVA.Factory", TMVA.kINFO)
+def __Log():
+    return __fLogger
+
 def __DefaultDataSetInfo(dl):
     return dl.AddDataSet(dl.GetName())
 
@@ -31,7 +35,7 @@ def GetInputVariableHist(self, className, variableName, numBin, processTrfs=""):
     trfs    = [];
     for trfDef in trfsDef:
         trfs.append(TMVA.TransformationHandler(dsinfo, "DataLoader"))
-        TMVA.MethodBase.CreateVariableTransforms( trfDef, dsinfo, trfs[-1], self.Log())
+        TMVA.MethodBase.CreateVariableTransforms( trfDef, dsinfo, trfs[-1], __Log())
 
     inputEvents = ds.GetEventCollection()
     transformed = 0

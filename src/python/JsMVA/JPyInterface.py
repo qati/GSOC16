@@ -45,7 +45,7 @@ class JsDraw:
     __jsMVASourceDir = "https://rawgit.com/qati/GSOC16/master/src/js"
 
     jsCanvasWidth   = 800
-    jsCanvasHeight  = 450
+    jsCanvasHeight  = 600
 
     __divUID = 1
 
@@ -70,6 +70,7 @@ class JsDraw:
         else:
             dat = ROOT.TBufferJSON.ConvertToJSON(obj)
             dat = str(dat).replace("\n","")
+
         display(HTML(JsDraw.__jsCode.substitute({
             'funcName': jsDrawMethod,
             'divid':'jstmva_'+str(JsDraw.__divUID),

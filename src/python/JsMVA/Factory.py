@@ -243,8 +243,11 @@ def DrawCutEfficiencies(fac, datasetName, methodName):
         tl.DrawLatex(0.13, 0.74, "different signal efficiency. Shown is the purity for each cut selection.")
 
     #FIXME xaxis coordinates and not attached to coordinate system
-    rightAxis = ROOT.TGaxis(1.134, sSig.GetYaxis().GetXmin()-0.33,
-                            1.134, sSig.GetYaxis().GetXmax()-0.23, 0, 1.1*maxSignificance,110, "+L")
+    wx = (sigE.GetXaxis().GetXmax()+abs(sigE.GetXaxis().GetXmin()))*0.135
+    rightAxis = ROOT.TGaxis( sigE.GetXaxis().GetXmax()+wx,
+                             c.GetUymin()-0.3,
+                             sigE.GetXaxis().GetXmax()+wx,
+                             0.7, 0, 1.1*maxSignificance,510, "+L")
     rightAxis.SetLineColor ( signifColor )
     rightAxis.SetLabelColor( signifColor )
     rightAxis.SetTitleColor( signifColor )

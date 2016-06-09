@@ -10,7 +10,6 @@ import sys, os.path
 sys.path.append(os.path.expanduser("PATH TO JsMVA"));
 import JsMVA
 ```
-* TMVA::Configurable.h we need to make Log() function public, because we need access to this function in python.
 
-* TMVA::DataLoader.h we need to make DefaultDataSetInfo() public
+* We have to make `TMVA::MethodBase::CreateVariableTransforms` function public.
 
