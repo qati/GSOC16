@@ -58,6 +58,83 @@ def GetNetwork(xml_file):
     return json.dumps(network)
 
 
+class TreeReader:
+    """Reads Decision Tree from XML file"""
+
+    def __init__(self, fileName):
+        self.__xmltree = ElementTree()
+        self.__xmltree.parse(fileName)
+        self.__NTrees = int(self.__xmltree.find("Weights").get('NTrees'))
+
+    def getNTrees(self):
+        return (self.__NTrees)
+
+    def __getBinaryTree(self, itree):
+        if self.__NTrees<=itree:
+            print( "to big number, tree number must be less then %s"%self.__NTrees )
+            return 0
+        return self.__xmltree.find("Weights").find("BinaryTree["+str(itree+1)+"]")
+
+    def __addNode(self, tree, info, branch=0):
+        if len(tree)==0:
+            tree["info"] = info
+            return
+        tree[branch] = {}
+        self.__addNode(tree[branch], info)
+
+    def __buildTree(self, tree, info, path="", path_len=0):
+        if path_len==0:
+            self.__addNode(tree, info)
+            return
+        if path_len==1:
+            self.__addNode(tree, info, path)
+            return
+        idx = path.index(",")
+        self.__buildTree(tree[path[:idx]], info, path[(idx+1):], path_len-1)
+
+    def __readTree(self, binaryTree, tree={}, path="", path_len=0):
+        nodes = binaryTree.findall("Node")
+        if len(nodes)==0:
+            return
+        if len(nodes)==1 and nodes[0].get("pos")=="s":
+            info = {
+                "IVar":   nodes[0].get("IVar"),
+                "Cut" :   nodes[0].get("Cut"),
+                "purity": nodes[0].get("purity")
+            }
+            self.__buildTree(tree, info)
+            self.__readTree(nodes[0], tree, "")
+            return
+        for node in nodes:
+            info = {
+                "IVar":   node.get("IVar"),
+                "Cut" :   node.get("Cut"),
+                "purity": node.get("purity")
+            }
+            if path_len==0:
+                comma = ""
+            else:
+                comma = ","
+            self.__buildTree(tree, info, path+comma+node.get("pos"), path_len+1)
+            self.__readTree(node, tree, path+comma+node.get("pos"), path_len+1)
+
+    def getTree(self, itree):
+        binaryTree = self.__getBinaryTree(itree)
+        if binaryTree==0:
+            return {}
+        tree = {}
+        self.__readTree(binaryTree, tree)
+        return tree
+
+    def getVariables(self):
+        variables = []
+        varstree = self.__xmltree.find("Variables").findall("Variable")
+        variables = [None]*len(varstree)
+        for v in varstree:
+            variables[int(v.get('VarIndex'))] = v.get('Expression')
+        return variables
+
+
 
 def DrawROCCurve(fac, datasetName):
     canvas = fac.GetROCCurve(datasetName)
@@ -267,3 +344,34 @@ def DrawNeuralNetwork(fac, datasetName, methodName):
         return None
     net = GetNetwork(str(m.GetWeightFileName()))
     JPyInterface.JsDraw.Draw(net, "drawNeuralNetwork", True)
+
+def DrawDecisionTree(fac, datasetName, methodName):
+    from IPython.core.display import display, clear_output
+    from ipywidgets import widgets
+    m = GetMethodObject(fac, datasetName, methodName)
+    if m==None:
+        return None
+    tr = TreeReader(str(m.GetWeightFileName()))
+
+    variables = tr.getVariables();
+
+    def clicked(b):
+        if treeSelector.value>tr.getNTrees():
+            treeSelector.value = tr.getNTrees()
+        clear_output()
+        toJs = {
+            "variables": variables,
+            "tree": tr.getTree(treeSelector.value)
+        }
+        json_str = json.dumps(toJs)
+        JPyInterface.JsDraw.Draw(json_str, "drawDecisionTree", True)
+
+    mx = str(tr.getNTrees()-1)
+
+    treeSelector = widgets.IntText(value=0, font_weight="bold")
+    drawTree     = widgets.Button(description="Draw", font_weight="bold")
+    label        = widgets.HTML("<div style='padding: 6px;font-weight:bold;color:#333;'>Decision Tree [0-"+mx+"]:</div>")
+
+    drawTree.on_click(clicked)
+    container = widgets.HBox([label,treeSelector, drawTree])
+    display(container)
