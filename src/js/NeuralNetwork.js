@@ -66,7 +66,7 @@
         }
     };
 
-    var div, canvas, svg, net, num_layers;
+    var canvas, svg, net, num_layers;
 
     var getNeuronNumber = function(layer_index){
         return Number(Object.keys(net["layout"]["layer_"+layer_index]).length-1);
@@ -269,7 +269,7 @@
 
     NeuralNetwork.draw = function (divid, netobj) {
         net = netobj;
-        div = d3.select("#"+divid);
+        var div = d3.select("#"+divid);
         canvas = {
             width:  div.property("style")["width"],
             height: div.property("style")["height"]

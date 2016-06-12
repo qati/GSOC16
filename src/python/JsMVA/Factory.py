@@ -75,24 +75,7 @@ class TreeReader:
             return 0
         return self.__xmltree.find("Weights").find("BinaryTree["+str(itree+1)+"]")
 
-    def __addNode(self, tree, info, branch=0):
-        if len(tree)==0:
-            tree["info"] = info
-            return
-        tree[branch] = {}
-        self.__addNode(tree[branch], info)
-
-    def __buildTree(self, tree, info, path="", path_len=0):
-        if path_len==0:
-            self.__addNode(tree, info)
-            return
-        if path_len==1:
-            self.__addNode(tree, info, path)
-            return
-        idx = path.index(",")
-        self.__buildTree(tree[path[:idx]], info, path[(idx+1):], path_len-1)
-
-    def __readTree(self, binaryTree, tree={}, path="", path_len=0):
+    def __readTree(self, binaryTree, tree={}, depth=0):
         nodes = binaryTree.findall("Node")
         if len(nodes)==0:
             return
@@ -100,23 +83,25 @@ class TreeReader:
             info = {
                 "IVar":   nodes[0].get("IVar"),
                 "Cut" :   nodes[0].get("Cut"),
-                "purity": nodes[0].get("purity")
+                "purity": nodes[0].get("purity"),
+                "pos":    0
             }
-            self.__buildTree(tree, info)
-            self.__readTree(nodes[0], tree, "")
+            tree["info"]     = info
+            tree["children"] = []
+            self.__readTree(nodes[0], tree, 1)
             return
         for node in nodes:
             info = {
                 "IVar":   node.get("IVar"),
                 "Cut" :   node.get("Cut"),
-                "purity": node.get("purity")
+                "purity": node.get("purity"),
+                "pos":    node.get("pos")
             }
-            if path_len==0:
-                comma = ""
-            else:
-                comma = ","
-            self.__buildTree(tree, info, path+comma+node.get("pos"), path_len+1)
-            self.__readTree(node, tree, path+comma+node.get("pos"), path_len+1)
+            tree["children"].append({
+               "info": info,
+                "children": []
+            })
+            self.__readTree(node, tree["children"][-1], depth+1)
 
     def getTree(self, itree):
         binaryTree = self.__getBinaryTree(itree)

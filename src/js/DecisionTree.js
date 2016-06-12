@@ -28,9 +28,10 @@
         },
         node: {
             padding: 10,
-            space: 20,
-            width: 60,
-            height: 30,
+            yspace: 50,
+            xspace: 10,
+            width: 150,
+            height: 40,
             mwidth: 150,
             mheight: 60,
             colors: {
@@ -108,7 +109,7 @@
                 return "S/(S+B)="+Number(d.info.purity).toFixed(3);
             })
             .style("font-size", function(d) {
-                d.font_size=12*style.node.width / (this.getComputedTextLength()) + "px";
+                d.font_size=10*style.node.width / (this.getComputedTextLength()) + "px";
                 return d.font_size;
             })
             .attr("dx", function(d){
@@ -283,10 +284,9 @@
 
     var updateSizesColors = function(){
         var nodes = d3tree.nodes(roottree);
-        style.node.height = canvas.height/(treeHeight(nodes[0])+1)-style.node.space;
-        if (style.node.width>style.node.mwidth)   style.node.width = style.node.mwidth;
+        style.node.height = canvas.height/(treeHeight(nodes[0])+1)-style.node.yspace;
         if (style.node.height>style.node.mheight) style.node.height = style.node.mheight;
-        style.node.width  = canvas.width/(treeWidth(nodes)+1)-style.node.space;
+        style.node.width  = canvas.width/(treeWidth(nodes)+1)-style.node.xspace;
         d3tree.size([canvas.width, canvas.height]);
         nodeColor.domain(purityToColor(nodes));
     };

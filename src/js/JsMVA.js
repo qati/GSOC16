@@ -21,7 +21,8 @@
     require.config({
         paths: {
             'JsRootCore': JSROOT_source_dir+'JSRootCore.min',
-            'nn': url+'NeuralNetwork'
+            'nn': url+'NeuralNetwork',
+            'dtree': url+'DecisionTree'
         }
     });
 
@@ -45,6 +46,13 @@
         var obj = JSON.parse(dat_json);
         require(['nn'], function(nn){
             nn.draw(divid, obj);
+        });
+    };
+
+    JsMVA.drawDecisionTree = function(divid, dat_json){
+        require(['dtree'], function(dtree){
+            var obj = JSON.parse(dat_json);
+            dtree.draw(divid, obj);
         });
     };
 
