@@ -241,7 +241,7 @@
             });
         svg.selectAll("g.nodes text").filter(function(d){return d.id==node.id;})
             .attr("font-size", function(d){
-                console.log(d.font_size);
+                console.log(d);
                 return (clear) ? d.font_size : 2*Number(d.font_size.replace("px", ""))+"px";
             });
         if (node.parent) path(node.parent, i, clear);
