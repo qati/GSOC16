@@ -54,7 +54,7 @@ class JsDraw:
 <script>
     require.config({
         paths: {
-            'JsMVA':'$PATH/JsMVA'
+            'JsMVA':'$PATH/JsMVA.min'
         }
     });
     require(['JsMVA'],function(jsmva){
