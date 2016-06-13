@@ -145,6 +145,9 @@
             .append("g").attr("class", "nodes")
             .attr("transform", function(d){return "translate("+father.x0+","+father.y0+")";})
             .style("cursor","pointer")
+            .filter(function(d){
+                return d.parent;
+            })
             .on("click", clickOnNode)
             .on("mouseover", path)
             .on("mouseout", function(d, i){return path(d, i, 1);});
