@@ -223,9 +223,13 @@
     };
 
     var path = function(node, i, clear){
+        var width = (clear) ? node.style.width : 2*node.style.width,
+            height = (clear) ? node.style.height : 1.5* node.style.height;
+
         svg.selectAll("path.link").filter(function(d){return d.target.id==node.id;})
             .style("stroke-width", (clear) ? style.link.width : style.link.focus_width)
             .style("stroke", (clear) ? style.link.colors.default : style.link.colors.focus);
+
         svg.selectAll("g.nodes rect").filter(function(d){return d.id==node.id;})
             .style("stroke-width", style.node.swidth)
             .style("stroke", function(d){
@@ -233,16 +237,18 @@
                     ? (d._children) ? style.node.colors.closed : nodeColor(d.info.purity)
                     : style.node.colors.focus;
             })
-            .style("width", function(d){
-                return ((clear) ? style.node.width : 2*style.node.width)+"px";
-            })
-            .style("height", function(d){
-                return ((clear) ? style.node.height : 1.5*style.node.height)+"px";
-            });
+            .style("width", width+"px")
+            .style("height", height+"px");
+
         svg.selectAll("g.nodes text").filter(function(d){return d.id==node.id;})
             .style("font-size", function(d){
                 return ((clear) ? d.font_size : 2*d.font_size)+"px";
+            })
+            .attr("dx", (clear) ? style.text.padding : (2*Number(style.text.padding.replace("px", ""))+"px"))
+            .attr("dy", function(){
+                return ((d3.select(this).attr("class")=="label1")? (height * 0.35) : (height * 0.75))+"px";
             });
+
         if (node.parent) path(node.parent, i, clear);
     };
 
