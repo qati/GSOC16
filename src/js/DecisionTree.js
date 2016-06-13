@@ -50,9 +50,6 @@
             width: "4px",
             focus_width: "8px"
         },
-        text:{
-            padding: "6px"
-        },
         aduration: 1500,
         legend: {
             size: 20,
@@ -62,6 +59,7 @@
         },
         text: {
             color: "#DEDEDE"
+            padding: "6px"
         }
     };
 
