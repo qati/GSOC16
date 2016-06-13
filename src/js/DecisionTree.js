@@ -105,6 +105,7 @@
         nodeContainer.append("text")
             .attr("dy", (style.node.height * 0.35) + "px")
             .attr("class", "label1")
+            .attr("dx", style.text.padding)
             .style("fill-opacity", 1e-6)
             .style("font-size", 1e-6+"px")
             .style("cursor", "pointer")
@@ -115,6 +116,7 @@
             });
         nodeContainer.append("text")
             .attr("class", "label2")
+            .attr("dx", style.text.padding)
             .attr("dy", (style.node.height*0.75)+"px")
             .style("fill-opacity", 1e-6)
             .style("cursor", "pointer")
@@ -173,9 +175,9 @@
                 d.font_size = 1.43*style.node.width/Math.max(l1.length, l2.length);
                 return d.font_size+"px";
             })
+            .attr("dx", style.text.padding)
             .attr("dy", function(d){
                 return ((d3.select(this).attr("class")=="label1")? (style.node.height * 0.35) : (style.node.height * 0.75))+"px"; })
-            .attr("dx", style.text.padding)
             .style("fill-opacity", 1);
 
         var nodeExit = nodeSelector.exit()
