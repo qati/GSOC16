@@ -105,7 +105,7 @@
         nodeContainer.append("text")
             .attr("dy", (style.node.height * 0.35) + "px")
             .attr("class", "label1")
-            .attr("dx", style.text.padding)
+            .attr("dx", function(d){ return style.text.padding;})
             .style("fill-opacity", 1e-6)
             .style("font-size", 1e-6+"px")
             .style("cursor", "pointer")
