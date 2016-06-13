@@ -28,8 +28,8 @@
         },
         node: {
             padding: 10,
-            yspace: 40,
-            xspace: 20,
+            yspace: 50,
+            xspace: 10,
             width: 150,
             height: 40,
             mwidth: 150,
@@ -238,10 +238,9 @@
         nodes.forEach(function(d){
            if (maxDepth<Number(d.depth)) maxDepth = Number(d.depth);
         });
-        maxDepth += 1;
 
         nodes.forEach(function(d){
-           d.y = d.depth * canvas.height / maxDepth+style.node.padding;
+           d.y = d.depth * canvas.height / maxDepth;
         });
 
         if (!("x0") in father || !("y0" in father)){
@@ -384,12 +383,12 @@
             });
         svg = svg
             .on("dblclick", function(){
-                zoom.scale(1.4);
+                zoom.scale(1);
                 zoom.translate([0, 0]);
                 svg.transition().attr("transform", "translate("+(-style.node.width)+", "+style.node.height+")scale(1)");
             })
             .append("g").call(zoom).append("g")
-            .attr("transform", "translate("+(-style.node.width)+", "+style.node.height+")scale(1)");
+            .attr("transform", "translate("+(-style.node.width)+", "+style.node.height+")");
 
         drawLegend(svgOriginal);
 
