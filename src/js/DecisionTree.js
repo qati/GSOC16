@@ -29,7 +29,7 @@
         node: {
             padding: 10,
             yspace: 40,
-            xspace: 20,
+            xspace: 10,
             width: 150,
             height: 40,
             mwidth: 150,
@@ -389,7 +389,7 @@
                 svg.transition().attr("transform", "translate("+(-style.node.width)+", "+style.node.height+")scale(1.4)");
             })
             .append("g").call(zoom).append("g")
-            .attr("transform", "translate("+(-style.node.width)+", "+style.node.height+")scale(1.4)");
+            .attr("transform", "translate("+(-style.node.width-style.margin.x)+", "+(style.node.height+style.margin.y)+")scale(1.4)");
 
         drawLegend(svgOriginal);
 
