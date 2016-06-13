@@ -317,6 +317,7 @@
 
         style.node.height = canvas.height/(height+1)-style.node.yspace;
         if (style.node.height>style.node.mheight) style.node.height = style.node.mheight;
+        console.log("height=", height);
         console.log("old width=", style.node.width)
         style.node.width  = canvas.width/(treeWidth(nodes)+1)-style.node.xspace;
         console.log("new width=", style.node.width)
