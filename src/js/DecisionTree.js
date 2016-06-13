@@ -223,8 +223,8 @@
     };
 
     var path = function(node, i, clear){
-        var width = (clear) ? node.style.width : 2*node.style.width,
-            height = (clear) ? node.style.height : 1.5* node.style.height;
+        var width = (clear) ? style.node.width : 2*style.node.width,
+            height = (clear) ? style.node.height : 1.5*style.node.height;
 
         svg.selectAll("path.link").filter(function(d){return d.target.id==node.id;})
             .style("stroke-width", (clear) ? style.link.width : style.link.focus_width)
