@@ -370,7 +370,7 @@
         var svgOriginal = svg;
         Object.keys(canvas).forEach(function (key) {
             canvas[key] = Number(canvas[key].replace("px",""));
-            canvas[key] -= key=="width" ? 2*style.margin.x+style.node.width : 2*style.margin.y+style.node.height;
+            canvas[key] -= key=="width" style.margin.x : style.margin.y;
         });
 
         updateSizesColors();
