@@ -8,7 +8,7 @@
 
     require.config({
         paths: {
-            'JsMVA':'https://rawgit.com/qati/GSOC16/master/src/js/JsMVA'
+            'JsMVA':'https://rawgit.com/qati/GSOC16/master/src/js/JsMVA.min'
         }
     });
 

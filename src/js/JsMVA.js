@@ -1,5 +1,5 @@
 /**
- * Created by Attila Bagoly <battila93@gmail.com> on 5/14/16.
+ * Created by Attila Bag on 5/14/16.
  */
 
 (function(factory){
@@ -8,7 +8,7 @@
 
     var url = "";
     if (require.s.contexts.hasOwnProperty("_")) {
-        url = require.s.contexts._.config.paths["JsMVA.min"].replace("JsMVA.min","");
+        url = require.s.contexts._.config.paths["JsMVA"].replace("JsMVA.min","");
     }
     if ((console!==undefined) && (typeof console.log == 'function')) {
         if (url!=""){
@@ -21,8 +21,8 @@
     require.config({
         paths: {
             'JsRootCore': JSROOT_source_dir+'JSRootCore.min',
-            'nn': url+'NeuralNetwork.min',
-            'dtree': url+'DecisionTree.min'
+            'nn': url+'NeuralNetwork',
+            'dtree': url+'DecisionTree'
         }
     });
 
