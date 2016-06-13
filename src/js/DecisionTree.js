@@ -240,7 +240,7 @@
                 return ((clear) ? style.node.height : 1.5*style.node.height)+"px";
             });
         svg.selectAll("g.nodes text").filter(function(d){return d.id==node.id;})
-            .attr("font-size", function(d){
+            .style("font-size", function(d){
                 return ((clear) ? d.font_size : 2*d.font_size)+"px";
             });
         if (node.parent) path(node.parent, i, clear);
