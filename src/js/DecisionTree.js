@@ -144,8 +144,9 @@
         var nodeContainer = nodeSelector.enter()
             .append("g").attr("class", "nodes")
             .attr("transform", function(d){return "translate("+father.x0+","+father.y0+")";})
-            .style("cursor","pointer")
-            .filter(function(d){
+            .style("cursor","pointer");
+        
+        nodeContainer.filter(function(d){
                 return d.parent;
             })
             .on("click", clickOnNode)
