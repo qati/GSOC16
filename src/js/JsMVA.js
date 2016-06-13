@@ -21,8 +21,8 @@
     require.config({
         paths: {
             'JsRootCore': JSROOT_source_dir+'JSRootCore.min',
-            'nn': url+'NeuralNetwork',
-            'dtree': url+'DecisionTree'
+            'nn': url+'NeuralNetwork.min',
+            'dtree': url+'DecisionTree.min'
         }
     });
 
