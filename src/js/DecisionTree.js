@@ -29,7 +29,7 @@
         node: {
             padding: 10,
             yspace: 40,
-            xspace: 60,
+            xspace: 20,
             width: 150,
             height: 40,
             mwidth: 150,
@@ -68,8 +68,6 @@
 
     var canvas, svg, roottree, variables;
 
-    var originalHeight=0;
-
     var d3tree = d3.layout.tree();
     var d3path = (function(){
         var diagonal = d3.svg.diagonal();
@@ -100,33 +98,23 @@
         drawTree(d);
     };
 
-    var drawLabels = function(nodeContainer){
+    var drawLabels = function(nodeContainer) {
         nodeContainer.append("text")
-            .attr("dy", (style.node.height*0.35)+"px")
-            .attr("class", function(d){
-                d.labelid = 1;
-                return "label1";
-            })
+            .attr("dy", (style.node.height * 0.35) + "px")
+            .attr("dx", (style.node.width*0.1)+"px")
+            .attr("class", "label1")
             .style("fill-opacity", 1e-6)
+            .style("font-size", 1e-6+"px")
             .style("cursor", "pointer")
             .style("fill", style.text.color)
             .style("font-weight", "bold")
-            .text(function(d){
-                return "S/(S+B)="+Number(d.info.purity).toFixed(3);
-            })
-            .style("font-size", function(d) {
-                d.font_size=10*style.node.width / (this.getComputedTextLength()) + "px";
-                return d.font_size;
-            })
-            .attr("dx", function(d){
-                return (style.node.width*0.5-this.getComputedTextLength()*0.5)+"px";
+            .text(function (d) {
+                return "S/(S+B)=" + Number(d.info.purity).toFixed(3);
             });
         nodeContainer.append("text")
-            .attr("class", function(d){
-                d.labelid = 2;
-                return "label2";
-            })
+            .attr("class", "label2")
             .attr("dy", (style.node.height*0.75)+"px")
+            .attr("dx", (style.node.width*0.1)+"px")
             .style("fill-opacity", 1e-6)
             .style("cursor", "pointer")
             .text(function(d){
@@ -134,12 +122,9 @@
                     ? variables[d.info.IVar]+">"+(Number(d.info.Cut).toFixed(3))
                     : "";
             })
-            .style("font-size", function(d) { return d.font_size;})
+            .style("font-size", 1e-6+"px")
             .style("fill", style.text.color)
-            .style("font-weight", "bold")
-            .attr("dx", function(d){
-                return (style.node.width*0.5-this.getComputedTextLength()*0.5)+"px"
-            });
+            .style("font-weight", "bold");
     };
 
     var drawNodes = function(nodeSelector, father){
@@ -177,7 +162,15 @@
                 return (d._children) ? style.node.colors.closed : "";
             });
 
-        nodeSelector.selectAll("text").transition().duration(style.aduration*2)
+        nodeSelector.selectAll("text")
+            .transition().duration(style.aduration)
+            .style("font-size", function(d) {
+                d.font_size=0.08*style.node.width;
+                return d.font_size+"px";
+            })
+            .attr("dx", function(d){return d.font_size;})
+            .attr("dy", function(d){
+                return ((d3.select(this).attr("class")=="label1")? (style.node.height * 0.35) : (style.node.height * 0.75))+"px"; })
             .style("fill-opacity", 1);
 
         var nodeExit = nodeSelector.exit()
@@ -194,6 +187,7 @@
             .attr("height", 1e-6);
 
         nodeExit.selectAll("text")
+            .style("font-size", 1e-6+"px")
             .style("fill-opacity", 1e-6);
     };
 
@@ -237,7 +231,7 @@
     };
 
     var drawTree = function(father){
-        updateScale();
+        updateSizesColors();
         var nodes = d3tree.nodes(roottree),
             links = d3tree.links(nodes);
 
@@ -264,6 +258,8 @@
             .data(links, function(d){return d.target.id;});
 
         drawLinks(linkSelector, father);
+
+        svg.transition().duration(style.aduration).attr("transform", "translate("+(-style.node.width)+", "+style.node.height+")");
 
         nodes.forEach(function(d){
             d.x0 = d.x+style.node.width;
@@ -318,39 +314,17 @@
 
         style.node.height = canvas.height/(height+1)-style.node.yspace;
         if (style.node.height>style.node.mheight) style.node.height = style.node.mheight;
-        console.log("height=", height);
-        console.log("old width=", style.node.width)
-        style.node.width  = canvas.width/(treeWidth(nodes)+1)-style.node.xspace;
-        console.log("new width=", style.node.width)
+        var corr = 0;
+        while(height!=0){
+            if (!(height%4)) corr++;
+            height /= 4;
+        }
+        style.node.width  = canvas.width/(treeWidth(nodes)+1-corr)-style.node.xspace;
         if (style.node.width>style.node.mwidth) style.node.height = style.node.mwidth;
 
         d3tree.size([canvas.width, canvas.height]);
 
         nodeColor.domain(purityToColor(nodes));
-        updateScale(first);
-    };
-
-    var updateScale = function(first){
-        var nodes = d3tree.nodes(roottree);
-        var tree;
-        for(var i in nodes){
-            if (!nodes[i].parent){
-                tree = nodes[i];
-                break;
-            }
-        }
-        var height = treeHeight(tree);
-        if (first!==undefined && first==1){
-            originalHeight = height;
-            return;
-        }
-
-        var scale = d3.scale.linear()
-            .domain([1.4, 1.6])
-            .range([1, originalHeight]);
-
-        console.log("do I scale good?")
-        svg.attr("transform", "scale(1.4)");
     };
 
     var drawLegend = function(svgOriginal){
@@ -420,7 +394,7 @@
         updateSizesColors(1);
 
         var zoom = d3.behavior.zoom()
-            .scaleExtent([1.4, 10])
+            .scaleExtent([1, 10])
             .on("zoom", function(){
                 svg.attr("transform",
                     "translate("+(-style.node.width)+", "+style.node.height
@@ -428,12 +402,12 @@
             });
         svg = svg
             .on("dblclick", function(){
-                zoom.scale(1.4);
+                zoom.scale(1);
                 zoom.translate([0, 0]);
-                svg.transition().attr("transform", "translate("+(-style.node.width)+", "+style.node.height+")scale(1.4)");
+                svg.transition().attr("transform", "translate("+(-style.node.width)+", "+style.node.height+")");
             })
             .append("g").call(zoom).append("g")
-            .attr("transform", "translate("+(-style.node.width)+", "+style.node.height+")scale(1.4)");
+            .attr("transform", "translate("+(-style.node.width)+", "+style.node.height+")");
 
         drawLegend(svgOriginal);
 
