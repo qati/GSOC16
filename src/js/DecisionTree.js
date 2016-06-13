@@ -171,7 +171,7 @@
                 var l2 = d.info.IVar!=-1
                     ? variables[d.info.IVar]+">"+(Number(d.info.Cut).toFixed(3))
                     : "";
-                d.font_size = 1.43*(style.node.width-2*Number(style.node.swidth.replace("px","")))/Math.max(l1.length, l2.length);
+                d.font_size = 1.45*(style.node.width-2*Number(style.node.swidth.replace("px","")))/Math.max(l1.length, l2.length);
                 return d.font_size+"px";
             })
             .attr("dx", style.text.padding)
