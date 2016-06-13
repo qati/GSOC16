@@ -29,7 +29,7 @@
         node: {
             padding: 10,
             yspace: 20,
-            xspace: 10,
+            xspace: 20,
             width: 150,
             height: 40,
             mwidth: 150,
@@ -67,6 +67,8 @@
         .range([style.node.colors.pureBkg, style.node.colors.pureSig]);
 
     var canvas, svg, roottree, variables;
+
+    var originalHeight=0;
 
     var d3tree = d3.layout.tree();
     var d3path = (function(){
@@ -302,14 +304,39 @@
         return [min, max];
     };
 
-    var updateSizesColors = function(){
+    var updateSizesColors = function(first){
         var nodes = d3tree.nodes(roottree);
-        style.node.height = canvas.height/(treeHeight(nodes[0])+1)-style.node.yspace;
+        var tree;
+        for(var i in nodes){
+            if (!nodes[i].parent){
+                tree = nodes[i];
+                break;
+            }
+        }
+        var height = treeHeight(tree);
+
+        style.node.height = canvas.height/(height+1)-style.node.yspace;
         if (style.node.height>style.node.mheight) style.node.height = style.node.mheight;
+        console.log("old width=", style.node.width)
         style.node.width  = canvas.width/(treeWidth(nodes)+1)-style.node.xspace;
+        console.log("new width=", style.node.width)
         if (style.node.width>style.node.mwidth) style.node.height = style.node.mwidth;
+
         d3tree.size([canvas.width, canvas.height]);
+
         nodeColor.domain(purityToColor(nodes));
+
+        if (first!==undefined && first==1){
+            originalHeight = height;
+            return;
+        }
+
+        var scale = d3.scale.linear()
+            .domain([1.4, 2])
+            .range([1, originalHeight]);
+
+        svg.attr("transform", "scale("+scale.inverse(height)+")");
+        scale.inverse()
     };
 
     var drawLegend = function(svgOriginal){
@@ -376,10 +403,10 @@
             canvas[key] -= key=="width" ? 2*style.margin.x+style.node.width : 2*style.margin.y+style.node.height;
         });
 
-        updateSizesColors();
+        updateSizesColors(1);
 
         var zoom = d3.behavior.zoom()
-            .scaleExtent([1, 10])
+            .scaleExtent([1.4, 10])
             .on("zoom", function(){
                 svg.attr("transform",
                     "translate("+(-style.node.width)+", "+style.node.height
@@ -387,12 +414,12 @@
             });
         svg = svg
             .on("dblclick", function(){
-                zoom.scale(1);
+                zoom.scale(1.4);
                 zoom.translate([0, 0]);
-                svg.transition().attr("transform", "translate("+(-style.node.width)+", "+style.node.height+")scale(1)");
+                svg.transition().attr("transform", "translate("+(-style.node.width)+", "+style.node.height+")scale(1.4)");
             })
             .append("g").call(zoom).append("g")
-            .attr("transform", "translate("+(-style.node.width)+", "+style.node.height+")");
+            .attr("transform", "translate("+(-style.node.width)+", "+style.node.height+")scale(1.4)");
 
         drawLegend(svgOriginal);
 
