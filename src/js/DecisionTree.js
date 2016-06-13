@@ -28,7 +28,7 @@
         },
         node: {
             padding: 10,
-            yspace: 50,
+            yspace: 20,
             xspace: 10,
             width: 150,
             height: 40,
@@ -145,7 +145,7 @@
             .append("g").attr("class", "nodes")
             .attr("transform", function(d){return "translate("+father.x0+","+father.y0+")";})
             .style("cursor","pointer");
-        
+
         nodeContainer.filter(function(d){
                 return d.parent;
             })
