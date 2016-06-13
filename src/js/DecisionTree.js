@@ -236,11 +236,12 @@
             .style("width", function(d){
                 return ((clear) ? style.node.width : 2*style.node.width)+"px";
             })
-            .style("width", function(d){
+            .style("height", function(d){
                 return ((clear) ? style.node.height : 2*style.node.height)+"px";
             });
         svg.selectAll("g.nodes text").filter(function(d){return d.id==node.id;})
             .attr("font-size", function(d){
+                console.log(d.font_size);
                 return (clear) ? d.font_size : 2*Number(d.font_size.replace("px", ""))+"px";
             });
         if (node.parent) path(node.parent, i, clear);
