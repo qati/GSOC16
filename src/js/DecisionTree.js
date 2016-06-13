@@ -50,6 +50,9 @@
             width: "4px",
             focus_width: "8px"
         },
+        text:{
+            padding: "6px"
+        },
         aduration: 1500,
         legend: {
             size: 20,
@@ -101,7 +104,7 @@
     var drawLabels = function(nodeContainer) {
         nodeContainer.append("text")
             .attr("dy", (style.node.height * 0.35) + "px")
-            .attr("dx", (style.node.width*0.1)+"px")
+            .attr("dx", style.text.padding)
             .attr("class", "label1")
             .style("fill-opacity", 1e-6)
             .style("font-size", 1e-6+"px")
@@ -114,7 +117,7 @@
         nodeContainer.append("text")
             .attr("class", "label2")
             .attr("dy", (style.node.height*0.75)+"px")
-            .attr("dx", (style.node.width*0.1)+"px")
+            .attr("dx", style.text.padding)
             .style("fill-opacity", 1e-6)
             .style("cursor", "pointer")
             .text(function(d){
@@ -172,7 +175,6 @@
                 d.font_size = 1.43*style.node.width/Math.max(l1.length, l2.length);
                 return d.font_size+"px";
             })
-            .attr("dx", Number(style.link.focus_width.replace("px","")+2) + "px")
             .attr("dy", function(d){
                 return ((d3.select(this).attr("class")=="label1")? (style.node.height * 0.35) : (style.node.height * 0.75))+"px"; })
             .style("fill-opacity", 1);
