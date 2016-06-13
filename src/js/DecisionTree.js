@@ -28,8 +28,8 @@
         },
         node: {
             padding: 10,
-            yspace: 20,
-            xspace: 20,
+            yspace: 40,
+            xspace: 40,
             width: 150,
             height: 40,
             mwidth: 150,
@@ -332,7 +332,7 @@
         }
 
         var scale = d3.scale.linear()
-            .domain([1.4, 2])
+            .domain([1.4, 1.6])
             .range([1, originalHeight]);
 
         svg.attr("transform", "scale("+scale.inverse(height)+")");
