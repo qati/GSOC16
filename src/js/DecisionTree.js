@@ -28,8 +28,8 @@
         },
         node: {
             padding: 10,
-            yspace: 50,
-            xspace: 10,
+            yspace: 40,
+            xspace: 20,
             width: 150,
             height: 40,
             mwidth: 150,
@@ -379,17 +379,17 @@
             .scaleExtent([1.4, 10])
             .on("zoom", function(){
                 svg.attr("transform",
-                    "translate("+(-style.node.width*2)+", "+style.node.height
+                    "translate("+(-style.node.width)+", "+style.node.height
                     +")translate(" + d3.event.translate + ")scale(" + d3.event.scale + ")");
             });
         svg = svg
             .on("dblclick", function(){
                 zoom.scale(1.4);
                 zoom.translate([0, 0]);
-                svg.transition().attr("transform", "translate("+(-style.node.width*2)+", "+style.node.height+")scale(1.4)");
+                svg.transition().attr("transform", "translate("+(-style.node.width)+", "+style.node.height+")scale(1.4)");
             })
             .append("g").call(zoom).append("g")
-            .attr("transform", "translate("+(-style.node.width*2)+", "+style.node.height+")scale(1.4)");
+            .attr("transform", "translate("+(-style.node.width)+", "+style.node.height+")scale(1.4)");
 
         drawLegend(svgOriginal);
 
