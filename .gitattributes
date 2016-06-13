@@ -1,2 +1,2 @@
 notebooks/* -diff
-notebooks/* linguist-documentation=false
+notebooks/* linguist-vendored=false
