@@ -40,7 +40,7 @@
                 pureBkg: "red",
                 pureSig: "blue"
             },
-            swidth: "4px",
+            swidth: "4px"
         },
         link: {
             colors:{
@@ -51,7 +51,7 @@
             focus_width: "8px"
         },
         text:{
-            padding: "6px"
+            padding: "8px"
         },
         aduration: 1500,
         legend: {
