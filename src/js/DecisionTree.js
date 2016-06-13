@@ -58,7 +58,7 @@
             rect_fucus_width: 115
         },
         text: {
-            color: "#DEDEDE"
+            color: "#DEDEDE",
             padding: "6px"
         }
     };
@@ -103,7 +103,7 @@
         nodeContainer.append("text")
             .attr("dy", (style.node.height * 0.35) + "px")
             .attr("class", "label1")
-            .attr("dx", "6px")
+            .attr("dx", style.text.padding)
             .style("fill-opacity", 1e-6)
             .style("font-size", 1e-6+"px")
             .style("cursor", "pointer")
