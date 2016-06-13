@@ -29,7 +29,7 @@
         node: {
             padding: 10,
             yspace: 40,
-            xspace: 40,
+            xspace: 60,
             width: 150,
             height: 40,
             mwidth: 150,
@@ -237,6 +237,7 @@
     };
 
     var drawTree = function(father){
+        updateScale();
         var nodes = d3tree.nodes(roottree),
             links = d3tree.links(nodes);
 
@@ -326,7 +327,19 @@
         d3tree.size([canvas.width, canvas.height]);
 
         nodeColor.domain(purityToColor(nodes));
+        updateScale(first);
+    };
 
+    var updateScale = function(first){
+        var nodes = d3tree.nodes(roottree);
+        var tree;
+        for(var i in nodes){
+            if (!nodes[i].parent){
+                tree = nodes[i];
+                break;
+            }
+        }
+        var height = treeHeight(tree);
         if (first!==undefined && first==1){
             originalHeight = height;
             return;
