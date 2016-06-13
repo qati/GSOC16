@@ -349,7 +349,8 @@
             .domain([1.4, 1.6])
             .range([1, originalHeight]);
 
-        svg.attr("transform", "scale("+scale.inverse(height)+")");
+        console.log("do I scale good?")
+        svg.attr("transform", "scale(1.4)");
         scale.inverse()
     };
 
