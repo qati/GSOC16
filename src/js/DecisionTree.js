@@ -351,7 +351,6 @@
 
         console.log("do I scale good?")
         svg.attr("transform", "scale(1.4)");
-        scale.inverse()
     };
 
     var drawLegend = function(svgOriginal){
