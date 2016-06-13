@@ -1,5 +1,5 @@
 /**
- * Created by battila on 5/14/16.
+ * Created by Attila Bagoly <battila93@gmail.com> on 5/14/16.
  */
 
 (function(factory){

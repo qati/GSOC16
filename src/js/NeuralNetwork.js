@@ -1,5 +1,5 @@
 /**
- * Created by attila on 6/9/16.
+ * Created by Attila Bagoly <battila93@gmail.com> on 6/9/16.
  */
 
 (function(factory){
@@ -12,7 +12,6 @@
     define(['d3'], function(d3){
         return factory({}, d3);
     });
-
 }(function(NeuralNetwork, d3) {
 
     // https://github.com/wbkd/d3-extended
