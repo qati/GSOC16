@@ -8,7 +8,7 @@
 
     var url = "";
     if (require.s.contexts.hasOwnProperty("_")) {
-        url = require.s.contexts._.config.paths["JsMVA"].replace("JsMVA","");
+        url = require.s.contexts._.config.paths["JsMVA.min"].replace("JsMVA.min","");
     }
     if ((console!==undefined) && (typeof console.log == 'function')) {
         if (url!=""){
@@ -21,8 +21,8 @@
     require.config({
         paths: {
             'JsRootCore': JSROOT_source_dir+'JSRootCore.min',
-            'nn': url+'NeuralNetwork',
-            'dtree': url+'DecisionTree'
+            'nn': url+'NeuralNetwork.min',
+            'dtree': url+'DecisionTree.min'
         }
     });
 
