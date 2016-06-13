@@ -165,7 +165,11 @@
         nodeSelector.selectAll("text")
             .transition().duration(style.aduration)
             .style("font-size", function(d) {
-                d.font_size=0.1*style.node.width;
+                var l1 = "S/(S+B)=" + Number(d.info.purity).toFixed(3);
+                var l2 = d.info.IVar!=-1
+                    ? variables[d.info.IVar]+">"+(Number(d.info.Cut).toFixed(3))
+                    : "";
+                d.font_size=style.node.width/Math.max(l1.length, l2.length);
                 return d.font_size+"px";
             })
             .attr("dx", function(d){return d.font_size;})
