@@ -105,7 +105,7 @@
         nodeContainer.append("text")
             .attr("dy", (style.node.height * 0.35) + "px")
             .attr("class", "label1")
-            .attr("dx", function(d){ return style.text.padding;})
+            .attr("dx", "6px")
             .style("fill-opacity", 1e-6)
             .style("font-size", 1e-6+"px")
             .style("cursor", "pointer")
@@ -114,6 +114,7 @@
             .text(function (d) {
                 return "S/(S+B)=" + Number(d.info.purity).toFixed(3);
             });
+        console.log(style.text.padding)
         nodeContainer.append("text")
             .attr("class", "label2")
             .attr("dx", style.text.padding)
