@@ -165,7 +165,7 @@
         nodeSelector.selectAll("text")
             .transition().duration(style.aduration)
             .style("font-size", function(d) {
-                d.font_size=0.12*style.node.width;
+                d.font_size=0.1*style.node.width;
                 return d.font_size+"px";
             })
             .attr("dx", function(d){return d.font_size;})
