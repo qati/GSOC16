@@ -29,7 +29,7 @@
         node: {
             padding: 10,
             yspace: 40,
-            xspace: 40,
+            xspace: 20,
             width: 150,
             height: 40,
             mwidth: 150,
@@ -370,13 +370,13 @@
         var svgOriginal = svg;
         Object.keys(canvas).forEach(function (key) {
             canvas[key] = Number(canvas[key].replace("px",""));
-            canvas[key] -= key=="width" ? style.margin.x : style.margin.y;
+            canvas[key] -= key=="width" ? 2*style.margin.x+style.node.width : 2*style.margin.y+style.node.height;
         });
 
         updateSizesColors();
 
         var zoom = d3.behavior.zoom()
-            .scaleExtent([1.4, 10])
+            .scaleExtent([1, 10])
             .on("zoom", function(){
                 svg.attr("transform",
                     "translate("+(-style.node.width)+", "+style.node.height
@@ -386,10 +386,10 @@
             .on("dblclick", function(){
                 zoom.scale(1.4);
                 zoom.translate([0, 0]);
-                svg.transition().attr("transform", "translate("+(-style.node.width)+", "+style.node.height+")scale(1.4)");
+                svg.transition().attr("transform", "translate("+(-style.node.width)+", "+style.node.height+")scale(1)");
             })
             .append("g").call(zoom).append("g")
-            .attr("transform", "translate("+(-style.node.width-style.margin.x)+", "+(style.node.height+style.margin.y)+")scale(1.4)");
+            .attr("transform", "translate("+(-style.node.width)+", "+style.node.height+")scale(1)");
 
         drawLegend(svgOriginal);
 
