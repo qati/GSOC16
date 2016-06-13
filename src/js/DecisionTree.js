@@ -29,7 +29,7 @@
         node: {
             padding: 10,
             yspace: 40,
-            xspace: 10,
+            xspace: 40,
             width: 150,
             height: 40,
             mwidth: 150,
