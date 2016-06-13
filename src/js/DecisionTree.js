@@ -104,7 +104,6 @@
     var drawLabels = function(nodeContainer) {
         nodeContainer.append("text")
             .attr("dy", (style.node.height * 0.35) + "px")
-            .attr("dx", style.text.padding)
             .attr("class", "label1")
             .style("fill-opacity", 1e-6)
             .style("font-size", 1e-6+"px")
@@ -117,7 +116,6 @@
         nodeContainer.append("text")
             .attr("class", "label2")
             .attr("dy", (style.node.height*0.75)+"px")
-            .attr("dx", style.text.padding)
             .style("fill-opacity", 1e-6)
             .style("cursor", "pointer")
             .text(function(d){
@@ -177,6 +175,7 @@
             })
             .attr("dy", function(d){
                 return ((d3.select(this).attr("class")=="label1")? (style.node.height * 0.35) : (style.node.height * 0.75))+"px"; })
+            .attr("dx", style.text.padding)
             .style("fill-opacity", 1);
 
         var nodeExit = nodeSelector.exit()
