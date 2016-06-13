@@ -171,7 +171,7 @@
                 var l2 = d.info.IVar!=-1
                     ? variables[d.info.IVar]+">"+(Number(d.info.Cut).toFixed(3))
                     : "";
-                d.font_size = 1.45*(style.node.width-2*Number(style.node.swidth.replace("px","")))/Math.max(l1.length, l2.length);
+                d.font_size = 1.5*(style.node.width-2*Number(style.node.swidth.replace("px","")))/Math.max(l1.length, l2.length);
                 return d.font_size+"px";
             })
             .attr("dx", style.text.padding)
@@ -223,15 +223,25 @@
     };
 
     var path = function(node, i, clear){
-        svg.selectAll("path.link").filter(function(d){return d.target.id==node.id})
+        svg.selectAll("path.link").filter(function(d){return d.target.id==node.id;})
             .style("stroke-width", (clear) ? style.link.width : style.link.focus_width)
             .style("stroke", (clear) ? style.link.colors.default : style.link.colors.focus);
-        svg.selectAll("g.nodes rect").filter(function(d){return d.id==node.id})
+        svg.selectAll("g.nodes rect").filter(function(d){return d.id==node.id;})
             .style("stroke-width", style.node.swidth)
             .style("stroke", function(d){
                 return (clear)
                     ? (d._children) ? style.node.colors.closed : nodeColor(d.info.purity)
                     : style.node.colors.focus;
+            })
+            .style("width", function(d){
+                return ((clear) ? style.node.width : 2*style.node.width)+"px";
+            })
+            .style("width", function(d){
+                return ((clear) ? style.node.height : 2*style.node.height)+"px";
+            });
+        svg.selectAll("g.nodes text").filter(function(d){return d.id==node.id;})
+            .attr("font-size", function(d){
+                return (clear) ? d.font_size : 2*Number(d.font_size.replace("px", ""))+"px";
             });
         if (node.parent) path(node.parent, i, clear);
     };
