@@ -169,7 +169,7 @@
                 var l2 = d.info.IVar!=-1
                     ? variables[d.info.IVar]+">"+(Number(d.info.Cut).toFixed(3))
                     : "";
-                d.font_size = 1.4*style.node.width/Math.max(l1.length, l2.length);
+                d.font_size = 1.45*style.node.width/Math.max(l1.length, l2.length);
                 return d.font_size+"px";
             })
             .attr("dx", function(d){return d.font_size;})
