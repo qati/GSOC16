@@ -51,7 +51,7 @@
             focus_width: "8px"
         },
         text:{
-            padding: "8px"
+            padding: "6px"
         },
         aduration: 1500,
         legend: {
