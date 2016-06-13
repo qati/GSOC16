@@ -172,7 +172,7 @@
                 d.font_size = 1.43*style.node.width/Math.max(l1.length, l2.length);
                 return d.font_size+"px";
             })
-            .attr("dx", 1.2*Number(style.link.focus_width.replace("px","")) + "px")
+            .attr("dx", Number(style.link.focus_width.replace("px","")+2) + "px")
             .attr("dy", function(d){
                 return ((d3.select(this).attr("class")=="label1")? (style.node.height * 0.35) : (style.node.height * 0.75))+"px"; })
             .style("fill-opacity", 1);
