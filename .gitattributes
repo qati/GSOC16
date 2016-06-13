@@ -1,2 +1,3 @@
 notebooks/* -diff
 notebooks/* linguist-vendored
+*.ipynb linguist-vendored
