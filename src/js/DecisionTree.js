@@ -101,6 +101,10 @@
     var drawLabels = function(nodeContainer){
         nodeContainer.append("text")
             .attr("dy", (style.node.height*0.35)+"px")
+            .attr("class", function(d){
+                d.labelid = 1;
+                return "label1";
+            })
             .style("fill-opacity", 1e-6)
             .style("cursor", "pointer")
             .style("fill", style.text.color)
@@ -116,6 +120,10 @@
                 return (style.node.width*0.5-this.getComputedTextLength()*0.5)+"px";
             });
         nodeContainer.append("text")
+            .attr("class", function(d){
+                d.labelid = 2;
+                return "label2";
+            })
             .attr("dy", (style.node.height*0.75)+"px")
             .style("fill-opacity", 1e-6)
             .style("cursor", "pointer")
@@ -226,6 +234,16 @@
         var nodes = d3tree.nodes(roottree),
             links = d3tree.links(nodes);
 
+        var maxDepth = 0;
+        nodes.forEach(function(d){
+           if (maxDepth<Number(d.depth)) maxDepth = Number(d.depth);
+        });
+        maxDepth += 1;
+
+        nodes.forEach(function(d){
+           d.y = d.depth * canvas.height / maxDepth+style.node.padding;
+        });
+
         if (!("x0") in father || !("y0" in father)){
             father.x0 = nodes[0].x+style.node.width*0.5;
             father.y0 = nodes[0].y-style.node.height;
@@ -245,7 +263,6 @@
             d.x0 = d.x+style.node.width;
             d.y0 = d.y;
         });
-
     };
 
     var treeHeight = function(tree){
@@ -287,6 +304,7 @@
         style.node.height = canvas.height/(treeHeight(nodes[0])+1)-style.node.yspace;
         if (style.node.height>style.node.mheight) style.node.height = style.node.mheight;
         style.node.width  = canvas.width/(treeWidth(nodes)+1)-style.node.xspace;
+        if (style.node.width>style.node.mwidth) style.node.height = style.node.mwidth;
         d3tree.size([canvas.width, canvas.height]);
         nodeColor.domain(purityToColor(nodes));
     };
@@ -358,7 +376,7 @@
         updateSizesColors();
 
         var zoom = d3.behavior.zoom()
-            .scaleExtent([1, 10])
+            .scaleExtent([1.4, 10])
             .on("zoom", function(){
                 svg.attr("transform",
                     "translate("+(-style.node.width)+", "+style.node.height
@@ -366,12 +384,12 @@
             });
         svg = svg
             .on("dblclick", function(){
-                zoom.scale(1);
+                zoom.scale(1.4);
                 zoom.translate([0, 0]);
-                svg.transition().attr("transform", "translate("+(-style.node.width)+", "+style.node.height+")scale(1)");
+                svg.transition().attr("transform", "translate("+(-style.node.width*2.8)+", "+style.node.height+")scale(1.4)");
             })
             .append("g").call(zoom).append("g")
-            .attr("transform", "translate("+(-style.node.width)+", "+style.node.height+")");
+            .attr("transform", "translate("+(-style.node.width*2.8)+", "+style.node.height+")scale(1.4)");
 
         drawLegend(svgOriginal);
 
