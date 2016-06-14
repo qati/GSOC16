@@ -113,7 +113,6 @@
             .text(function (d) {
                 return "S/(S+B)=" + Number(d.info.purity).toFixed(3);
             });
-        console.log(style.text.padding)
         nodeContainer.append("text")
             .attr("class", "label2")
             .attr("dx", style.text.padding)
@@ -228,9 +227,6 @@
     };
 
     var path = function(node, i, clear){
-        var width = (clear) ? style.node.width : 2*style.node.width,
-            height = (clear) ? style.node.height : 1.5*style.node.height;
-
         svg.selectAll("path.link").filter(function(d){return d.target.id==node.id;})
             .style("stroke-width", (clear) ? style.link.width : style.link.focus_width)
             .style("stroke", (clear) ? style.link.colors.default : style.link.colors.focus);
@@ -247,6 +243,9 @@
     };
 
     var makePathNodesBigger = function(node, i, clear){
+        var width = (clear) ? style.node.width : 2*style.node.width,
+            height = (clear) ? style.node.height : 1.5*style.node.height;
+
         svg.selectAll("g.nodes rect").filter(function(d){return d.id==node.id;})
             .style("width", width+"px")
             .style("height", height+"px");
