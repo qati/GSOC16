@@ -243,7 +243,7 @@
     };
 
     var makePathNodesBigger = function(node, i, clear){
-        return;
+        if (d3.event.defaultPrevented) return;
         var width = (clear) ? style.node.width : 2*style.node.width,
             height = (clear) ? style.node.height : 1.5*style.node.height;
 
