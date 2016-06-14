@@ -89,7 +89,7 @@
     })();
 
     var clickOnNode = function(d){
-        //if (d3.event.defaultPrevented) return;
+        if (d3.event.defaultPrevented) return;
         if ("children" in d){
             d._children = d.children;
             d.children = null;
@@ -243,6 +243,7 @@
     };
 
     var makePathNodesBigger = function(node, i, clear){
+        return;
         var width = (clear) ? style.node.width : 2*style.node.width,
             height = (clear) ? style.node.height : 1.5*style.node.height;
 
