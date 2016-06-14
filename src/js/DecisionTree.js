@@ -249,16 +249,16 @@
         svg.selectAll("g.nodes rect").filter(function(d){return d.id==node.id;})
             .style("width", width+"px")
             .style("height", height+"px");
+
         svg.selectAll("g.nodes text").filter(function(d){return d.id==node.id;})
             .style("font-size", function(d){
-                d.bigger = (clear) ? false : true;
                 return ((clear) ? d.font_size : 2*d.font_size)+"px";
             })
             .attr("dx", (clear) ? style.text.padding : (2*Number(style.text.padding.replace("px", ""))+"px"))
             .attr("dy", function(){
                 return ((d3.select(this).attr("class")=="label1")? (height * 0.35) : (height * 0.75))+"px";
             });
-        if (node.parent) path(node.parent, i, clear);
+        if (node.parent) makePathNodesBigger(node.parent, i, clear);
     };
 
     var drawTree = function(father){
