@@ -89,6 +89,7 @@
     })();
 
     var clickOnNode = function(d){
+        if (d3.event.defaultPrevented) return;
         if ("children" in d){
             d._children = d.children;
             d.children = null;
@@ -140,7 +141,11 @@
             })
             .on("click", clickOnNode)
             .on("mouseover", path)
-            .on("mouseout", function(d, i){return path(d, i, 1);});
+            .on("mouseout", function(d, i){makePathNodesBigger(d, i, 1); return path(d, i, 1);})
+            .on("contextmenu", function(d, i){
+                d3.event.preventDefault();
+                makePathNodesBigger(d);
+            });
 
         nodeContainer.append("rect")
             .attr("width", 1e-6)
@@ -236,19 +241,24 @@
                 return (clear)
                     ? (d._children) ? style.node.colors.closed : nodeColor(d.info.purity)
                     : style.node.colors.focus;
-            })
+            });
+
+        if (node.parent) path(node.parent, i, clear);
+    };
+
+    var makePathNodesBigger = function(node, i, clear){
+        svg.selectAll("g.nodes rect").filter(function(d){return d.id==node.id;})
             .style("width", width+"px")
             .style("height", height+"px");
-
         svg.selectAll("g.nodes text").filter(function(d){return d.id==node.id;})
             .style("font-size", function(d){
+                d.bigger = (clear) ? false : true;
                 return ((clear) ? d.font_size : 2*d.font_size)+"px";
             })
             .attr("dx", (clear) ? style.text.padding : (2*Number(style.text.padding.replace("px", ""))+"px"))
             .attr("dy", function(){
                 return ((d3.select(this).attr("class")=="label1")? (height * 0.35) : (height * 0.75))+"px";
             });
-
         if (node.parent) path(node.parent, i, clear);
     };
 
