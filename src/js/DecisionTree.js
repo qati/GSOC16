@@ -141,8 +141,10 @@
             })
             .on("click", clickOnNode)
             .on("mouseover", path)
-            .on("mouseout", function(d, i){makePathNodesBigger(d, i, 1); return path(d, i, 1);})
-            .on("contextmenu", function(d, i){
+            .on("mouseout", function(d, i){
+                if (d.bigger) makePathNodesBigger(d, i, 1);
+                return path(d, i, 1);
+            }).on("contextmenu", function(d, i){
                 d3.event.preventDefault();
                 makePathNodesBigger(d);
             });
