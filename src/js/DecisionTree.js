@@ -246,8 +246,8 @@
     var makePathNodesBigger = function(node, i, clear){
         var width = (clear) ? style.node.width : 2*style.node.width,
             height = (clear) ? style.node.height : 1.5*style.node.height;
-
-        svg.selectAll("g.nodes rect").filter(function(d){return d.id==node.id;})
+        console.log("I am running, clear",clear);
+        svg.selectAll("g.nodes rect").filter(function(d){d.bigger=(clear) ? true : false; return d.id==node.id;})
             .style("width", width+"px")
             .style("height", height+"px");
 
