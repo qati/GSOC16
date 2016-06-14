@@ -244,6 +244,8 @@
     };
 
     var makePathNodesBigger = function(node, i, clear){
+        if (d3.event.defaultPrevented) return;
+        d3.event.stopPropagation();
         var width = (clear) ? style.node.width : 2*style.node.width,
             height = (clear) ? style.node.height : 1.5*style.node.height;
         svg.selectAll("g.nodes rect").filter(function(d){d.bigger=(clear) ? false : true; return d.id==node.id;})
