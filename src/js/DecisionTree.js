@@ -243,7 +243,11 @@
         if (node.parent) path(node.parent, i, clear);
     };
 
+    /*
+      FIXME I'm not working properly. I will mess up the node size changing for collapsing effect. I'm not supposed to do that.
+     */
     var makePathNodesBigger = function(node, i, clear){
+        return;
         var width = (clear) ? style.node.width : 2*style.node.width,
             height = (clear) ? style.node.height : 1.5*style.node.height;
         svg.selectAll("g.nodes rect").filter(function(d){d.bigger=(clear) ? false : true; return d.id==node.id;})
