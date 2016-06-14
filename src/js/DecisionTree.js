@@ -89,7 +89,7 @@
     })();
 
     var clickOnNode = function(d){
-        if (d3.event.defaultPrevented) return;
+        //if (d3.event.defaultPrevented) return;
         if ("children" in d){
             d._children = d.children;
             d.children = null;
