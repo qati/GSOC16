@@ -47,7 +47,9 @@
                 "negative": "#00005E",
                 "positive": "#FF4B00"
             },
+            "default_width_rannge": [0.5, 5],
             "width_range": [0.5, 5],
+            "default_alpha": 0.7,
             "alpha": 0.7,
             "mouseon": {
                 "width_range": [0.5, 10],
@@ -58,7 +60,7 @@
             "labels_layer0_padding": 0.03
         },
         "legend": {
-            "pos": {"x": -150, "y": 10},
+            "pos": {"x": 750, "y": 10},
             "rect": {"width": 10, "height":10},
             "dy": 20,
             "padding": 10
@@ -66,6 +68,7 @@
     };
 
     var canvas, svg, net, num_layers;
+
 
     var getNeuronNumber = function(layer_index){
         return Number(Object.keys(net["layout"]["layer_"+layer_index]).length-1);
@@ -150,7 +153,7 @@
             .attr("y", function(d){return d[1].y+0.25*this.getBBox().height;});
     };
 
-    var drawNeurons = function (neuronsattr, layer_num, input_variable_labels) {
+    var drawNeurons = function (neuronsattr, layer_num, input_variable_labels, deepNet) {
         if (input_variable_labels!==undefined){
             var dat = d3.zip(neuronsattr, getInputLabels(neuronsattr));
         } else {
@@ -168,6 +171,7 @@
         if (input_variable_labels!==undefined){
             drawInputLabels(group)
         }
+        if (deepNet) return;
         animate(group);
     };
 
@@ -245,6 +249,7 @@
             {"c": style["synapse"]["colors"]["negative"], "txt": "Negative weight"}
         ];
         var attr = style["legend"];
+        
         var container = svg.append("g").attr("id", "legend");
         container.selectAll("g")
             .data(labels)
@@ -265,6 +270,53 @@
                     .style("fill", function(d){return d.c;});
             });
     };
+    
+    var transformDeepNetObject = function(deepnet){
+        vars = deepnet["variables"];
+        vars.push("Bias node");
+        var layers = deepnet["layers"];
+        var synapses = deepnet["synapses"]["synapses"];
+        var layout = {
+            layer_0: {
+                nneurons: vars.length
+            }
+        };
+        var nodes;
+        for(var j=0;j<vars.length;j++){
+            nodes = Number(layers[0]["Nodes"]);
+            layout["layer_0"]["neuron_"+j]={
+                nsynapses: nodes,
+                weights: synapses.slice(j*nodes, (j+1)*nodes)
+            }
+        }
+        for(var i=0; i<(layers.length-1);i++){
+            layout["layer_"+(i+1)] = {
+                nneurons: Number(layers[i]["Nodes"])
+            };
+            nodes = Number(layers[i+1]["Nodes"]);
+            for(var j=0; j<Number(layers[i]["Nodes"]);j++){
+                layout["layer_"+(i+1)]["neuron_"+j] = {
+                    nsynapses: nodes,
+                    weights: synapses.slice(j*nodes, (j+1)*nodes)
+                }
+            }
+        }
+        layout["layer_"+(i+1)] = {
+            nneurons: Number(layers[i]["Nodes"])
+        };
+        for(var j=0; j<Number(layers[i]["Nodes"]);j++){
+            layout["layer_"+(i+1)]["neuron_"+j] = {
+                nsynapses: 0
+            }
+        }
+        layout["nlayers"] = i+2;
+        var net = {
+            variables: vars,
+            layout: layout
+        };
+        return net;
+    };
+
 
     NeuralNetwork.draw = function (divid, netobj) {
         net = netobj;
@@ -274,6 +326,7 @@
             height: div.property("style")["height"]
         };
         svg = div.append("svg")
+            .attr("id", "svg_"+divid)
             .attr("width", canvas.width)
             .attr("height", canvas.height);
         Object.keys(canvas).forEach(function (key) {
@@ -282,13 +335,28 @@
 
         style.legend.pos.x += canvas.width;
 
+        var deepNet;
+        if ("layers" in net && "synapses" in net){
+            style.synapse.width_range = [5/net["synapses"]["synapses"].length, 50/net["synapses"]["synapses"].length];
+            style.synapse.alpha = 0.9;
+            scaleSynapsisPos.range(style["synapse"]["width_range"]);
+            scaleSynapsisNeg.range(style["synapse"]["width_range"]);
+            net = transformDeepNetObject(net);
+            deepNet = true;
+        } else {
+            style.synapse.width_range = style.synapse.default_width_rannge;
+            style.synapse.alpha = style.synapse.default_alpha;
+            scaleSynapsisPos.range(style["synapse"]["width_range"]);
+            scaleSynapsisNeg.range(style["synapse"]["width_range"]);
+            deepNet = false;
+        }
+
         num_layers = Number(net["layout"]["nlayers"]);
 
         scaleSynapsisPos.domain([0,getMinMaxWeight().max]);
         scaleSynapsisNeg.domain([0, Math.abs(getMinMaxWeight().min)]);
-
         var zoom = d3.behavior.zoom()
-            .scaleExtent([1, 10])
+            .scaleExtent([1, 20])
             .on("zoom", function(){
                 svg.attr("transform", "translate(" + d3.event.translate + ")scale(" + d3.event.scale + ")");
             });
@@ -306,7 +374,7 @@
 
         }
         for(i=0;i<num_layers;i++) {
-            drawNeurons(layers[i], i, i==0 ? true : undefined);
+            drawNeurons(layers[i], i, i==0 ? true : undefined, deepNet);
             drawSynapses(layers[i], i, layers[i + 1]);
         }
         drawLegend();
