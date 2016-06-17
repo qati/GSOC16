@@ -47,7 +47,7 @@
                 "negative": "#00005E",
                 "positive": "#FF4B00"
             },
-            "default_width_rannge": [0.5, 5],
+            "default_width_range": [0.5, 5],
             "width_range": [0.5, 5],
             "default_alpha": 0.7,
             "alpha": 0.7,
@@ -60,22 +60,21 @@
             "labels_layer0_padding": 0.03
         },
         "legend": {
-            "pos": {"x": 750, "y": 10},
+            "pos": {"x": 150, "y": 10},
             "rect": {"width": 10, "height":10},
             "dy": 20,
             "padding": 10
         }
     };
 
-    var canvas, svg, net, num_layers;
+    var canvas;
 
-
-    var getNeuronNumber = function(layer_index){
+    var getNeuronNumber = function(net, layer_index){
         return Number(Object.keys(net["layout"]["layer_"+layer_index]).length-1);
     };
 
-    var getNeuronsAttr = function (layer_index) {
-        var numn = getNeuronNumber(layer_index);
+    var getNeuronsAttr = function (net, num_layers, layer_index) {
+        var numn = getNeuronNumber(net, layer_index);
         var neuronsAttr = Array(numn);
         for(var i=0;i<numn;i++){
             neuronsAttr[i] = {
@@ -95,29 +94,29 @@
         return neuronsAttr;
     };
 
-    var getWeights = function(layer, neuron){
+    var getWeights = function(net, layer, neuron){
         var neuron = net["layout"]["layer_"+layer]["neuron_"+neuron];
         if (neuron["nsynapses"]!=0) return neuron["weights"];
         return [];
     };
 
-    var getMinMaxWeight = function(){
+    var getMinMaxWeight = function(net, num_layers){
         var max = -1e30;
         var min =  1e30;
         var tmp;
         for(var i=0;i<num_layers;i++){
-            for(var j=0;j<getNeuronNumber(i);j++){
-                tmp = d3.max(getWeights(i, j));
+            for(var j=0;j<getNeuronNumber(net, i);j++){
+                tmp = d3.max(getWeights(net, i, j));
                 if (max < tmp) max = tmp;
-                tmp = d3.min(getWeights(i, j));
+                tmp = d3.min(getWeights(net, i, j));
                 if (min > tmp) min = tmp;
             }
         }
         return {"min": min, "max": max};
     };
 
-    var getSynapses = function(layer_index, neuron, pos, layer2){
-        var weights  = getWeights(layer_index, neuron);
+    var getSynapses = function(net, layer_index, neuron, pos, layer2){
+        var weights  = getWeights(net, layer_index, neuron);
         var synapses = Array(weights.length);
         for(var i in weights){
             synapses[i] = {
@@ -132,7 +131,7 @@
         return synapses;
     };
 
-    var getInputLabels = function(layer0){
+    var getInputLabels = function(net, layer0){
         var labels = net["variables"];
         labels.push("Bias node");
         var variables = Array(labels.length);
@@ -153,9 +152,9 @@
             .attr("y", function(d){return d[1].y+0.25*this.getBBox().height;});
     };
 
-    var drawNeurons = function (neuronsattr, layer_num, input_variable_labels, deepNet) {
+    var drawNeurons = function (svg, net, neuronsattr, layer_num, input_variable_labels, deepNet) {
         if (input_variable_labels!==undefined){
-            var dat = d3.zip(neuronsattr, getInputLabels(neuronsattr));
+            var dat = d3.zip(neuronsattr, getInputLabels(net, neuronsattr));
         } else {
             var dat = d3.zip(neuronsattr, Array(neuronsattr.length));
         }
@@ -172,22 +171,20 @@
             drawInputLabels(group)
         }
         if (deepNet) return;
-        animate(group);
+        animate(svg, group);
     };
 
-    var scaleSynapsisPos = d3.scale.linear()
-        .range(style["synapse"]["width_range"]);
-    var scaleSynapsisNeg = d3.scale.linear()
-        .range(style["synapse"]["width_range"]);
+    var scaleSynapsisPos = d3.scale.linear();
+    var scaleSynapsisNeg = d3.scale.linear();
 
     var synapse = d3.svg.line()
         .x(function(d){return d.x;})
         .y(function(d){return d.y;})
         .interpolate("linear");
 
-    var drawSynapses = function(layer1, layer1_index, layer2){
+    var drawSynapses = function(svg, net, layer1, layer1_index, layer2){
         for(var idx in layer1){
-            var synapses = getSynapses(layer1_index, idx, layer1[idx].position, layer2);
+            var synapses = getSynapses(net, layer1_index, idx, layer1[idx].position, layer2);
             svg.select("g#neuron_"+layer1_index+""+idx)
                 .selectAll("path")
                 .data(synapses)
@@ -202,7 +199,7 @@
         }
     };
 
-    var animate = function(group){
+    var animate = function(svg, group){
         group.on('mouseover', function(d) {
             scaleSynapsisPos.range(style["synapse"]["mouseon"]["width_range"]);
             scaleSynapsisNeg.range(style["synapse"]["mouseon"]["width_range"]);
@@ -243,13 +240,13 @@
         });
     };
 
-    var drawLegend = function(){
+    var drawLegend = function(svg){
         var labels = [
             {"c": style["synapse"]["colors"]["positive"], "txt": "Positive weight"},
             {"c": style["synapse"]["colors"]["negative"], "txt": "Negative weight"}
         ];
         var attr = style["legend"];
-        
+
         var container = svg.append("g").attr("id", "legend");
         container.selectAll("g")
             .data(labels)
@@ -258,19 +255,19 @@
             .each(function(d, i){
                 var g = d3.select(this);
                 g.append("rect")
-                    .attr("x", attr.pos.x)
+                    .attr("x", canvas.width-attr.pos.x)
                     .attr("y", attr.pos.y+i*attr.dy)
                     .attr("width", attr.rect.width)
                     .attr("height", attr.rect.height)
                     .style("fill", function(d){return d.c;});
                 g.append("text")
-                    .attr("x", attr.pos.x+attr.rect.width+attr.padding)
+                    .attr("x", canvas.width-attr.pos.x+attr.rect.width+attr.padding)
                     .attr("y", attr.pos.y+i*attr.dy+attr.rect.height)
                     .text(function(d){return d.txt;})
                     .style("fill", function(d){return d.c;});
             });
     };
-    
+
     var transformDeepNetObject = function(deepnet){
         vars = deepnet["variables"];
         vars.push("Bias node");
@@ -319,7 +316,8 @@
 
 
     NeuralNetwork.draw = function (divid, netobj) {
-        net = netobj;
+        var svg, net;
+
         var div = d3.select("#"+divid);
         canvas = {
             width:  div.property("style")["width"],
@@ -333,28 +331,27 @@
             canvas[key] = Number(canvas[key].replace("px",""))
         });
 
-        style.legend.pos.x += canvas.width;
-
         var deepNet;
-        if ("layers" in net && "synapses" in net){
-            style.synapse.width_range = [5/net["synapses"]["synapses"].length, 50/net["synapses"]["synapses"].length];
+        if ("layers" in netobj && "synapses" in netobj){
+            net = transformDeepNetObject(netobj);
+            style.synapse.width_range = [5/netobj["synapses"]["synapses"].length, 50/netobj["synapses"]["synapses"].length];
             style.synapse.alpha = 0.9;
             scaleSynapsisPos.range(style["synapse"]["width_range"]);
             scaleSynapsisNeg.range(style["synapse"]["width_range"]);
-            net = transformDeepNetObject(net);
             deepNet = true;
         } else {
-            style.synapse.width_range = style.synapse.default_width_rannge;
+            net = netobj;
+            style.synapse.width_range = style.synapse.default_width_range;
             style.synapse.alpha = style.synapse.default_alpha;
             scaleSynapsisPos.range(style["synapse"]["width_range"]);
             scaleSynapsisNeg.range(style["synapse"]["width_range"]);
             deepNet = false;
         }
 
-        num_layers = Number(net["layout"]["nlayers"]);
+        var num_layers = Number(net["layout"]["nlayers"]);
 
-        scaleSynapsisPos.domain([0,getMinMaxWeight().max]);
-        scaleSynapsisNeg.domain([0, Math.abs(getMinMaxWeight().min)]);
+        scaleSynapsisPos.domain([0,getMinMaxWeight(net, num_layers).max]);
+        scaleSynapsisNeg.domain([0, Math.abs(getMinMaxWeight(net, num_layers).min)]);
         var zoom = d3.behavior.zoom()
             .scaleExtent([1, 20])
             .on("zoom", function(){
@@ -370,14 +367,14 @@
 
         var layers = Array(num_layers);
         for(var i=0;i<num_layers;i++){
-            layers[i] = getNeuronsAttr(i);
+            layers[i] = getNeuronsAttr(net, num_layers, i);
 
         }
         for(i=0;i<num_layers;i++) {
-            drawNeurons(layers[i], i, i==0 ? true : undefined, deepNet);
-            drawSynapses(layers[i], i, layers[i + 1]);
+            drawNeurons(svg, net, layers[i], i, i==0 ? true : undefined, deepNet);
+            drawSynapses(svg, net, layers[i], i, layers[i + 1]);
         }
-        drawLegend();
+        drawLegend(svg);
     };
 
     Object.seal(NeuralNetwork);

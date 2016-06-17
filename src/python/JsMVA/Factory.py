@@ -25,6 +25,38 @@ def GetMethodObject(fac, datasetName, methodName):
     return (method[0])
 
 
+def GetDeepNetwork(xml_file):
+    tree = ElementTree()
+    tree.parse(xml_file)
+    roottree = tree.getroot()
+    network  = {}
+    network["variables"] = []
+    for v in roottree.find("Variables"):
+        network["variables"].append(v.get('Title'))
+    layout = roottree.find("Weights").find("Layout")
+    net    = []
+    for layer in layout:
+        net.append({"Connection": layer.get("Connection"),
+        "Nodes": layer.get("Nodes"),
+        "ActivationFunction": layer.get("ActivationFunction"),
+        "OutputMode": layer.get("OutputMode")
+         })
+    network["layers"] = net
+    Synapses = roottree.find("Weights").find("Synapses")
+    synapses = {
+        "InputSize": Synapses.get("InputSize"),
+        "OutputSize": Synapses.get("OutputSize"),
+        "NumberSynapses": Synapses.get("NumberSynapses"),
+        "synapses": []
+    }
+    for i in Synapses.text.split(" "):
+        tmp = i.replace("\n", "")
+        if len(tmp)>1:
+            synapses["synapses"].append(tmp)
+    network["synapses"] = synapses
+    return json.dumps(network)
+
+
 def GetNetwork(xml_file):
     tree = ElementTree()
     tree.parse(xml_file)
@@ -34,6 +66,7 @@ def GetNetwork(xml_file):
     for v in roottree.find("Variables"):
         network["variables"].append(v.get('Title'))
     layout = roottree.find("Weights").find("Layout")
+
     net    = { "nlayers": layout.get("NLayers") }
     for layer in layout:
         neuron_num = int(layer.get("NNeurons"))
@@ -327,8 +360,12 @@ def DrawNeuralNetwork(fac, datasetName, methodName):
     m = GetMethodObject(fac, datasetName, methodName)
     if m==None:
         return None
-    net = GetNetwork(str(m.GetWeightFileName()))
+    if (methodName=="DNN"):
+        net = GetDeepNetwork(str(m.GetWeightFileName()))
+    else:
+        net = GetNetwork(str(m.GetWeightFileName()))
     JPyInterface.JsDraw.Draw(net, "drawNeuralNetwork", True)
+
 
 def DrawDecisionTree(fac, datasetName, methodName):
     from IPython.core.display import display, clear_output
