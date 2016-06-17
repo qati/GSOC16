@@ -200,8 +200,8 @@
     };
 
     var animate = function(svg, group){
-        style.synapse.width_range = style.synapse.default_width_range;
-        style.synapse.alpha = style.synapse.default_alpha;
+        style.synapse.width_range = Object.assign({}, style.synapse.default_width_range);
+        style.synapse.alpha = Object.assign({}, style.synapse.default_alpha);
         scaleSynapsisPos.range(style["synapse"]["width_range"]);
         scaleSynapsisNeg.range(style["synapse"]["width_range"]);
         group.on('mouseover', function(d) {
@@ -291,8 +291,8 @@
             deepNet = true;
         } else {
             net = netobj;
-            style.synapse.width_range = style.synapse.default_width_range;
-            style.synapse.alpha = style.synapse.default_alpha;
+            style.synapse.width_range = Object.assign({}, style.synapse.default_width_range);
+            style.synapse.alpha = Object.assign({}, style.synapse.default_alpha);
             scaleSynapsisPos.range(style["synapse"]["width_range"]);
             scaleSynapsisNeg.range(style["synapse"]["width_range"]);
             deepNet = false;
