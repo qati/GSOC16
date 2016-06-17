@@ -200,6 +200,10 @@
     };
 
     var animate = function(svg, group){
+        style.synapse.width_range = style.synapse.default_width_range;
+        style.synapse.alpha = style.synapse.default_alpha;
+        scaleSynapsisPos.range(style["synapse"]["width_range"]);
+        scaleSynapsisNeg.range(style["synapse"]["width_range"]);
         group.on('mouseover', function(d) {
             scaleSynapsisPos.range(style["synapse"]["mouseon"]["width_range"]);
             scaleSynapsisNeg.range(style["synapse"]["mouseon"]["width_range"]);
@@ -333,7 +337,18 @@
 
         var deepNet;
         if ("layers" in netobj && "synapses" in netobj){
+            /** ADDING EXTRA LAYERS FOR TEST **/
+            /** TODO remove this **/
+            netobj["layers"].splice(1, 0, {"Nodes" : 50});
+            for(var i=0;i<5000;i++) {
+                netobj["synapses"]["synapses"].push((Math.random() > 0.5 ? -1 : 1) * Math.random() * 4);
+            }
+
             net = transformDeepNetObject(netobj);
+
+            console.log(netobj);
+            console.log(net);
+            
             style.synapse.width_range = [5/netobj["synapses"]["synapses"].length, 50/netobj["synapses"]["synapses"].length];
             style.synapse.alpha = 0.9;
             scaleSynapsisPos.range(style["synapse"]["width_range"]);
