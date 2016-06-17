@@ -339,16 +339,18 @@
         if ("layers" in netobj && "synapses" in netobj){
             /** ADDING EXTRA LAYERS FOR TEST **/
             /** TODO remove this **/
-            netobj["layers"].splice(1, 0, {"Nodes" : 50});
-            for(var i=0;i<5000;i++) {
-                netobj["synapses"]["synapses"].push((Math.random() > 0.5 ? -1 : 1) * Math.random() * 4);
+            for(var k=0;k<5;k++){
+                netobj["layers"].splice(1, 0, {"Nodes" : 50});
+                for(var i=0;i<5000;i++) {
+                    netobj["synapses"]["synapses"].push((Math.random() > 0.5 ? -1 : 1) * Math.random() * 4);
+                }
             }
 
             net = transformDeepNetObject(netobj);
 
             console.log(netobj);
             console.log(net);
-            
+
             style.synapse.width_range = [5/netobj["synapses"]["synapses"].length, 50/netobj["synapses"]["synapses"].length];
             style.synapse.alpha = 0.9;
             scaleSynapsisPos.range(style["synapse"]["width_range"]);
