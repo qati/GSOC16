@@ -340,8 +340,8 @@
             /** ADDING EXTRA LAYERS FOR TEST **/
             /** TODO remove this **/
             for(var k=0;k<5;k++){
-                netobj["layers"].splice(1, 0, {"Nodes" : 50});
-                for(var i=0;i<5000;i++) {
+                netobj["layers"].splice(1, 0, {"Nodes" : 100});
+                for(var i=0;i<10000;i++) {
                     netobj["synapses"]["synapses"].push((Math.random() > 0.5 ? -1 : 1) * Math.random() * 4);
                 }
             }
