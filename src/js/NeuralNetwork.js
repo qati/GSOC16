@@ -281,11 +281,28 @@
             height: div.property("style")["height"]
         };
 
-        net = netobj;
+        var deepNet;
+        if ("layers" in netobj && "synapses" in netobj){
+            net = transformDeepNetObject(netobj);
+            style.synapse.width_range = [5/netobj["synapses"]["synapses"].length, 50/netobj["synapses"]["synapses"].length];
+            style.synapse.alpha = 0.9;
+            scaleSynapsisPos.range(style["synapse"]["width_range"]);
+            scaleSynapsisNeg.range(style["synapse"]["width_range"]);
+            deepNet = true;
+        } else {
+            net = netobj;
+            style.synapse.width_range = style.synapse.default_width_range;
+            style.synapse.alpha = style.synapse.default_alpha;
+            scaleSynapsisPos.range(style["synapse"]["width_range"]);
+            scaleSynapsisNeg.range(style["synapse"]["width_range"]);
+            deepNet = false;
+        }
+
+        /*net = netobj;
         style.synapse.width_range = style.synapse.default_width_range;
         style.synapse.alpha = style.synapse.default_alpha;
         scaleSynapsisPos.range(style["synapse"]["width_range"]);
-        scaleSynapsisNeg.range(style["synapse"]["width_range"]);
+        scaleSynapsisNeg.range(style["synapse"]["width_range"]);*/
 
         svg = div.append("svg")
             .attr("id", "svg_"+divid)
@@ -318,7 +335,7 @@
 
         }
         for(i=0;i<num_layers;i++) {
-            drawNeurons(svg, net, layers[i], i, i==0 ? true : undefined, false);
+            drawNeurons(svg, net, layers[i], i, i==0 ? true : undefined, deepNet);
             drawSynapses(svg, net, layers[i], i, layers[i + 1]);
         }
         drawLegend(svg);
