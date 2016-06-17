@@ -202,8 +202,7 @@
     var animate = function(svg, group){
         style.synapse.width_range = Object.assign({}, style.synapse.default_width_range);
         style.synapse.alpha = Object.assign({}, style.synapse.default_alpha);
-        scaleSynapsisPos.range(style["synapse"]["width_range"]);
-        scaleSynapsisNeg.range(style["synapse"]["width_range"]);
+        console.log(style.synapse.width_range, style["synapse"]["mouseon"]["width_range"]);
         group.on('mouseover', function(d) {
             scaleSynapsisPos.range(style["synapse"]["mouseon"]["width_range"]);
             scaleSynapsisNeg.range(style["synapse"]["mouseon"]["width_range"]);
@@ -226,10 +225,10 @@
                 .attr("r", function(d){return d[0].radius})
             allbutnotthis.selectAll("path")
                 .style("stroke-opacity", style["synapse"]["mouseon"]["alpha"]);
-            scaleSynapsisPos.range(style["synapse"]["width_range"]);
-            scaleSynapsisNeg.range(style["synapse"]["width_range"]);
         });
         group.on('mouseout', function(d){
+            scaleSynapsisPos.range(style["synapse"]["width_range"]);
+            scaleSynapsisNeg.range(style["synapse"]["width_range"]);
             var gg = svg.selectAll("g.layer").selectAll("g").transition();
             gg.selectAll("circle")
                 .style("fill-opacity", 1)
