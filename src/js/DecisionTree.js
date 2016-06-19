@@ -139,12 +139,13 @@
             })
             .on("click", clickOnNode)
             .on("mouseover", path)
-            .on("mouseout", function(d, i){
-                if (d.bigger) makePathNodesBigger(d, i, 1);
-                return path(d, i, 1);
-            }).on("contextmenu", function(d, i){
+            .on("contextmenu", function(d, i){
                 d3.event.preventDefault();
                 makePathNodesBigger(d);
+            })
+            .on("mouseleave", function(d, i){
+                if (d.bigger) makePathNodesBigger(d, i, 1);
+                return path(d, i, 1);
             });
 
         nodeContainer.append("rect")
@@ -247,12 +248,12 @@
         var width = (clear) ? style.node.width : 2*style.node.width,
             height = (clear) ? style.node.height : 1.5*style.node.height;
         svg.selectAll("g.nodes rect").filter(function(d){d.bigger=(clear) ? false : true; return d.id==node.id;})
-            .transition().duration(style.aduration)
+            .transition().duration(style.aduration/2)
             .attr("width", width+"px")
             .attr("height", height+"px");
 
         svg.selectAll("g.nodes text").filter(function(d){return d.id==node.id;})
-            .transition().duration(style.aduration)
+            .transition().duration(style.aduration/2)
             .style("font-size", function(d){
                 return ((clear) ? d.font_size : 2*d.font_size)+"px";
             })
