@@ -13,7 +13,6 @@
 
     var url = "";
     if (require.s.contexts.hasOwnProperty("_")) {
-        console.log(require.s.contexts._.config.paths);
         url = require.s.contexts._.config.paths["JsMVA"].replace("src/js/JsMVA.min","");
     }
 
