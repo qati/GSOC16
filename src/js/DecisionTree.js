@@ -11,11 +11,16 @@
        } 
     });
 
+    var url = "";
+    if (require.s.contexts.hasOwnProperty("_")) {
+        url = require.s.contexts._.config.paths["JsMVA"].replace("src/js/JsMVA.min","");
+    }
+
     define(["d3"], function(d3){
-        return factory({}, d3);
+        return factory({}, d3, url);
     });
 
-})(function(DecisionTree, d3){
+})(function(DecisionTree, d3, url){
 
     Object.size = function(obj){
         return Object.keys(obj).length;
@@ -60,6 +65,15 @@
         text: {
             color: "#DEDEDE",
             padding: "4px"
+        },
+        buttons:{
+            reset:{
+                width: "36px",
+                height: "36px",
+                alpha: "0.5",
+                img: url+"img/reset.png",
+                background: "white"
+            }
         }
     };
 
@@ -264,7 +278,7 @@
         if (node.parent) makePathNodesBigger(node.parent, i, clear);
     };
 
-    var drawTree = function(father){
+    var drawTree = function(father, nox0y0Calc){
         updateSizesColors();
         var nodes = d3tree.nodes(roottree),
             links = d3tree.links(nodes);
@@ -294,7 +308,7 @@
         drawLinks(linkSelector, father);
 
         svg.transition().duration(style.aduration).attr("transform", "translate("+(-style.node.width)+", "+style.node.height+")");
-
+        if (nox0y0Calc!==undefined && nox0y0Calc==true) return;
         nodes.forEach(function(d){
             d.x0 = d.x+style.node.width;
             d.y0 = d.y;
@@ -400,6 +414,37 @@
             .style("fill", style.text.color);
     };
 
+    var openSubTree = function(node){
+        if ("_children" in node && node.children==null){
+            node.children = node._children;
+            node._children = null;
+        }
+        if ("children" in node && node.children!=null){
+            for(var i in node.children){
+                openSubTree(node.children[i]);
+            }
+        }
+    };
+
+    var findFathers = function(start){
+        var fathers = [];
+        var Q = [];
+        Q.push(start);
+        while(Q.length>0){
+            var node = Q.shift();
+            if ("_children" in node && node._children!=null){
+                fathers.push(node);
+            }
+            if (node.children!=null) {
+                for (var i = 0; i < node.children.length; i++) {
+                    Q.push(node.children[i]);
+                }
+            }
+        }
+        return fathers.length>0 ? fathers : start;
+    };
+
+
     DecisionTree.draw = function(divid, pyobj){
         var div = d3.select("#"+divid);
 
@@ -446,6 +491,32 @@
         drawLegend(svgOriginal);
 
         drawTree(roottree);
+
+        div.append("button")
+            .style("width", style.buttons.reset.width)
+            .style("height", style.buttons.reset.height)
+            .style("opacity", style.buttons.reset.alpha)
+            .style("background", style.buttons.reset.background)
+            .style("background-size", "contain")
+            .style("background-image", "url("+style.buttons.reset.img+")")
+            .style("cursor", "pointer")
+            .style("border", "none")
+            .on("mouseover", function(){
+                d3.select(this).style("opacity", "1");
+            })
+            .on("mouseout", function(){
+                d3.select(this).style("opacity", style.buttons.reset.alpha);
+            })
+            .on("click", function(){
+                zoom.scale(1);
+                zoom.translate([0, 0]);
+                svg.transition().attr("transform", "translate("+(-style.node.width)+", "+style.node.height+")");
+                var fathers = findFathers(roottree);
+                for(var i=0;i<fathers.length;i++){
+                    openSubTree(fathers[i]);
+                    drawTree(fathers[i], true);
+                }
+            });
     };
 
     Object.seal(DecisionTree);
