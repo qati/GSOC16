@@ -493,9 +493,6 @@
         drawTree(roottree);
 
         div.append("button")
-            .style("position", "fixed")
-            .style("right", "0%")
-            .style("top", "0%")
             .style("width", style.buttons.reset.width)
             .style("height", style.buttons.reset.height)
             .style("opacity", style.buttons.reset.alpha)
