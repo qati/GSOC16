@@ -6,6 +6,9 @@ from ROOT import TMVA
 import JPyInterface
 from xml.etree.ElementTree import ElementTree
 import json
+from IPython.core.display import display, clear_output
+from ipywidgets import widgets
+from threading import Thread, Timer
 
 
 
@@ -368,8 +371,6 @@ def DrawNeuralNetwork(fac, datasetName, methodName):
 
 
 def DrawDecisionTree(fac, datasetName, methodName):
-    from IPython.core.display import display, clear_output
-    from ipywidgets import widgets
     m = GetMethodObject(fac, datasetName, methodName)
     if m==None:
         return None
@@ -397,3 +398,38 @@ def DrawDecisionTree(fac, datasetName, methodName):
     drawTree.on_click(clicked)
     container = widgets.HBox([label,treeSelector, drawTree])
     display(container)
+
+
+def __UpdateData(m):
+    if not m.TrainingEnded():
+        Timer(0.5, __UpdateData, args=[m]).start()
+    res = m.GetInteractiveTrainingData()
+    dat = json.dumps({
+        "l1": {"x": res[0], "y": res[1]},
+        "l2": {"x": res[0], "y": res[2]}
+    })
+    #clear_output()
+    JPyInterface.JsDraw.InsertData(dat)
+
+def __TrainAllMethods(fac, dataset):
+    m = GetMethodObject(fac, dataset, "MLP")
+    ROOT.TMVA.Factory.MyTrain._threaded = True
+    t = Thread(target=ROOT.TMVA.Factory.MyTrain, args=[fac])
+    t.start()
+    def stop(b):
+        m.ExitFromTraining()
+    stopTraining = widgets.Button(description="Stop", font_weight="bold")
+    stopTraining.on_click(stop)
+    display(stopTraining)
+    ROOT.gSystem.Sleep._threaded = True
+    ROOT.gSystem.Sleep(1500)
+    res = m.GetInteractiveTrainingData()
+    dat = json.dumps({
+        "l1": {"x": res[0], "y": res[1]},
+        "l2": {"x": res[0], "y": res[2]}
+    })
+    JPyInterface.JsDraw.Draw(dat, "drawTrainingTestingErrors", True)
+    __UpdateData(m)
+    return
+
+ROOT.TMVA.Factory.TrainAllMethods2 = __TrainAllMethods

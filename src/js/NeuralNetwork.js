@@ -45,7 +45,7 @@
         "synapse": {
             "colors": {
                 "negative": "#00005E",
-                "positive": "#FF4B00"
+                "positive": "#5E0000"//"#FF4B00"
             },
             "default_width_range": [0.5, 5],
             "width_range": [0.5, 5],
@@ -202,7 +202,6 @@
     var animate = function(svg, group){
         style.synapse.width_range = Object.assign({}, style.synapse.default_width_range);
         style.synapse.alpha = Object.assign({}, style.synapse.default_alpha);
-        console.log(style.synapse.width_range, style["synapse"]["mouseon"]["width_range"]);
         group.on('mouseover', function(d) {
             scaleSynapsisPos.range(style["synapse"]["mouseon"]["width_range"]);
             scaleSynapsisNeg.range(style["synapse"]["mouseon"]["width_range"]);
@@ -423,7 +422,7 @@
 
         /** ADDING EXTRA LAYERS FOR TEST **/
         /** TODO remove this **/
-        var N =200;
+        var N =50;
         netobj["layers"].splice(1, 0, {"Nodes" : N});
         for(var i=0;i<100*N;i++) {
             netobj["synapses"]["synapses"].push((Math.random() > 0.5 ? -1 : 1) * Math.random() * 10);

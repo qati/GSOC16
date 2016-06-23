@@ -1,5 +1,5 @@
 /**
- * Created by Attila Bag on 5/14/16.
+ * Created by Attila Bagoly <battila93@gmail.com> on 5/14/16.
  */
 
 (function(factory){
@@ -22,7 +22,8 @@
         paths: {
             'JsRootCore': JSROOT_source_dir+'JSRootCore.min',
             'nn': url+'NeuralNetwork.min',
-            'dtree': url+'DecisionTree.min'
+            'dtree': url+'DecisionTree.min',
+            'IChart': url+'IChart'
         }
     });
 
@@ -53,6 +54,24 @@
         require(['dtree'], function(dtree){
             var obj = JSON.parse(dat_json);
             dtree.draw(divid, obj);
+        });
+    };
+
+    JsMVA.drawTrainingTestingErrors = function(divid, dat_json){
+        require(["IChart"], function(ic){
+            var obj = JSON.parse(dat_json);
+            ic.draw(divid, obj, {
+                xlabel: "Epoch",
+                ylabel: "Error",
+                legend: ["Error on training set", "Error on testing set"]
+            });
+        });
+    };
+
+    JsMVA.IChartDataInserter = function(dat_json){
+        require(["IChart"], function(ic){
+            var obj = JSON.parse(dat_json);
+            ic.addData(obj);
         });
     };
 

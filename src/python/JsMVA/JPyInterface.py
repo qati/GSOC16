@@ -63,6 +63,13 @@ class JsDraw:
     });
 </script>
 """)
+    __jsCodeForDataInsert = Template("""<script id="dataInserterScript">
+require(['JsMVA'],function(jsmva){
+jsmva.$funcName('$dat');
+var script = document.getElementById("dataInserterScript");
+script.parentElement.parentElement.remove();
+});
+</script>""")
 
     @staticmethod
     def Draw(obj, jsDrawMethod='draw', objIsJSON=False):
@@ -79,8 +86,15 @@ class JsDraw:
             'PATH': JsDraw.__jsMVASourceDir,
             'width': JsDraw.jsCanvasWidth,
             'height': JsDraw.jsCanvasHeight
-         })));
+         })))
         JsDraw.__divUID += 1
+
+    @staticmethod
+    def InsertData(dat, dataInserterMethod="IChartDataInserter"):
+        display(HTML(JsDraw.__jsCodeForDataInsert.substitute({
+            'funcName': dataInserterMethod,
+            'dat': dat
+         })))
 
     @staticmethod
     def sbPlot(sig, bkg, title):

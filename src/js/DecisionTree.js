@@ -452,7 +452,7 @@
         variables = pyobj["variables"];
 
         if (Object.size(roottree)==0){
-            div.innerHTML = "<b style='color:red;'>Tree empty...</b>";
+            div.innerHTML = "<b style='color:red'>Tree empty...</b>";
             return;
         }
 
