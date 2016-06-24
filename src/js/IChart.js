@@ -126,7 +126,7 @@
     };
 
     IChart.draw = function(divid, dat, labels){
-        clearData();
+        IChart.clearData();
         var div = d3.select("#"+divid);
 
         canvas = {
