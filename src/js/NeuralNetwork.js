@@ -47,8 +47,8 @@
                 "negative": "#00005E",
                 "positive": "#5E0000"//"#FF4B00"
             },
-            "default_width_range": [0.5, 5],
-            "width_range": [0.5, 5],
+            "default_width_range": [0.5, 2],
+            "width_range": [0.5, 2],
             "default_alpha": 0.7,
             "alpha": 0.7,
             "mouseon": {
@@ -56,7 +56,7 @@
                 "alpha": 0.1
             }
         },
-        "variables": {
+        "variables":{
             "labels_layer0_padding": 0.03
         },
         "legend": {
@@ -271,6 +271,7 @@
     };
 
     NeuralNetwork.draw = function (divid, netobj) {
+        if ("layers" in netobj && "synapses" in netobj) return NeuralNetwork.drawDeepNetwork(divid, netobj);
         var svg, net;
 
         var div = d3.select("#"+divid);
@@ -278,7 +279,7 @@
             width:  div.property("style")["width"],
             height: div.property("style")["height"]
         };
-
+        console.log(netobj);
         var deepNet;
         if ("layers" in netobj && "synapses" in netobj){
             net = transformDeepNetObject(netobj);
