@@ -420,10 +420,10 @@
             width:  div.property("style")["width"],
             height: div.property("style")["height"]
         };
-        
+
         net = transformDeepNetObject(netobj);
 
-        style.synapse.width_range = [50/netobj["synapses"]["synapses"].length, 1000/netobj["synapses"]["synapses"].length];
+        style.synapse.width_range = [0.2, 1];
         style.synapse.alpha = 0.9;
         scaleSynapsisPos.range(style["synapse"]["width_range"]);
         scaleSynapsisNeg.range(style["synapse"]["width_range"]);
