@@ -420,23 +420,7 @@
             width:  div.property("style")["width"],
             height: div.property("style")["height"]
         };
-
-        /** ADDING EXTRA LAYERS FOR TEST **/
-        /** TODO remove this **/
-        var N =50;
-        netobj["layers"].splice(1, 0, {"Nodes" : N});
-        for(var i=0;i<100*N;i++) {
-            netobj["synapses"]["synapses"].push((Math.random() > 0.5 ? -1 : 1) * Math.random() * 10);
-        }
-        for(var k=0;k<10;k++){
-            netobj["layers"].splice(1, 0, {"Nodes" : N});
-            for(var i=0;i<N*N;i++) {
-                netobj["synapses"]["synapses"].push((Math.random() > 0.5 ? -1 : 1) * Math.random() * 10);
-            }
-        }
-        for(var i=0;i<N*50;i++) {
-            netobj["synapses"]["synapses"].push((Math.random() > 0.5 ? -1 : 1) * Math.random() * 10);
-        }
+        
         net = transformDeepNetObject(netobj);
 
         style.synapse.width_range = [50/netobj["synapses"]["synapses"].length, 1000/netobj["synapses"]["synapses"].length];
