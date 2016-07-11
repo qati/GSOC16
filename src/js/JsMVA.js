@@ -59,7 +59,7 @@
 
     JsMVA.drawTrainingTestingErrors = function(divid, dat_json){
         var obj = JSROOT.parse(dat_json);
-        JSROOT.redraw(divid, obj);
+        JSROOT.draw(divid, obj);
     };
 
     JsMVA.updateTrainingTestingErrors = function(divid, dat_json){
