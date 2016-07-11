@@ -16,8 +16,8 @@ def __DefaultDataSetInfo(dl):
 
 def GetInputVariableHist(self, className, variableName, numBin, processTrfs=""):
     dsinfo = __DefaultDataSetInfo(self)
-    vi = 0;
-    ivar = 0;
+    vi = 0
+    ivar = 0
     for i in range(dsinfo.GetNVariables()):
         if dsinfo.GetVariableInfo(i).GetLabel()==variableName:
             vi   = dsinfo.GetVariableInfo(i)

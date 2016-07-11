@@ -42,13 +42,13 @@ class functions:
 
 
 class JsDraw:
-    __jsMVASourceDir = "https://rawgit.com/qati/GSOC16/master/src/js"
-    #__jsMVASourceDir = "http://localhost:8888/notebooks/GSOC/wd/src/js"
+    #__jsMVASourceDir = "https://rawgit.com/qati/GSOC16/master/src/js"
+    __jsMVASourceDir = "http://localhost:8888/notebooks/code/GSOC/wd/src/js"
 
     jsCanvasWidth   = 800
     jsCanvasHeight  = 450
 
-    __divUID = 1
+    __divUID = 0
 
     __jsCode = Template("""
 <div id="$divid" style="width: ${width}px; height:${height}px"></div>
@@ -65,7 +65,7 @@ class JsDraw:
 """)
     __jsCodeForDataInsert = Template("""<script id="dataInserterScript">
 require(['JsMVA'],function(jsmva){
-jsmva.$funcName('$dat');
+jsmva.$funcName('$divid', '$dat');
 var script = document.getElementById("dataInserterScript");
 script.parentElement.parentElement.remove();
 });
@@ -78,7 +78,7 @@ script.parentElement.parentElement.remove();
         else:
             dat = ROOT.TBufferJSON.ConvertToJSON(obj)
             dat = str(dat).replace("\n","")
-
+        JsDraw.__divUID += 1
         display(HTML(JsDraw.__jsCode.substitute({
             'funcName': jsDrawMethod,
             'divid':'jstmva_'+str(JsDraw.__divUID),
@@ -87,14 +87,19 @@ script.parentElement.parentElement.remove();
             'width': JsDraw.jsCanvasWidth,
             'height': JsDraw.jsCanvasHeight
          })))
-        JsDraw.__divUID += 1
 
     @staticmethod
-    def InsertData(dat, dataInserterMethod="IChartDataInserter"):
+    def InsertData(obj, dataInserterMethod="updateTrainingTestingErrors", objIsJSON=False):
+        if objIsJSON:
+            dat = obj
+        else:
+            dat = ROOT.TBufferJSON.ConvertToJSON(obj)
+            dat = str(dat).replace("\n", "")
         display(HTML(JsDraw.__jsCodeForDataInsert.substitute({
             'funcName': dataInserterMethod,
+            'divid': 'jstmva_'+str(JsDraw.__divUID),
             'dat': dat
-         })))
+        })))
 
     @staticmethod
     def sbPlot(sig, bkg, title):

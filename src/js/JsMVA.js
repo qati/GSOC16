@@ -7,8 +7,8 @@
     var JSROOT_source_dir = "https://root.cern.ch/js/notebook/scripts/";
 
     var url = "";
-    if (require.s.contexts.hasOwnProperty("_")) {
-        url = require.s.contexts._.config.paths["JsMVA"].replace("JsMVA.min","");
+    if (requirejs.s.contexts.hasOwnProperty("_")) {
+        url = requirejs.s.contexts._.config.paths["JsMVA"].replace("JsMVA.min","");
     }
     if ((console!==undefined) && (typeof console.log == 'function')) {
         if (url!=""){
@@ -20,7 +20,7 @@
 
     require.config({
         paths: {
-            'JsRootCore': JSROOT_source_dir+'JSRootCore.min',
+            'JsRootCore': JSROOT_source_dir+'JSRootCore',
             'nn': url+'NeuralNetwork.min',
             'dtree': url+'DecisionTree.min',
             'IChart': url+'IChart'
@@ -58,21 +58,13 @@
     };
 
     JsMVA.drawTrainingTestingErrors = function(divid, dat_json){
-        require(["IChart"], function(ic){
-            var obj = JSON.parse(dat_json);
-            ic.draw(divid, obj, {
-                xlabel: "Epoch",
-                ylabel: "Error",
-                legend: ["Error on training set", "Error on testing set"]
-            });
-        });
+        var obj = JSROOT.parse(dat_json);
+        JSROOT.redraw(divid, obj);
     };
 
-    JsMVA.IChartDataInserter = function(dat_json){
-        require(["IChart"], function(ic){
-            var obj = JSON.parse(dat_json);
-            ic.addData(obj);
-        });
+    JsMVA.updateTrainingTestingErrors = function(divid, dat_json){
+        var obj = JSROOT.parse(dat_json);
+        JSROOT.redraw(divid, obj);
     };
 
     return JsMVA;
