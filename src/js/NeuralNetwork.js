@@ -272,6 +272,7 @@
 
     NeuralNetwork.draw = function (divid, netobj) {
         if ("layers" in netobj && "synapses" in netobj) return NeuralNetwork.drawDeepNetwork(divid, netobj);
+
         var svg, net;
 
         var div = d3.select("#"+divid);
@@ -414,29 +415,7 @@
         }
     };
 
-    NeuralNetwork.drawDeepNetwork = function (divid, netobj) {
-        var div = d3.select("#"+divid);
-        canvas = {
-            width:  div.property("style")["width"],
-            height: div.property("style")["height"]
-        };
-
-        net = transformDeepNetObject(netobj);
-
-        style.synapse.width_range = [0.2, 1];
-        style.synapse.alpha = 0.9;
-        scaleSynapsisPos.range(style["synapse"]["width_range"]);
-        scaleSynapsisNeg.range(style["synapse"]["width_range"]);
-
-        var context = div.append("canvas")
-            .attr("width", canvas.width)
-            .attr("height", canvas.height)
-            .node().getContext("2d");
-
-        Object.keys(canvas).forEach(function (key) {
-            canvas[key] = Number(canvas[key].replace("px",""))
-        });
-
+    var drawDeepNetwork = function(context, net){
         var num_layers = Number(net["layout"]["nlayers"]);
 
         var layers = Array(num_layers);
@@ -448,6 +427,39 @@
             drawDeepNetSynapses(context, net, layers[i], i, layers[i + 1]);
             drawDeepNetNeurons(context, layers[i]);
         }
+    };
+
+
+    NeuralNetwork.drawDeepNetwork = function (divid, netobj) {
+        var div = d3.select("#"+divid);
+        canvas = {
+            width:  Number(div.property("style")["width"].replace("px","")),
+            height: Number(div.property("style")["height"].replace("px",""))
+        };
+
+        net = transformDeepNetObject(netobj);
+
+        style.synapse.width_range = [0.2, 1];
+        style.synapse.alpha = 0.9;
+        scaleSynapsisPos.range(style["synapse"]["width_range"]);
+        scaleSynapsisNeg.range(style["synapse"]["width_range"]);
+
+        var context = div.append("canvas")
+            .attr("width", canvas.width+"px")
+            .attr("height", canvas.height+"px")
+            .call(d3.behavior.zoom().scaleExtent([1, 8]).on("zoom", function(){
+                context.save();
+                context.clearRect(0, 0, canvas.width, canvas.height);
+                context.translate(d3.event.translate[0], d3.event.translate[1]);
+                context.scale(d3.event.scale, d3.event.scale);
+                drawDeepNetwork(context, net);
+                context.restore();
+            }))
+            .node().getContext("2d");
+
+
+        drawDeepNetwork(context, net);
+
     };
 
     Object.seal(NeuralNetwork);
