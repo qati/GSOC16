@@ -407,16 +407,11 @@ __TMVA_Factory_TrainAllMethods_ORIGINAL._threaded = True
 ROOT.TMVA.MethodMLP.GetInteractiveTrainingError._threaded = True
 
 def __TrainAllMethods(fac, dataset):
+    clear_output()
     m = GetMethodObject(fac, dataset, "MLP")
     m.InitIPythonInteractive()
     t = Thread(target=__TMVA_Factory_TrainAllMethods_ORIGINAL, args=[fac])
     t.start()
-
-    def stop(b):
-        m.ExitFromTraining()
-    stopTraining = widgets.Button(description="Stop", font_weight="bold")
-    stopTraining.on_click(stop)
-    display(stopTraining)
     time.sleep(0.5)
     JPyInterface.JsDraw.Draw(m.GetInteractiveTrainingError(), "drawTrainingTestingErrors")
     while not m.TrainingEnded():
