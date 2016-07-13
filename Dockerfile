@@ -5,7 +5,7 @@ MAINTAINER Attila Bagoly <battila93@gmail.com>
 USER root
 
 RUN apt-get -y update && apt-get install -y libx11-6 libxext6 libxft2 libxpm4 
-
+RUN apt-get -y netstat
 WORKDIR /opt
 RUN wget http://battila93.web.elte.hu/gsoc/root.tar.gz
 RUN tar -xzf root.tar.gz && rm root.tar.gz
