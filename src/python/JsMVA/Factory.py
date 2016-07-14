@@ -6,10 +6,11 @@ from ROOT import TMVA
 import JPyInterface
 from xml.etree.ElementTree import ElementTree
 import json
-from IPython.core.display import display, clear_output
+from IPython.core.display import display, HTML, clear_output
 from ipywidgets import widgets
 from threading import Thread
 import time
+from string import Template
 
 
 
@@ -402,21 +403,162 @@ def DrawDecisionTree(fac, datasetName, methodName):
     display(container)
 
 
-__TMVA_Factory_TrainAllMethods_ORIGINAL = ROOT.TMVA.Factory.TrainAllMethods
-__TMVA_Factory_TrainAllMethods_ORIGINAL._threaded = True
-ROOT.TMVA.MethodMLP.GetInteractiveTrainingError._threaded = True
+ROOT.TMVA.MethodBase.GetInteractiveTrainingError._threaded = True
+ROOT.TMVA.MethodBase.ExitFromTraining._threaded = True
+ROOT.TMVA.MethodBase.TrainingEnded._threaded
+ROOT.TMVA.MethodBase.TrainMethod._threaded = True
 
-def __TrainAllMethods(fac, dataset):
+def __TrainAllMethods(fac):
     clear_output()
-    m = GetMethodObject(fac, dataset, "MLP")
-    m.InitIPythonInteractive()
-    t = Thread(target=__TMVA_Factory_TrainAllMethods_ORIGINAL, args=[fac])
-    t.start()
-    time.sleep(0.5)
-    JPyInterface.JsDraw.Draw(m.GetInteractiveTrainingError(), "drawTrainingTestingErrors")
-    while not m.TrainingEnded():
-        JPyInterface.JsDraw.InsertData(m.GetInteractiveTrainingError())
-        time.sleep(0.5)
+    #stop button
+    button = """
+    <script type="text/javascript">
+    require(["jquery"], function(jQ){
+        jQ("input.stopTrainingButton").on("click", function(){
+            IPython.notebook.kernel.interrupt();
+            jQ(this).css({
+                "background-color": "rgba(200, 0, 0, 0.8)",
+                "color": "#fff",
+                "box-shadow": "0 3px 5px rgba(0, 0, 0, 0.3)",
+            });
+        });
+    });
+    </script>
+    <style type="text/css">
+    input.stopTrainingButton {
+        background-color: #fff;
+        border: 1px solid #ccc;
+        width: 100%;
+        font-size: 16px;
+        font-weight: bold;
+        padding: 6px 12px;
+        cursor: pointer;
+        border-radius: 6px;
+        color: #333;
+    }
+    input.stopTrainingButton:hover {
+        background-color: rgba(204, 204, 204, 0.4);
+    }
+    </style>
+    <input type="button" value="Stop" class="stopTrainingButton" />
+    """
+    inc = Template("""
+    <script type="text/javascript" id="progressBarScriptInc">
+    require(["jquery"], function(jQ){
+        jQ("#jsmva_bar_$id").css("width", $progress + "%");
+        jQ("#jsmva_label_$id").text($progress + '%');
+        jQ("#progressBarScriptInc").parent().parent().remove();
+    });
+    </script>
+    """)
+    progress_bar = Template("""
+    <style>
+    #jsmva_progress_$id {
+        position: relative;
+        float: left;
+        height: 30px;
+        width: 100%;
+        background-color: #f5f5f5;
+        border-radius: 3px;
+        box-shadow: inset 0 3px 6px rgba(0, 0, 0, 0.1);
+    }
+    #jsmva_bar_$id {
+        position: absolute;
+        width: 1%;
+        height: 100%;
+        background-color: #337ab7;
+    }
+    #jsmva_label_$id {
+        text-align: center;
+        line-height: 30px;
+        color: white;
+    }
+    </style>
+    <div id="jsmva_progress_$id">
+      <div id="jsmva_bar_$id">
+        <div id="jsmva_label_$id">0%</div>
+      </div>
+    </div>
+    """)
+    progress_bar_idx = 0
+
+    def exit_supported(mn):
+        name = str(mn)
+        es = ["SVM", "Cuts", "Boost", "BDT"]
+        for e in es:
+            if name.find(e) != -1:
+                return True
+        return False
+
+    wait_times = {"MLP": 0.5, "DNN": 1, "BDT": 0.5}
+
+    for methodMapElement in fac.fMethodsMap:
+        display(HTML("<center><h1>Dataset: "+str(methodMapElement[0])+"</h1></center>"))
+        for m in methodMapElement[1]:
+            m.GetName._threaded = True
+            name = str(m.GetName())
+            display(HTML("<h2><b>Train method: "+name+"</b></h2>"))
+            if name in wait_times:
+                display(HTML(button))
+                m.InitIPythonInteractive()
+                t = Thread(target=ROOT.TMVA.MethodBase.TrainMethod, args=[m])
+                t.start()
+                time.sleep(wait_times[name])
+                if m.MaxIter != -1:
+                    display(HTML(progress_bar.substitute({"id": progress_bar_idx})))
+                    display(HTML(inc.substitute({"id": progress_bar_idx, "progress": 100 * m.CurrentIter / m.MaxIter})))
+                JPyInterface.JsDraw.Draw(m.GetInteractiveTrainingError(), "drawTrainingTestingErrors")
+                try:
+                    while not m.TrainingEnded():
+                        JPyInterface.JsDraw.InsertData(m.GetInteractiveTrainingError())
+                        if m.MaxIter != -1:
+                            display(HTML(inc.substitute({
+                                "id": progress_bar_idx,
+                                "progress": 100 * m.CurrentIter / m.MaxIter
+                            })))
+                        time.sleep(0.5)
+                except KeyboardInterrupt:
+                    m.ExitFromTraining()
+                progress_bar_idx += 1
+            else:
+                if exit_supported(name):
+                    display(HTML(button))
+                m.InitIPythonInteractive()
+                t = Thread(target=ROOT.TMVA.MethodBase.TrainMethod, args=[m])
+                t.start()
+                time.sleep(0.5)
+                if m.MaxIter!=-1:
+                    display(HTML(progress_bar.substitute({"id": progress_bar_idx})))
+                    display(HTML(inc.substitute({"id": progress_bar_idx, "progress": 100*m.CurrentIter/m.MaxIter})))
+                else:
+                    display(HTML("<b>Training...</b>"))
+                if exit_supported(name):
+                    try:
+                        while not m.TrainingEnded():
+                            if m.MaxIter!=-1:
+                                display(HTML(inc.substitute({
+                                    "id": progress_bar_idx,
+                                    "progress": 100 * m.CurrentIter / m.MaxIter
+                                })))
+                            time.sleep(0.5)
+                    except KeyboardInterrupt:
+                        m.ExitFromTraining()
+                else:
+                    while not m.TrainingEnded():
+                        if m.MaxIter != -1:
+                            display(HTML(inc.substitute({
+                                "id": progress_bar_idx,
+                                "progress": 100 * m.CurrentIter / m.MaxIter
+                            })))
+                        time.sleep(0.5)
+                if m.MaxIter != -1:
+                    display(HTML(inc.substitute({
+                        "id": progress_bar_idx,
+                        "progress": 100 * m.CurrentIter / m.MaxIter
+                    })))
+                else:
+                    display(HTML("<b>End</b>"))
+                progress_bar_idx += 1
     return
 
 ROOT.TMVA.Factory.TrainAllMethods = __TrainAllMethods

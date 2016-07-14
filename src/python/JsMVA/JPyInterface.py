@@ -42,8 +42,8 @@ class functions:
 
 
 class JsDraw:
-    __jsMVASourceDir = "https://rawgit.com/qati/GSOC16/master/src/js"
-    #__jsMVASourceDir = "http://localhost:8888/notebooks/code/GSOC/wd/src/js"
+    #__jsMVASourceDir = "https://rawgit.com/qati/GSOC16/master/src/js"
+    __jsMVASourceDir = "http://localhost:8888/notebooks/code/GSOC/wd/src/js"
 
     jsCanvasWidth   = 800
     jsCanvasHeight  = 450
