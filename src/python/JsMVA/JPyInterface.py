@@ -42,8 +42,7 @@ class functions:
 
 
 class JsDraw:
-    #__jsMVASourceDir = "https://rawgit.com/qati/GSOC16/master/src/js"
-    __jsMVASourceDir = "http://localhost:8888/notebooks/code/GSOC/wd/src/js"
+    __jsMVASourceDir = "https://rawgit.com/qati/GSOC16/master/src/js"
 
     jsCanvasWidth   = 800
     jsCanvasHeight  = 450
@@ -104,8 +103,6 @@ script.parentElement.parentElement.remove();
     @staticmethod
     def sbPlot(sig, bkg, title):
         canvas = ROOT.TCanvas("csbplot", title["plot"], JsDraw.jsCanvasWidth, JsDraw.jsCanvasHeight)
-        #ROOT.TMVA.TMVAGlob.SetSignalAndBackgroundStyle(sig, bkg)
-        #ROOT.TMVA.TMVAGlob.SetFrameStyle(sig, 1.2)
         sig.SetMaximum(ROOT.TMath.Max(sig.GetMaximum(),bkg.GetMaximum()*1.1))
         sig.SetTitle(sig.GetTitle().replace("(Signal)",""))
         sig.GetXaxis().SetTitle(title["xaxis"])

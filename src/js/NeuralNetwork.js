@@ -152,7 +152,7 @@
             .attr("y", function(d){return d[1].y+0.25*this.getBBox().height;});
     };
 
-    var drawNeurons = function (svg, net, neuronsattr, layer_num, input_variable_labels, deepNet) {
+    var drawNeurons = function (svg, net, neuronsattr, layer_num, input_variable_labels) {
         if (input_variable_labels!==undefined){
             var dat = d3.zip(neuronsattr, getInputLabels(net, neuronsattr));
         } else {
@@ -170,7 +170,6 @@
         if (input_variable_labels!==undefined){
             drawInputLabels(group)
         }
-        if (deepNet) return;
         animate(svg, group);
     };
 
@@ -280,29 +279,12 @@
             width:  div.property("style")["width"],
             height: div.property("style")["height"]
         };
-        console.log(netobj);
-        var deepNet;
-        if ("layers" in netobj && "synapses" in netobj){
-            net = transformDeepNetObject(netobj);
-            style.synapse.width_range = [5/netobj["synapses"]["synapses"].length, 50/netobj["synapses"]["synapses"].length];
-            style.synapse.alpha = 0.9;
-            scaleSynapsisPos.range(style["synapse"]["width_range"]);
-            scaleSynapsisNeg.range(style["synapse"]["width_range"]);
-            deepNet = true;
-        } else {
-            net = netobj;
-            style.synapse.width_range = Object.assign({}, style.synapse.default_width_range);
-            style.synapse.alpha = Object.assign({}, style.synapse.default_alpha);
-            scaleSynapsisPos.range(style["synapse"]["width_range"]);
-            scaleSynapsisNeg.range(style["synapse"]["width_range"]);
-            deepNet = false;
-        }
 
-        /*net = netobj;
-        style.synapse.width_range = style.synapse.default_width_range;
-        style.synapse.alpha = style.synapse.default_alpha;
+        net = netobj;
+        style.synapse.width_range = Object.assign({}, style.synapse.default_width_range);
+        style.synapse.alpha = Object.assign({}, style.synapse.default_alpha);
         scaleSynapsisPos.range(style["synapse"]["width_range"]);
-        scaleSynapsisNeg.range(style["synapse"]["width_range"]);*/
+        scaleSynapsisNeg.range(style["synapse"]["width_range"]);
 
         svg = div.append("svg")
             .attr("id", "svg_"+divid)
@@ -335,7 +317,7 @@
 
         }
         for(i=0;i<num_layers;i++) {
-            drawNeurons(svg, net, layers[i], i, i==0 ? true : undefined, deepNet);
+            drawNeurons(svg, net, layers[i], i, i==0 ? true : undefined);
             drawSynapses(svg, net, layers[i], i, layers[i + 1]);
         }
         drawLegend(svg);
@@ -439,7 +421,7 @@
 
         net = transformDeepNetObject(netobj);
 
-        style.synapse.width_range = [0.2, 1];
+        style.synapse.width_range = [0.1, 0.5];
         style.synapse.alpha = 0.9;
         scaleSynapsisPos.range(style["synapse"]["width_range"]);
         scaleSynapsisNeg.range(style["synapse"]["width_range"]);
@@ -447,7 +429,7 @@
         var context = div.append("canvas")
             .attr("width", canvas.width+"px")
             .attr("height", canvas.height+"px")
-            .call(d3.behavior.zoom().scaleExtent([1, 8]).on("zoom", function(){
+            .call(d3.behavior.zoom().scaleExtent([1, 10]).on("zoom", function(){
                 context.save();
                 context.clearRect(0, 0, canvas.width, canvas.height);
                 context.translate(d3.event.translate[0], d3.event.translate[1]);

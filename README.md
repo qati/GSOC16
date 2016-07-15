@@ -11,5 +11,3 @@ sys.path.append(os.path.expanduser("PATH TO JsMVA"));
 import JsMVA
 ```
 
-* We have to make `TMVA::MethodBase::CreateVariableTransforms` function public.
-

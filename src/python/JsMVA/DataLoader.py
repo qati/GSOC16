@@ -5,17 +5,8 @@ from ROOT import TH1F, TMVA
 import JPyInterface
 
 
-__fLogger = TMVA.MsgLogger("JsMVA.Factory", TMVA.kINFO)
-def __Log():
-    return __fLogger
-
-def __DefaultDataSetInfo(dl):
-    return dl.AddDataSet(dl.GetName())
-
-
-
 def GetInputVariableHist(self, className, variableName, numBin, processTrfs=""):
-    dsinfo = __DefaultDataSetInfo(self)
+    dsinfo = self.GetDefaultDataSetInfo()
     vi = 0
     ivar = 0
     for i in range(dsinfo.GetNVariables()):
@@ -35,12 +26,11 @@ def GetInputVariableHist(self, className, variableName, numBin, processTrfs=""):
     trfs    = [];
     for trfDef in trfsDef:
         trfs.append(TMVA.TransformationHandler(dsinfo, "DataLoader"))
-        TMVA.MethodBase.CreateVariableTransforms( trfDef, dsinfo, trfs[-1], __Log())
+        TMVA.MethodBase.CreateVariableTransforms( trfDef, dsinfo, trfs[-1], self.Log())
 
     inputEvents = ds.GetEventCollection()
     transformed = 0
     tmp         = 0
-    #FIXME CalcTransformations calls PlotVariables: in my opinion here we shouldn't call that method
     for trf in trfs:
         if transformed==0:
             transformed = trf.CalcTransformations(inputEvents, 1)

@@ -191,8 +191,6 @@ def DrawProbabilityDistribution(fac, datasetName, methodName):
     JPyInterface.JsDraw.Draw(c)
 
 
-#TODO more nice structure here
-#TODO not fixed formule (now S/sqrt{S+B})
 def DrawCutEfficiencies(fac, datasetName, methodName):
     method = GetMethodObject(fac, datasetName, methodName)
     if method==0:
@@ -343,7 +341,6 @@ def DrawCutEfficiencies(fac, datasetName, methodName):
         tl.DrawLatex( 0.13, 0.77, "Method Cuts provides a bundle of cut selections, each tuned to a")
         tl.DrawLatex(0.13, 0.74, "different signal efficiency. Shown is the purity for each cut selection.")
 
-    #FIXME xaxis coordinates and not attached to coordinate system
     wx = (sigE.GetXaxis().GetXmax()+abs(sigE.GetXaxis().GetXmin()))*0.135
     rightAxis = ROOT.TGaxis( sigE.GetXaxis().GetXmax()+wx,
                              c.GetUymin()-0.3,
@@ -442,6 +439,7 @@ def __TrainAllMethods(fac):
     </style>
     <input type="button" value="Stop" class="stopTrainingButton" />
     """
+    #progress bar
     inc = Template("""
     <script type="text/javascript" id="progressBarScriptInc">
     require(["jquery"], function(jQ){

@@ -1,3 +1,4 @@
 notebooks/* -diff
+src/js/*.min.js -diff
 notebooks/* linguist-vendored
 *.ipynb linguist-vendored
