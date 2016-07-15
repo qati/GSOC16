@@ -35,7 +35,7 @@
 
     JsMVA.drawTH2 = function(divid, dat_json){
         var obj = JSROOT.parse(dat_json);
-        JSROOT.draw(divid, obj, "colz");
+        JSROOT.draw(divid, obj, "colz;PAL50");
     };
 
     JsMVA.draw = function(divid, dat_json){
