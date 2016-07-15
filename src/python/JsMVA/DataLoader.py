@@ -55,6 +55,13 @@ def GetInputVariableHist(self, className, variableName, numBin, processTrfs=""):
 
 def DrawCorrelationMatrix(dl, className):
     th2 = dl.GetCorrelationMatrix(className)
+    th2.SetMarkerSize(1.5)
+    th2.SetMarkerColor(0)
+    labelSize = 0.040
+    th2.GetXaxis().SetLabelSize(labelSize)
+    th2.GetYaxis().SetLabelSize(labelSize)
+    th2.LabelsOption("d")
+    th2.SetLabelOffset(0.011)
     JPyInterface.JsDraw.Draw(th2, 'drawTH2')
 
 def DrawInputVariable(dl, variableName, numBin=100, processTrfs=""):
