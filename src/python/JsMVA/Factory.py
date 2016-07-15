@@ -496,11 +496,11 @@ def __TrainAllMethods(fac):
             m.GetName._threaded = True
             name = str(m.GetName())
             display(HTML("<h2><b>Train method: "+name+"</b></h2>"))
+            m.InitIPythonInteractive()
+            t = Thread(target=ROOT.TMVA.MethodBase.TrainMethod, args=[m])
+            t.start()
             if name in wait_times:
                 display(HTML(button))
-                m.InitIPythonInteractive()
-                t = Thread(target=ROOT.TMVA.MethodBase.TrainMethod, args=[m])
-                t.start()
                 time.sleep(wait_times[name])
                 if m.MaxIter != -1:
                     display(HTML(progress_bar.substitute({"id": progress_bar_idx})))
@@ -521,9 +521,6 @@ def __TrainAllMethods(fac):
             else:
                 if exit_supported(name):
                     display(HTML(button))
-                m.InitIPythonInteractive()
-                t = Thread(target=ROOT.TMVA.MethodBase.TrainMethod, args=[m])
-                t.start()
                 time.sleep(0.5)
                 if m.MaxIter!=-1:
                     display(HTML(progress_bar.substitute({"id": progress_bar_idx})))
@@ -557,6 +554,7 @@ def __TrainAllMethods(fac):
                 else:
                     display(HTML("<b>End</b>"))
                 progress_bar_idx += 1
+            t.join()
     return
 
 ROOT.TMVA.Factory.TrainAllMethods = __TrainAllMethods
