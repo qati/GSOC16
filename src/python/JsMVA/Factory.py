@@ -502,58 +502,57 @@ def __TrainAllMethods(fac):
             if name in wait_times:
                 display(HTML(button))
                 time.sleep(wait_times[name])
-                if m.MaxIter != -1:
+                if m.GetMaxIter() != 0:
                     display(HTML(progress_bar.substitute({"id": progress_bar_idx})))
-                    display(HTML(inc.substitute({"id": progress_bar_idx, "progress": 100 * m.CurrentIter / m.MaxIter})))
+                    display(HTML(inc.substitute({"id": progress_bar_idx, "progress": 100 * m.GetCurrentIter() / m.GetMaxIter()})))
                 JPyInterface.JsDraw.Draw(m.GetInteractiveTrainingError(), "drawTrainingTestingErrors")
                 try:
                     while not m.TrainingEnded():
                         JPyInterface.JsDraw.InsertData(m.GetInteractiveTrainingError())
-                        if m.MaxIter != -1:
+                        if m.GetMaxIter() != 0:
                             display(HTML(inc.substitute({
                                 "id": progress_bar_idx,
-                                "progress": 100 * m.CurrentIter / m.MaxIter
+                                "progress": 100 * m.GetCurrentIter() / m.GetMaxIter()
                             })))
                         time.sleep(0.5)
                 except KeyboardInterrupt:
                     m.ExitFromTraining()
-                progress_bar_idx += 1
             else:
                 if exit_supported(name):
                     display(HTML(button))
                 time.sleep(0.5)
-                if m.MaxIter!=-1:
+                if m.GetMaxIter()!=0:
                     display(HTML(progress_bar.substitute({"id": progress_bar_idx})))
-                    display(HTML(inc.substitute({"id": progress_bar_idx, "progress": 100*m.CurrentIter/m.MaxIter})))
+                    display(HTML(inc.substitute({"id": progress_bar_idx, "progress": 100*m.GetCurrentIter()/m.GetMaxIter()})))
                 else:
                     display(HTML("<b>Training...</b>"))
                 if exit_supported(name):
                     try:
                         while not m.TrainingEnded():
-                            if m.MaxIter!=-1:
+                            if m.GetMaxIter()!=0:
                                 display(HTML(inc.substitute({
                                     "id": progress_bar_idx,
-                                    "progress": 100 * m.CurrentIter / m.MaxIter
+                                    "progress": 100 * m.GetCurrentIter() / m.GetMaxIter()
                                 })))
                             time.sleep(0.5)
                     except KeyboardInterrupt:
                         m.ExitFromTraining()
                 else:
                     while not m.TrainingEnded():
-                        if m.MaxIter != -1:
+                        if m.GetMaxIter() != 0:
                             display(HTML(inc.substitute({
                                 "id": progress_bar_idx,
-                                "progress": 100 * m.CurrentIter / m.MaxIter
+                                "progress": 100 * m.GetCurrentIter() / m.GetMaxIter()
                             })))
                         time.sleep(0.5)
-                if m.MaxIter != -1:
-                    display(HTML(inc.substitute({
-                        "id": progress_bar_idx,
-                        "progress": 100 * m.CurrentIter / m.MaxIter
-                    })))
-                else:
-                    display(HTML("<b>End</b>"))
-                progress_bar_idx += 1
+            if m.GetMaxIter() != 0:
+                display(HTML(inc.substitute({
+                    "id": progress_bar_idx,
+                    "progress": 100 * m.GetCurrentIter() / m.GetMaxIter()
+                })))
+            else:
+                display(HTML("<b>End</b>"))
+            progress_bar_idx += 1
             t.join()
     return
 
