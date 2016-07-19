@@ -7,7 +7,7 @@
     
     require.config({
        paths:{
-           d3: "https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.17/d3.min"
+           d3: "https://root.cern.ch/js/notebook/scripts/d3.v3.min"
        } 
     });
 
