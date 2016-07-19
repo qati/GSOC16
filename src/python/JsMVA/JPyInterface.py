@@ -1,5 +1,9 @@
 # -*- coding: utf-8 -*-
-#  Authors: Attila Bagoly <battila93@gmail.com>
+## @package JsMVA/JPyInterface
+#  @authors  Attila Bagoly <battila93@gmail.com>
+# This package is responsible for adding the drawing methods to TMVA
+# and for creating the JavaScript outputs from objects.
+
 
 from IPython.core.display import display, HTML
 from string import Template
@@ -8,7 +12,15 @@ import DataLoader
 import Factory
 
 
+## Function inserter class
+# This class contains the methods which are invoked by using jsmva magic, and will inject the new methods
+# to TMVA::Factory, TMVA::DataLoader
 class functions:
+
+    ## The method inserter function
+    # @param target which class to insert
+    # @param source module which contains the methods to insert
+    # @param args list of methods to insert
     @staticmethod
     def __register(target, source, *args):
         for arg in args:
@@ -16,12 +28,18 @@ class functions:
                 continue
             setattr(target, arg, getattr(source, arg))
 
+    ## The method removes inserted functions from class
+    # @param target from which class to remove functions
+    # @param args list of methods to remove
     @staticmethod
     def __unregister(target, *args):
         for arg in args:
             if hasattr(target, arg):
                 delattr(target, arg)
 
+    ## Reads all methods containing a selector from specified module
+    # @param module finding methods in this module
+    # @param selector if method in module contains this string will be selected
     @staticmethod
     def __getMethods(module, selector):
         methods = []
@@ -30,25 +48,35 @@ class functions:
                 methods.append(method)
         return methods
 
+    ## This function will register all functions which name contains "Draw" to TMVA.DataLoader and TMVA.Factory
+    # from DataLoader and Factory modules
     @staticmethod
     def register():
         functions.__register(ROOT.TMVA.DataLoader, DataLoader, *functions.__getMethods(DataLoader, "Draw"))
         functions.__register(ROOT.TMVA.Factory,    Factory,    *functions.__getMethods(Factory,    "Draw"))
 
+    ## This function will remove all functions which name contains "Draw" from TMVA.DataLoader and TMVA.Factory
+    # if the function was inserted from DataLoader and Factory modules
     @staticmethod
     def unregister():
         functions.__register(ROOT.TMVA.DataLoader, DataLoader, *functions.__getMethods(DataLoader, "Draw"))
         functions.__register(ROOT.TMVA.Factory,    Factory,    *functions.__getMethods(Factory,    "Draw"))
 
 
+## Class for creating the output scripts and inserting them to cell output
 class JsDraw:
-    __jsMVASourceDir = "https://rawgit.com/qati/GSOC16/master/src/js"
+    #__jsMVASourceDir = "https://rawgit.com/qati/GSOC16/master/src/js"
+    ## String containing the link to JavaScript files
+    __jsMVASourceDir = "http://localhost:8888/notebooks/code/GSOC/wd/src/js"
 
+    ## Drawing are sizes
     jsCanvasWidth   = 800
     jsCanvasHeight  = 450
 
+    ## id for drawing area
     __divUID = 0
 
+    ## Template containing HTML code with draw area and drawing JavaScript
     __jsCode = Template("""
 <div id="$divid" style="width: ${width}px; height:${height}px"></div>
 <script>
@@ -62,6 +90,8 @@ class JsDraw:
     });
 </script>
 """)
+
+    ## Template containing data insertion JavaScript code
     __jsCodeForDataInsert = Template("""<script id="dataInserterScript">
 require(['JsMVA'],function(jsmva){
 jsmva.$funcName('$divid', '$dat');
@@ -70,6 +100,10 @@ script.parentElement.parentElement.remove();
 });
 </script>""")
 
+    ## Inserts the draw area and drawing JavaScript to output
+    # @param obj ROOT object (will be converted to JSON) or JSON string containing the data to be drawed
+    # @param jsDrawMethod the JsMVA JavaScrip object method name to be used for drawing
+    # @param objIsJSON obj is ROOT object or JSON
     @staticmethod
     def Draw(obj, jsDrawMethod='draw', objIsJSON=False):
         if objIsJSON:
@@ -87,6 +121,10 @@ script.parentElement.parentElement.remove();
             'height': JsDraw.jsCanvasHeight
          })))
 
+    ## Inserts the data inserter JavaScript code to output
+    # @param obj ROOT object (will be converted to JSON) or JSON string containing the data to be inserted
+    # @param jsDrawMethod the JsMVA JavaScrip object method name to be used for inserting the new data
+    # @param objIsJSON obj is ROOT object or JSON
     @staticmethod
     def InsertData(obj, dataInserterMethod="updateTrainingTestingErrors", objIsJSON=False):
         if objIsJSON:
@@ -100,6 +138,10 @@ script.parentElement.parentElement.remove();
             'dat': dat
         })))
 
+    ## Draws a signal and background histogram to a newly created TCanvas
+    # @param sig signal histogram
+    # @param bkg background histogram
+    # @param title all labels
     @staticmethod
     def sbPlot(sig, bkg, title):
         canvas = ROOT.TCanvas("csbplot", title["plot"], JsDraw.jsCanvasWidth, JsDraw.jsCanvasHeight)

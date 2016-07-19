@@ -1,12 +1,21 @@
 # -*- coding: utf-8 -*-
-#  Authors: Attila Bagoly <battila93@gmail.com>
+## @package JsMVA/DataLoader
+# DataLoader module with the functions to be inserted to TMVA::DataLoader class and helper functions
+# @authors Attila Bagoly <battila93@gmail.com>
+
 
 from ROOT import TH1F, TMVA
 import JPyInterface
 
 
-def GetInputVariableHist(self, className, variableName, numBin, processTrfs=""):
-    dsinfo = self.GetDefaultDataSetInfo()
+## Creates the input variable histogram and perform the transformations if necessary
+# @param dl DataLoader object
+# @param className string Signal/Background
+# @param variableName string containing the variable name
+# @param numBin for creating the histogram
+# @param processTrfs string containing the list of transformations to be used on input variable; eg. "I;N;D;P;U;G,D"
+def GetInputVariableHist(dl, className, variableName, numBin, processTrfs=""):
+    dsinfo = dl.GetDefaultDataSetInfo()
     vi = 0
     ivar = 0
     for i in range(dsinfo.GetNVariables()):
@@ -23,10 +32,10 @@ def GetInputVariableHist(self, className, variableName, numBin, processTrfs=""):
     ds   = dsinfo.GetDataSet()
 
     trfsDef = processTrfs.split(';')
-    trfs    = [];
+    trfs    = []
     for trfDef in trfsDef:
         trfs.append(TMVA.TransformationHandler(dsinfo, "DataLoader"))
-        TMVA.MethodBase.CreateVariableTransforms( trfDef, dsinfo, trfs[-1], self.Log())
+        TMVA.CreateVariableTransforms( trfDef, dsinfo, trfs[-1], dl.Log())
 
     inputEvents = ds.GetEventCollection()
     transformed = 0
@@ -53,6 +62,10 @@ def GetInputVariableHist(self, className, variableName, numBin, processTrfs=""):
     return (h)
 
 
+## Draw correlation matrix
+# This function uses the TMVA::DataLoader::GetCorrelationMatrix function added newly to root
+# @param dl the object pointer
+# @param className Signal/Background
 def DrawCorrelationMatrix(dl, className):
     th2 = dl.GetCorrelationMatrix(className)
     th2.SetMarkerSize(1.5)
@@ -64,6 +77,12 @@ def DrawCorrelationMatrix(dl, className):
     th2.SetLabelOffset(0.011)
     JPyInterface.JsDraw.Draw(th2, 'drawTH2')
 
+## Draw input variables
+# This function uses the previously defined GetInputVariableHist function to create the histograms
+# @param dl The object pointer
+# @param variableName string containing the variable name
+# @param numBin for creating the histogram
+# @param processTrfs string containing the list of transformations to be used on input variable; eg. "I;N;D;P;U;G,D"
 def DrawInputVariable(dl, variableName, numBin=100, processTrfs=""):
     sig = GetInputVariableHist(dl, "Signal",     variableName, numBin, processTrfs)
     bkg = GetInputVariableHist(dl, "Background", variableName, numBin, processTrfs)

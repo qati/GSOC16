@@ -1,5 +1,8 @@
 # -*- coding: utf-8 -*-
-#  Authors: Attila Bagoly <battila93@gmail.com>
+## @package JsMVA/Factory
+#  @authors  Attila Bagoly <battila93@gmail.com>
+# Factory module with the functions to be inserted to TMVA::Factory class and helper functions and classes
+
 
 import ROOT
 from ROOT import TMVA
@@ -13,12 +16,15 @@ import time
 from string import Template
 
 
-
+## Getting method object from factory
+# @param fac the TMVA::Factory object
+# @param datasetName selecting the dataset
+# @param methodName which method we want to get
 def GetMethodObject(fac, datasetName, methodName):
     method = []
     for methodMapElement in fac.fMethodsMap:
         if methodMapElement[0] != datasetName:
-            continue;
+            continue
         methods = methodMapElement[1]
         for m in methods:
             m.GetName._threaded = True
@@ -30,7 +36,8 @@ def GetMethodObject(fac, datasetName, methodName):
         return None
     return (method[0])
 
-
+## Reads deep neural network weights from file and returns it in JSON format
+# @param xml_file path to DNN weight file
 def GetDeepNetwork(xml_file):
     tree = ElementTree()
     tree.parse(xml_file)
@@ -62,7 +69,8 @@ def GetDeepNetwork(xml_file):
     network["synapses"] = synapses
     return json.dumps(network)
 
-
+## Reads neural network weights from file and returns it in JSON format
+# @param xml_file path to weight file
 def GetNetwork(xml_file):
     tree = ElementTree()
     tree.parse(xml_file)
@@ -96,24 +104,34 @@ def GetNetwork(xml_file):
     network["layout"] = net
     return json.dumps(network)
 
-
+## Helper class for reading decision tree from XML file
 class TreeReader:
-    """Reads Decision Tree from XML file"""
 
+    ## Standard Constructor
     def __init__(self, fileName):
         self.__xmltree = ElementTree()
         self.__xmltree.parse(fileName)
         self.__NTrees = int(self.__xmltree.find("Weights").get('NTrees'))
 
+    ## Returns the number of trees
+    # @param self object pointer
     def getNTrees(self):
         return (self.__NTrees)
 
+    # Returns DOM object to selected tree
+    # @param self object pointer
+    # @param itree the index of tree
     def __getBinaryTree(self, itree):
         if self.__NTrees<=itree:
             print( "to big number, tree number must be less then %s"%self.__NTrees )
             return 0
         return self.__xmltree.find("Weights").find("BinaryTree["+str(itree+1)+"]")
 
+    ## Reads the tree
+    # @param self the object pointer
+    # @param binaryTree the tree DOM object to be read
+    # @param tree empty object, this will be filled
+    # @param depth current depth
     def __readTree(self, binaryTree, tree={}, depth=0):
         nodes = binaryTree.findall("Node")
         if len(nodes)==0:
@@ -142,6 +160,9 @@ class TreeReader:
             })
             self.__readTree(node, tree["children"][-1], depth+1)
 
+    ## Public function which returns the specified tree object
+    # @param self the object pointer
+    # @param itree selected tree index
     def getTree(self, itree):
         binaryTree = self.__getBinaryTree(itree)
         if binaryTree==0:
@@ -150,8 +171,9 @@ class TreeReader:
         self.__readTree(binaryTree, tree)
         return tree
 
+    ## Returns a list with input variable names
+    # @param self the object pointer
     def getVariables(self):
-        variables = []
         varstree = self.__xmltree.find("Variables").findall("Variable")
         variables = [None]*len(varstree)
         for v in varstree:
@@ -159,12 +181,17 @@ class TreeReader:
         return variables
 
 
-
+## Draw ROC curve
+# @param fac the object pointer
+# @param datasetName the dataset name
 def DrawROCCurve(fac, datasetName):
     canvas = fac.GetROCCurve(datasetName)
     JPyInterface.JsDraw.Draw(canvas)
 
-
+## Draw output distributions
+# @param fac the object pointer
+# @param datasetName the dataset name
+# @param methodName we want to see the output distribution of this method
 def DrawOutputDistribution(fac, datasetName, methodName):
     method = GetMethodObject(fac, datasetName, methodName)
     if method==None:
@@ -177,7 +204,10 @@ def DrawOutputDistribution(fac, datasetName, methodName):
                                     "plot": "TMVA response for classifier: "+methodName})
     JPyInterface.JsDraw.Draw(c)
 
-
+## Draw output probability distribution
+# @param fac the object pointer
+# @param datasetName the dataset name
+# @param methodName we want to see the output probability distribution of this method
 def DrawProbabilityDistribution(fac, datasetName, methodName):
     method = GetMethodObject(fac, datasetName, methodName)
     if method==0:
@@ -190,7 +220,10 @@ def DrawProbabilityDistribution(fac, datasetName, methodName):
                                         "plot": "TMVA probability for classifier: "+methodName})
     JPyInterface.JsDraw.Draw(c)
 
-
+## Draw cut efficiencies
+# @param fac the object pointer
+# @param datasetName the dataset name
+# @param methodName we want to see the cut efficiencies of this method
 def DrawCutEfficiencies(fac, datasetName, methodName):
     method = GetMethodObject(fac, datasetName, methodName)
     if method==0:
@@ -358,7 +391,10 @@ def DrawCutEfficiencies(fac, datasetName, methodName):
 
     JPyInterface.JsDraw.Draw(c)
 
-
+## Draw neural network
+# @param fac the object pointer
+# @param datasetName the dataset name
+# @param methodName we want to see the network created by this method
 def DrawNeuralNetwork(fac, datasetName, methodName):
     m = GetMethodObject(fac, datasetName, methodName)
     if m==None:
@@ -369,7 +405,10 @@ def DrawNeuralNetwork(fac, datasetName, methodName):
         net = GetNetwork(str(m.GetWeightFileName()))
     JPyInterface.JsDraw.Draw(net, "drawNeuralNetwork", True)
 
-
+## Draw deep neural network
+# @param fac the object pointer
+# @param datasetName the dataset name
+# @param methodName we want to see the deep network created by this method
 def DrawDecisionTree(fac, datasetName, methodName):
     m = GetMethodObject(fac, datasetName, methodName)
     if m==None:
@@ -399,12 +438,8 @@ def DrawDecisionTree(fac, datasetName, methodName):
     container = widgets.HBox([label,treeSelector, drawTree])
     display(container)
 
-
-ROOT.TMVA.MethodBase.GetInteractiveTrainingError._threaded = True
-ROOT.TMVA.MethodBase.ExitFromTraining._threaded = True
-ROOT.TMVA.MethodBase.TrainingEnded._threaded
-ROOT.TMVA.MethodBase.TrainMethod._threaded = True
-
+## Rewrites the TMVA::Factory::TrainAllMethods function. This function provides interactive training.
+# @param fac the factory object pointer
 def __TrainAllMethods(fac):
     clear_output()
     #stop button
@@ -556,4 +591,9 @@ def __TrainAllMethods(fac):
             t.join()
     return
 
+
+ROOT.TMVA.MethodBase.GetInteractiveTrainingError._threaded = True
+ROOT.TMVA.MethodBase.ExitFromTraining._threaded = True
+ROOT.TMVA.MethodBase.TrainingEnded._threaded = True
+ROOT.TMVA.MethodBase.TrainMethod._threaded = True
 ROOT.TMVA.Factory.TrainAllMethods = __TrainAllMethods
