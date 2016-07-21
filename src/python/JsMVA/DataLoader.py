@@ -90,3 +90,18 @@ def DrawInputVariable(dl, variableName, numBin=100, processTrfs=""):
                                     "yaxis": "N",
                                     "plot": "Input variable: "+sig.GetTitle()})
     JPyInterface.JsDraw.Draw(c)
+
+## Rewrite TMVA::DataLoader::PrepareTrainingAndTestTree
+def ChangeCallOriginalPrepareTrainingAndTestTree(*args, **kwargs):
+    if len(kwargs)==0:
+        originalFunction, args = JPyInterface.functions.ProcessParameters(0, *args, **kwargs)
+        return originalFunction(*args)
+    try:
+        args, kwargs = JPyInterface.functions.ConvertSpecKwargsToArgs(["SigCut", "BkgCut"], *args, **kwargs)
+    except AttributeError:
+        try:
+            args, kwargs = JPyInterface.functions.ConvertSpecKwargsToArgs(["Cut"], *args, **kwargs)
+        except AttributeError:
+            raise AttributeError
+    originalFunction, args = JPyInterface.functions.ProcessParameters(3, *args, **kwargs)
+    return originalFunction(*args)

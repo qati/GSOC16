@@ -10,6 +10,7 @@ from string import Template
 import ROOT
 import DataLoader
 import Factory
+import types
 
 
 ## Function inserter class
@@ -51,6 +52,63 @@ class functions:
                 setattr(target, originalName, rewriter(getattr(target, originalName), getattr(source, arg)))
             else:
                 setattr(target, arg.replace("Change", ""), getattr(source, arg))
+
+    ## Get's special parameters from kwargs and converts to positional parameter
+    @staticmethod
+    def ConvertSpecKwargsToArgs(positionalArgumentsToNamed, *args, **kwargs):
+        # args[0] = self
+        args = list(args)
+        idx = 0
+        PositionalArgsEnded = False
+        for argName in positionalArgumentsToNamed:
+            if not PositionalArgsEnded:
+                if argName in kwargs:
+                    if (idx + 1) != len(args):
+                        raise AttributeError
+                    PositionalArgsEnded = True
+                else:
+                    idx += 1
+            if PositionalArgsEnded and argName not in kwargs:
+                raise AttributeError
+            if argName in kwargs:
+                args.append(kwargs[argName])
+                del kwargs[argName]
+        args = tuple(args)
+        return (args, kwargs)
+
+    ## Converts object to TMVA style option string
+    @staticmethod
+    def ProcessParameters(optStringStartIndex, *args, **kwargs):
+        originalFunction = None
+        if optStringStartIndex != -10:
+            originalFunction = kwargs["originalFunction"]
+            del kwargs["originalFunction"]
+        OptionStringPassed = False
+        if (len(args) - 1) == optStringStartIndex:
+            opt = args[optStringStartIndex] + ":"
+            tmp = list(args)
+            del tmp[optStringStartIndex]
+            args = tuple(tmp)
+            OptionStringPassed = True
+        else:
+            opt = ""
+        for key in kwargs:
+            if type(kwargs[key]) == types.BooleanType:
+                if kwargs[key] == True:
+                    opt += key + ":"
+                else:
+                    opt += "!" + key + ":"
+            elif type(kwargs[key]) == types.ListType:
+                ss = ""
+                for o in kwargs[key]:
+                    ss += str(o) + ";"
+                opt += key + "=" + ss[:-1] + ":"
+            else:
+                opt += key + "=" + str(kwargs[key]) + ":"
+        tmp = list(args)
+        if OptionStringPassed or len(kwargs) > 0:
+            tmp.append(opt[:-1])
+        return (originalFunction, tuple(tmp))
 
     ## The method removes inserted functions from class
     # @param target from which class to remove functions
