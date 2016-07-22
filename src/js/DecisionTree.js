@@ -4,13 +4,6 @@
 
 
 (function(factory){
-    
-    require.config({
-       paths:{
-           d3: "https://root.cern.ch/js/notebook/scripts/d3.v3.min"
-       } 
-    });
-
     var url = "";
     if (require.s.contexts.hasOwnProperty("_")) {
         url = require.s.contexts._.config.paths["JsMVA"].replace("src/js/JsMVA.min","");

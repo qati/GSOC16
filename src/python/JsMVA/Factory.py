@@ -628,12 +628,18 @@ def ChangeCallOriginalBookMethod(*args,  **kwargs):
 
 ## Rewrite the constructor of TMVA::Factory::EvaluateImportance
 def ChangeCallOriginalEvaluateImportance(*args,  **kwargs):
+    if len(kwargs) == 0:
+        originalFunction, args = JPyInterface.functions.ProcessParameters(0, *args, **kwargs)
+        return originalFunction(*args)
     args, kwargs = JPyInterface.functions.ConvertSpecKwargsToArgs(["DataLoader", "VIType", "Method", "MethodTitle"], *args, **kwargs)
     originalFunction, args = JPyInterface.functions.ProcessParameters(5, *args, **kwargs)
     return originalFunction(*args)
 
-## Rewrite the constructor of TMVA::Factory::EvaluateImportance
-def ChangeCallOriginalEvaluateImportance(*args,  **kwargs):
+## Rewrite the constructor of TMVA::Factory::CrossValidate
+def ChangeCallOriginalCrossValidate(*args,  **kwargs):
+    if len(kwargs) == 0:
+        originalFunction, args = JPyInterface.functions.ProcessParameters(0, *args, **kwargs)
+        return originalFunction(*args)
     optParams = False
     rocIntegrals = False
     if "optParams" in kwargs:

@@ -3,12 +3,6 @@
  */
 
 (function(factory){
-    require.config({
-        paths: {
-            d3: "https://root.cern.ch/js/notebook/scripts/d3.v3.min"
-        }
-    });
-
     define(['d3'], function(d3){
         return factory({}, d3);
     });
