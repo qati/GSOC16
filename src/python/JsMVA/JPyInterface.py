@@ -153,8 +153,7 @@ class functions:
 ## Class for creating the output scripts and inserting them to cell output
 class JsDraw:
     ## String containing the link to JavaScript files
-    #__jsMVASourceDir = "https://rawgit.com/qati/GSOC16/master/src/js"
-    __jsMVASourceDir = "http://localhost:8888/notebooks/GSOC/wd/src/js"
+    __jsMVASourceDir = "https://rawgit.com/qati/GSOC16/master/src/js"
 
     ## Drawing are sizes
     jsCanvasWidth   = 800
