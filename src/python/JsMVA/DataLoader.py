@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-## @package JsMVA::DataLoader
+## @package JsMVA.DataLoader
 # DataLoader module with the functions to be inserted to TMVA::DataLoader class and helper functions
 # @authors Attila Bagoly <battila93@gmail.com>
 

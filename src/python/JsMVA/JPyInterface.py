@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
-## @package JsMVA/JPyInterface
-#  @authors  Attila Bagoly <battila93@gmail.com>
-# This package is responsible for adding the drawing methods to TMVA
+## @package JsMVA.JPyInterface
+# JPyInterface is responsible for adding the drawing methods to TMVA
 # and for creating the JavaScript outputs from objects.
+#  @authors  Attila Bagoly <battila93@gmail.com>
 
 
 from IPython.core.display import display, HTML
@@ -153,7 +153,8 @@ class functions:
 ## Class for creating the output scripts and inserting them to cell output
 class JsDraw:
     ## String containing the link to JavaScript files
-    __jsMVASourceDir = "https://rawgit.com/qati/GSOC16/master/src/js"
+    #__jsMVASourceDir = "https://rawgit.com/qati/GSOC16/master/src/js"
+    __jsMVASourceDir = "http://localhost:8888/notebooks/GSOC/wd/src/js"
 
     ## Drawing are sizes
     jsCanvasWidth   = 800
@@ -209,7 +210,7 @@ script.parentElement.parentElement.remove();
 
     ## Inserts the data inserter JavaScript code to output
     # @param obj ROOT object (will be converted to JSON) or JSON string containing the data to be inserted
-    # @param jsDrawMethod the JsMVA JavaScrip object method name to be used for inserting the new data
+    # @param dataInserterMethod the JsMVA JavaScrip object method name to be used for inserting the new data
     # @param objIsJSON obj is ROOT object or JSON
     @staticmethod
     def InsertData(obj, dataInserterMethod="updateTrainingTestingErrors", objIsJSON=False):
@@ -231,7 +232,7 @@ script.parentElement.parentElement.remove();
     @staticmethod
     def sbPlot(sig, bkg, title):
         canvas = ROOT.TCanvas("csbplot", title["plot"], JsDraw.jsCanvasWidth, JsDraw.jsCanvasHeight)
-        sig.SetMaximum(ROOT.TMath.Max(sig.GetMaximum(),bkg.GetMaximum()*1.1))
+        sig.SetMaximum(ROOT.TMath.Max(sig.GetMaximum()*1.1,bkg.GetMaximum()*1.1))
         sig.SetTitle(sig.GetTitle().replace("(Signal)",""))
         sig.GetXaxis().SetTitle(title["xaxis"])
         sig.GetYaxis().SetTitle(title["yaxis"])

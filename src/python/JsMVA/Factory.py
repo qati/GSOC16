@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
-## @package JsMVA/Factory
-#  @authors  Attila Bagoly <battila93@gmail.com>
+## @package JsMVA.Factory
 # Factory module with the functions to be inserted to TMVA::Factory class and helper functions and classes
+#  @authors  Attila Bagoly <battila93@gmail.com>
 
 
 import ROOT
