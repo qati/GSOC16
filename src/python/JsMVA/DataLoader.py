@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-## @package JsMVA/DataLoader
+## @package JsMVA::DataLoader
 # DataLoader module with the functions to be inserted to TMVA::DataLoader class and helper functions
 # @authors Attila Bagoly <battila93@gmail.com>
 
@@ -87,7 +87,7 @@ def DrawInputVariable(dl, variableName, numBin=100, processTrfs=""):
     sig = GetInputVariableHist(dl, "Signal",     variableName, numBin, processTrfs)
     bkg = GetInputVariableHist(dl, "Background", variableName, numBin, processTrfs)
     c, l = JPyInterface.JsDraw.sbPlot(sig, bkg, {"xaxis": sig.GetTitle(),
-                                    "yaxis": "N",
+                                    "yaxis": "Number of events",
                                     "plot": "Input variable: "+sig.GetTitle()})
     JPyInterface.JsDraw.Draw(c)
 

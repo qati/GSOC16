@@ -60,14 +60,13 @@
 
     JsMVA.drawTrainingTestingErrors = function(divid, dat_json){
         var obj = JSROOT.parse(dat_json);
-        console.log(obj)
         JSROOT.draw(divid, obj);
         require(['d3'], function(d3){
             var div = d3.select("#"+divid).style("position", "relative");
             var svg = div.append("svg")
-                .attr("width", div.property("style")["width"])
-                .attr("height", div.property("style")["height"])
-                .style({"position":"absolute", "top": "8px", "left": "8px", "z-index":2});
+                .attr("width", "200px")
+                .attr("height", "50px")
+                .style({"position":"absolute", "top": "8px", "right": "8px"});
             var attr = {
                 "pos": {"x": 150, "y": 10},
                 "rect": {"width": 10, "height":10},
@@ -75,8 +74,8 @@
                 "padding": 10
             };
             canvas = {
-                width:  Number(div.property("style")["width"].replace("px",""))-40,
-                height: Number(div.property("style")["height"].replace("px",""))+20
+                width:  160,
+                height: 70
             };
             var container = svg.append("g").attr("id", "legend");
             container.selectAll("g")
@@ -97,11 +96,12 @@
                         .text(function(d){return d.fTitle;})
                         .style("fill", function(d){return JSROOT.Painter.root_colors[d.fFillColor];});
                 });
-            var xlabel = obj.fGraphs.arr[0].fTitle.indexOf("Error on training set")!=-1 ? "Epoch" : "#tree";
-            svg.append("text")
-                .attr("x", 55)
-                .attr("y", canvas.height-55)
-                .text(xlabel)
+            div.append("svg").attr("width", "55px").attr("height", "20px")
+                .style({"position":"absolute", "bottom": "15px", "right": "40px"})
+                .append("text")
+                .attr("x", "5px")
+                .attr("y", "15px")
+                .text(obj.fGraphs.arr[0].fTitle.indexOf("Error on training set")!=-1 ? "Epoch" : "#tree")
                 .style({"font-size": "16px"});
         });
     };
