@@ -101,7 +101,15 @@ class functions:
             elif type(kwargs[key]) == types.ListType:
                 ss = ""
                 for o in kwargs[key]:
-                    ss += str(o) + ";"
+                    if type(o) == types.DictType:
+                        sst = ""
+                        for kk in o:
+                            sst += kk + "=" + str(o[kk]) + ","
+                        ss += sst[:-1] + "|"
+                    elif key=="Layout":
+                        ss += str(o) + ","
+                    else:
+                        ss += str(o) + ";"
                 opt += key + "=" + ss[:-1] + ":"
             else:
                 opt += key + "=" + str(kwargs[key]) + ":"
