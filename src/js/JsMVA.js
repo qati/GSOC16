@@ -61,7 +61,7 @@
     var drawLabel = function(divid, obj){
         require(['d3'], function(d3){
             var csvg = d3.select("#"+divid+">.interactivePlot_Labels")[0][0];
-            if (csvg===null) return;
+            if (csvg!=null) return;
             var div = d3.select("#"+divid).style("position", "relative");
             var svg = div.append("svg").attr("class", "interactivePlot_Labels")
                 .attr("width", "200px")
