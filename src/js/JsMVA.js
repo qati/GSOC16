@@ -60,8 +60,8 @@
 
     var drawLabel = function(divid, obj){
         require(['d3'], function(d3){
-            var csvg = d3.select("#"+divid+">.interactivePlot_Labels")[0];
-            if (csvg===undefined || csvg==null) return;
+            var csvg = d3.select("#"+divid+">.interactivePlot_Labels")[0][0];
+            if (csvg===null) return;
             var div = d3.select("#"+divid).style("position", "relative");
             var svg = div.append("svg").attr("class", "interactivePlot_Labels")
                 .attr("width", "200px")
@@ -105,6 +105,7 @@
                 .style({"font-size": "16px"});
         });
     };
+
 
     JsMVA.drawTrainingTestingErrors = function(divid, dat_json){
         var obj = JSROOT.parse(dat_json);
