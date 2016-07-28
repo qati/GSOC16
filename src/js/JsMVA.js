@@ -58,7 +58,7 @@
         });
     };
 
-    var drawLabel = function(divid){
+    var drawLabel = function(divid, obj){
         require(['d3'], function(d3){
             var div = d3.select("#"+divid).style("position", "relative");
             var svg = div.append("svg")
@@ -104,16 +104,19 @@
         });
     };
 
+    var drawTrainingTestingErrorsRan = false;
+
     JsMVA.drawTrainingTestingErrors = function(divid, dat_json){
         var obj = JSROOT.parse(dat_json);
         JSROOT.draw(divid, obj);
-        drawLabel(divid);
+        drawLabel(divid, obj);
+        drawTrainingTestingErrorsRan = true;
     };
 
     JsMVA.updateTrainingTestingErrors = function(divid, dat_json){
         var obj = JSROOT.parse(dat_json);
         JSROOT.redraw(divid, obj);
-        drawLabel(divid);
+        if (!drawTrainingTestingErrorsRan) drawLabel(divid, obj);
     };
 
     return JsMVA;
