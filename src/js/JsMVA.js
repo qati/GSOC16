@@ -58,9 +58,7 @@
         });
     };
 
-    JsMVA.drawTrainingTestingErrors = function(divid, dat_json){
-        var obj = JSROOT.parse(dat_json);
-        JSROOT.draw(divid, obj);
+    var drawLabel = function(divid){
         require(['d3'], function(d3){
             var div = d3.select("#"+divid).style("position", "relative");
             var svg = div.append("svg")
@@ -106,9 +104,16 @@
         });
     };
 
+    JsMVA.drawTrainingTestingErrors = function(divid, dat_json){
+        var obj = JSROOT.parse(dat_json);
+        JSROOT.draw(divid, obj);
+        drawLabel(divid);
+    };
+
     JsMVA.updateTrainingTestingErrors = function(divid, dat_json){
         var obj = JSROOT.parse(dat_json);
         JSROOT.redraw(divid, obj);
+        drawLabel(divid);
     };
 
     return JsMVA;
