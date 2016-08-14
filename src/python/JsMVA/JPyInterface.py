@@ -149,6 +149,7 @@ class functions:
         for key in functions.ThreadedFunctions:
             for func in functions.ThreadedFunctions[key]:
                 setattr(getattr(getattr(ROOT.TMVA, key), func), "_threaded", True)
+        functions.__register(ROOT.TMVA.Factory, Factory, "BookDNN")
 
     ## This function will remove all functions which name contains "Draw" from TMVA.DataLoader and TMVA.Factory
     # if the function was inserted from DataLoader and Factory modules
@@ -162,6 +163,9 @@ class functions:
 class JsDraw:
     ## String containing the link to JavaScript files
     __jsMVASourceDir = "https://rawgit.com/qati/GSOC16/master/src/js"
+
+    ## String containing the link to CSS files
+    __jsMVACSSDir = "https://rawgit.com/qati/GSOC16/master/src/css"
 
     ## Drawing are sizes
     jsCanvasWidth   = 800
@@ -214,6 +218,12 @@ script.parentElement.parentElement.remove();
             'width': JsDraw.jsCanvasWidth,
             'height': JsDraw.jsCanvasHeight
          })))
+
+    ## Inserts CSS file
+    # @param cssName The CSS file name. File must be in jsMVACSSDir!
+    @staticmethod
+    def InsertCSS(cssName):
+        display(HTML('<link rel="stylesheet" href="' + JsDraw.__jsMVACSSDir + '/' +cssName+ '"></link>'))
 
     ## Inserts the data inserter JavaScript code to output
     # @param obj ROOT object (will be converted to JSON) or JSON string containing the data to be inserted

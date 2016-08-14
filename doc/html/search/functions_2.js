@@ -1,12 +1,10 @@
 var searchData=
 [
-  ['draw',['Draw',['../class_js_m_v_a_1_1_j_py_interface_1_1_js_draw.html#a742bc6cf68ab47905d807eb725c9423d',1,'JsMVA::JPyInterface::JsDraw']]],
-  ['drawcorrelationmatrix',['DrawCorrelationMatrix',['../namespace_js_m_v_a_1_1_data_loader.html#a533ed4c3222f4f3a5be4618a2ab48d72',1,'JsMVA::DataLoader']]],
-  ['drawcutefficiencies',['DrawCutEfficiencies',['../namespace_js_m_v_a_1_1_factory.html#a08a6e7995ebfcc4bb1f9ab2d9243f147',1,'JsMVA::Factory']]],
-  ['drawdecisiontree',['DrawDecisionTree',['../namespace_js_m_v_a_1_1_factory.html#a0137c9ad641412e86f1dc80b7cbc2206',1,'JsMVA::Factory']]],
-  ['drawinputvariable',['DrawInputVariable',['../namespace_js_m_v_a_1_1_data_loader.html#af2431470e5b169e6b3d4e9482121fb77',1,'JsMVA::DataLoader']]],
-  ['drawneuralnetwork',['DrawNeuralNetwork',['../namespace_js_m_v_a_1_1_factory.html#a1e21509eca7325c6e88fe19c6468b3ed',1,'JsMVA::Factory']]],
-  ['drawoutputdistribution',['DrawOutputDistribution',['../namespace_js_m_v_a_1_1_factory.html#a4829b7ee62324edab80052469e51860b',1,'JsMVA::Factory']]],
-  ['drawprobabilitydistribution',['DrawProbabilityDistribution',['../namespace_js_m_v_a_1_1_factory.html#a24ee69a149443f6d5800345cc82e7789',1,'JsMVA::Factory']]],
-  ['drawroccurve',['DrawROCCurve',['../namespace_js_m_v_a_1_1_factory.html#a57d70b694bb4c43f06c06f22c4165ba3',1,'JsMVA::Factory']]]
+  ['changecalloriginal_5f_5finit_5f_5f',['ChangeCallOriginal__init__',['../namespace_js_m_v_a_1_1_factory.html#abcf9d3733984d82e125508738126096d',1,'JsMVA::Factory']]],
+  ['changecalloriginalbookmethod',['ChangeCallOriginalBookMethod',['../namespace_js_m_v_a_1_1_factory.html#a3707e17762930224ff09c9e1e30f0809',1,'JsMVA::Factory']]],
+  ['changecalloriginalcrossvalidate',['ChangeCallOriginalCrossValidate',['../namespace_js_m_v_a_1_1_factory.html#a45e8c210986c1d70775aacaeead3f307',1,'JsMVA::Factory']]],
+  ['changecalloriginalevaluateimportance',['ChangeCallOriginalEvaluateImportance',['../namespace_js_m_v_a_1_1_factory.html#a855b454f83972cf59f16241bdb1dcb48',1,'JsMVA::Factory']]],
+  ['changecalloriginalpreparetrainingandtesttree',['ChangeCallOriginalPrepareTrainingAndTestTree',['../namespace_js_m_v_a_1_1_data_loader.html#a70731ab58985cee778608f555bdf68bf',1,'JsMVA::DataLoader']]],
+  ['changetrainallmethods',['ChangeTrainAllMethods',['../namespace_js_m_v_a_1_1_factory.html#a94bb06cc37f454d199aeacc84f408fcd',1,'JsMVA::Factory']]],
+  ['convertspeckwargstoargs',['ConvertSpecKwargsToArgs',['../class_js_m_v_a_1_1_j_py_interface_1_1functions.html#a4b63ceb0106ada0139a030796d1f42fa',1,'JsMVA::JPyInterface::functions']]]
 ];

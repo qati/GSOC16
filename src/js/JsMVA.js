@@ -21,10 +21,10 @@
     require.config({
         paths: {
             'd3': JSROOT_source_dir+'d3.v3.min',
-            'JsRootCore': JSROOT_source_dir+'JSRootCore',
+            'JsRootCore': JSROOT_source_dir+'JSRootCore.min',
             'nn': url+'NeuralNetwork.min',
             'dtree': url+'DecisionTree.min',
-            'IChart': url+'IChart'
+            'NetworkDesigner': url+'NetworkDesigner'
         }
     });
 
@@ -117,6 +117,12 @@
         var obj = JSROOT.parse(dat_json);
         JSROOT.redraw(divid, obj);
         drawLabel(divid, obj);
+    };
+
+    JsMVA.NetworkDesigner = function(divid, dat_json){
+      require(['NetworkDesigner'], function (nd) {
+         nd.draw(divid);
+      });
     };
 
     return JsMVA;

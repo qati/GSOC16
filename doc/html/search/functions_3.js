@@ -1,10 +1,12 @@
 var searchData=
 [
-  ['getdeepnetwork',['GetDeepNetwork',['../namespace_js_m_v_a_1_1_factory.html#af7f8a22a90a4756591cf8c0b80afcfe3',1,'JsMVA::Factory']]],
-  ['getinputvariablehist',['GetInputVariableHist',['../namespace_js_m_v_a_1_1_data_loader.html#aaf11a0dc07ae564216a0b7aa5e0795db',1,'JsMVA::DataLoader']]],
-  ['getmethodobject',['GetMethodObject',['../namespace_js_m_v_a_1_1_factory.html#a12c4586e5d8fe52de176d24422900618',1,'JsMVA::Factory']]],
-  ['getnetwork',['GetNetwork',['../namespace_js_m_v_a_1_1_factory.html#a753d8ee1c00db53d528d06647f4a8264',1,'JsMVA::Factory']]],
-  ['getntrees',['getNTrees',['../class_js_m_v_a_1_1_factory_1_1_tree_reader.html#ac81cef4b34300720c7cd257e8ea11df7',1,'JsMVA::Factory::TreeReader']]],
-  ['gettree',['getTree',['../class_js_m_v_a_1_1_factory_1_1_tree_reader.html#a3064fce91b137c1674e26e7018f406de',1,'JsMVA::Factory::TreeReader']]],
-  ['getvariables',['getVariables',['../class_js_m_v_a_1_1_factory_1_1_tree_reader.html#a7ce713d8c2a0ff64346825b60c091d78',1,'JsMVA::Factory::TreeReader']]]
+  ['draw',['Draw',['../class_js_m_v_a_1_1_j_py_interface_1_1_js_draw.html#a742bc6cf68ab47905d807eb725c9423d',1,'JsMVA::JPyInterface::JsDraw']]],
+  ['drawcorrelationmatrix',['DrawCorrelationMatrix',['../namespace_js_m_v_a_1_1_data_loader.html#a533ed4c3222f4f3a5be4618a2ab48d72',1,'JsMVA::DataLoader']]],
+  ['drawcutefficiencies',['DrawCutEfficiencies',['../namespace_js_m_v_a_1_1_factory.html#a08a6e7995ebfcc4bb1f9ab2d9243f147',1,'JsMVA::Factory']]],
+  ['drawdecisiontree',['DrawDecisionTree',['../namespace_js_m_v_a_1_1_factory.html#a0137c9ad641412e86f1dc80b7cbc2206',1,'JsMVA::Factory']]],
+  ['drawinputvariable',['DrawInputVariable',['../namespace_js_m_v_a_1_1_data_loader.html#a9950d59a10c1f45ca6fb913b2c5030a9',1,'JsMVA::DataLoader']]],
+  ['drawneuralnetwork',['DrawNeuralNetwork',['../namespace_js_m_v_a_1_1_factory.html#a1e21509eca7325c6e88fe19c6468b3ed',1,'JsMVA::Factory']]],
+  ['drawoutputdistribution',['DrawOutputDistribution',['../namespace_js_m_v_a_1_1_factory.html#a4829b7ee62324edab80052469e51860b',1,'JsMVA::Factory']]],
+  ['drawprobabilitydistribution',['DrawProbabilityDistribution',['../namespace_js_m_v_a_1_1_factory.html#a24ee69a149443f6d5800345cc82e7789',1,'JsMVA::Factory']]],
+  ['drawroccurve',['DrawROCCurve',['../namespace_js_m_v_a_1_1_factory.html#a57d70b694bb4c43f06c06f22c4165ba3',1,'JsMVA::Factory']]]
 ];

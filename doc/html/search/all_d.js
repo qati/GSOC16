@@ -1,5 +1,4 @@
 var searchData=
 [
-  ['threadedfunctions',['ThreadedFunctions',['../class_js_m_v_a_1_1_j_py_interface_1_1functions.html#a37ffec420b062323525b7f55dc68fc0d',1,'JsMVA::JPyInterface::functions']]],
-  ['treereader',['TreeReader',['../class_js_m_v_a_1_1_factory_1_1_tree_reader.html',1,'JsMVA::Factory']]]
+  ['sbplot',['sbPlot',['../class_js_m_v_a_1_1_j_py_interface_1_1_js_draw.html#a02afaf7c97d628857cbeffe8d51eb5d8',1,'JsMVA::JPyInterface::JsDraw']]]
 ];

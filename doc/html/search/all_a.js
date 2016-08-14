@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['processparameters',['ProcessParameters',['../class_js_m_v_a_1_1_j_py_interface_1_1functions.html#a249bbf60c49e65734ace7d8a19df58ab',1,'JsMVA::JPyInterface::functions']]]
+  ['nargs',['nargs',['../class_js_m_v_a_1_1_js_m_v_a_magic_1_1_js_m_v_a_magic.html#a2ffa7b1949077edb6040716ab3b239d3',1,'JsMVA::JsMVAMagic::JsMVAMagic']]]
 ];
