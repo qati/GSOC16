@@ -679,5 +679,6 @@ def BookDNN(self, loader, title="DNN"):
         self.BookMethod(loader, ROOT.TMVA.Types.kDNN, title, optString)
         return
     __BookDNNHelper = __bookDNN
+    clear_output()
     JPyInterface.JsDraw.InsertCSS("NetworkDesigner.css")
     JPyInterface.JsDraw.Draw("", "NetworkDesigner", True)

@@ -655,6 +655,7 @@
     NetworkDesigner.draw = function(id){
         containerID = id;
         layersID    = 0;
+        $("#"+containerID).empty();
         $("#"+containerID).css({"z-index": 90, "position": "relative"});
 
         connection_queue = [];
