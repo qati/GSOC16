@@ -110,10 +110,18 @@
     font-size: 16px;
 }
 
-.layer_box center{
-    font-size: 22px;
+.layer_box input.button_layer_output{
+    position: absolute;
+    bottom: 3px;
+    left: 23%;
     font-weight: bold;
-    padding: 10px;
+    font-size: 16px;
+}
+
+.layer_box center{
+    font-size: 20px;
+    font-weight: bold;
+    padding: 5px;
     -webkit-touch-callout: none;
     -webkit-user-select: none;
     -khtml-user-select: none;

@@ -204,6 +204,13 @@
         }
         if (addText){
             layer.append(addText);
+            if (addText.toLowerCase().indexOf("output")!=-1){
+                layer.append("<input type='button' id='options_"+lid+"' class='button_layer_output' value='Options' / >");
+                layer.on("click", "#options_" + lid, function () {
+                    $("#output_layer_dialog").data('buttonID', lid);
+                    $("#output_layer_dialog").dialog("open");
+                });
+            }
         }
         var arr = lid.split("_");
         initLayer( Number(arr[arr.length-1]), arr[arr.length-2]);
@@ -248,6 +255,52 @@
         $("#neuronnum_layer_dialog").on("click", "#training_strategy_button", function () {
             var d = $("#trainingstrategy_dialog");
             d.data("formID", $("#neuronnum_layer_dialog").data("buttonID"));
+            d.dialog("open");
+        });
+    };
+
+    var outputLayerOptionsDialog = function(){
+        var layertype = "<select id='output_layer_type'>";
+        for(var lt in layer_ids){
+            layertype += "<option value='"+lt+"'>"+lt+"</option>";
+        }
+        layertype += "</select>";
+        $("#"+containerID).append("<div id='output_layer_dialog' title='Layer type' style='display: none'>\
+            <form><label>Type of layer: </label>"+layertype+"</form>\
+            <div id='ts_link'><input id='training_strategy_button' type='button' class='ui-button' value='Training Strategy' /></div>\
+            </div>");
+        $("#output_layer_dialog").dialog({
+            autoOpen: false,
+            show: {
+                effect: "fade",
+                duration: 500
+            },
+            hide: {
+                effect: "fade",
+                duration: 500
+            },
+            open:  function(){
+                var arr = $(this).data("buttonID").split("_");
+                arr   = Number(arr[arr.length-1]);
+                if (layers[arr].func!==undefined) {
+                    $("#output_layer_type").val(layers[arr].func);
+                }
+            },
+            buttons: {
+                "OK": function(){
+                    var arr = $(this).data("buttonID").split("_");
+                    arr  = Number(arr[arr.length-1]);
+                    layers[arr]["func"] = $("#output_layer_type").val();
+                    $(this).dialog("close");
+                },
+                "Close": function() {
+                    $(this).dialog("close");
+                }
+            }
+        }).data('buttonID', '-1');
+        $("#output_layer_dialog").on("click", "#training_strategy_button", function () {
+            var d = $("#trainingstrategy_dialog");
+            d.data("formID", $("#output_layer_dialog").data("buttonID"));
             d.dialog("open");
         });
     };
@@ -558,7 +611,7 @@
 
     var genLayerString = function(input){
         if (input===undefined || input.type===undefined) return "";
-        if (input.type=="output") return "";
+        if (input.type=="output") return input.func;
         if (input.type=="input") return "" + genLayerString(layers[input.connected.after]);
         if (input.type!="input" && input.type!="output"){
             return (input.type.toUpperCase()+"|"+input.neurons)+","+genLayerString(layers[input.connected.after]);
@@ -576,7 +629,7 @@
 
     var genTrainingStrategyString = function(input){
         if (input===undefined || input.type===undefined) return "";
-        if (input.type=="output") return "";
+        if (input.type=="output") return genTrainingStrategyStringOneLayer(input.trainingStrategy);
         if (input.type=="input") return "" + genTrainingStrategyString(layers[input.connected.after]);
         if (input.type!="input" && input.type!="output"){
             return genTrainingStrategyStringOneLayer(input.trainingStrategy)+"|"+genTrainingStrategyString(layers[input.connected.after]);
@@ -605,8 +658,12 @@
             console.log("TrainingStrategy="+training_strategy);
             return "";
         }
-        layout = layout.substr(0, layout.length-1);
-        training_strategy = training_strategy.substr(0, training_strategy.length-1);
+        if (layout[layout.length-1]==","){
+            layout = layout.substr(0, layout.length-1);
+        }
+        if (training_strategy[training_strategy.length-1]=="|"){
+            training_strategy = training_strategy.substr(0, training_strategy.length-1);
+        }
         opt += "Layout="+layout + ":TrainingStrategy="+training_strategy;
         return opt;
     };
@@ -621,6 +678,7 @@
         if (optString.length<1){
             return;
         }
+        console.log(optString);
         var callback = {
             iopub: {
                 output: handle_save_net_output
@@ -676,6 +734,7 @@
         addNeuronsToLayer();
         trainingStrategyForm();
         globalOptionsForm();
+        outputLayerOptionsDialog();
     };
 
     return NetworkDesigner;
