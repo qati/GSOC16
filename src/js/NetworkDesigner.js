@@ -431,6 +431,9 @@
                 }
             }
         }).data('formID', '-1');
+        $("#trainingstrategy_dialog input").on("keypress keydown keyup", function(e) {
+            e.stopPropagation();
+        });
     };
 
     var globalOptionsForm = function(){
@@ -508,6 +511,9 @@
                     $(this).dialog("close");
                 }
             }
+        });
+        $("#globopts_dialog input").on("keypress keydown keyup", function(e) {
+            e.stopPropagation();
         });
     };
 
