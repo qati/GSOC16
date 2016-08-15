@@ -1,13 +1,10 @@
-# JsMVA
 
-[![Binder](http://mybinder.org/badge.svg)](http://mybinder.org/repo/qati/GSOC16)
+<table><tr>
+<td><a href="https://rawgit.com/qati/GSOC16/master/doc/html/index.html"><img alt="Documentation" src="/assets/images/doc.svg" width="250px" /></a></td>
+<td><a href="http://mybinder.org/repo/qati/GSOC16"><img alt="Tutorials" src="/assets/images/tut.svg" width="200px" /></a></td>
+<td><a href="http://mybinder.org/repo/qati/GSOC16"><img src="http://mybinder.org/badge.svg" alt="Binder" width="200px"></a></td>
+</tr></table>
 
+# Integration of TMVA in Jupyter notebooks
 
-### Setup stuff
-* We have to add the following lines to JupyROOT/__init__.py
-```python
-import sys, os.path
-sys.path.append(os.path.expanduser("PATH TO JsMVA"));
-import JsMVA
-```
 
