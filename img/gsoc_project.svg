@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+
+<svg
+   xmlns:dc="http://purl.org/dc/elements/1.1/"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   width="282"
+   height="37"
+   viewBox="0 0 282 37"
+   id="svg3394"
+   version="1.1"
+   inkscape:version="0.91 r13725"
+   sodipodi:docname="gsoc.svg">
+  <defs
+     id="defs3396" />
+  <sodipodi:namedview
+     id="base"
+     pagecolor="#ffffff"
+     bordercolor="#666666"
+     borderopacity="1.0"
+     inkscape:pageopacity="0.0"
+     inkscape:pageshadow="2"
+     inkscape:zoom="1.979899"
+     inkscape:cx="233.47049"
+     inkscape:cy="-28.454779"
+     inkscape:document-units="px"
+     inkscape:current-layer="layer1"
+     showgrid="false"
+     units="px"
+     inkscape:window-width="1536"
+     inkscape:window-height="801"
+     inkscape:window-x="-8"
+     inkscape:window-y="-8"
+     inkscape:window-maximized="1" />
+  <metadata
+     id="metadata3399">
+    <rdf:RDF>
+      <cc:Work
+         rdf:about="">
+        <dc:format>image/svg+xml</dc:format>
+        <dc:type
+           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+        <dc:title></dc:title>
+      </cc:Work>
+    </rdf:RDF>
+  </metadata>
+  <g
+     inkscape:label="Layer 1"
+     inkscape:groupmode="layer"
+     id="layer1"
+     transform="translate(0,-1015.3621)">
+    <g
+       transform="translate(2.0293701,1017.9043)"
+       style="fill:none"
+       id="g3340"
+       inkscape:transform-center-x="-48.214286"
+       inkscape:transform-center-y="89.285714">
+      <path
+         style="fill:#fbbc05"
+         inkscape:connector-curvature="0"
+         d="m 20.68,27.37 6.62,0 0,-6.64 4.67,-4.7 -4.67,-4.67 0,-6.64 -6.62,0 -4.68,-4.7 -4.67,4.7 -6.63,0 0,6.64 -4.66,4.68 4.67,4.7 0,6.63 6.63,0 4.66,4.68 4.68,-4.68"
+         id="path3342" />
+      <path
+         style="fill:#ffffff"
+         inkscape:connector-curvature="0"
+         d="m 16,5.8 c 5.63,0 10.2,4.6 10.2,10.24 0,5.65 -4.57,10.24 -10.2,10.24 C 10.37,26.28 5.8,21.68 5.8,16.04 5.8,10.4 10.36,5.8 16,5.8 m 0,-0.57 c -5.96,0 -10.8,4.84 -10.8,10.8 0,6 4.84,10.83 10.8,10.83 5.96,0 10.8,-4.84 10.8,-10.82 0,-5.97 -4.84,-10.8 -10.8,-10.8"
+         id="path3344" />
+      <path
+         style="fill:#ffffff"
+         inkscape:connector-curvature="0"
+         d="m 16.5,11.04 0,0.06 -2.18,9.58 -0.08,0.37 1.34,0 0,-0.07 2.18,-9.58 0.08,-0.36 -1.34,0 z m -3.43,1.3 -0.18,0.14 -3.92,3.05 -0.25,0.2 0,0.63 0.26,0.2 3.9,3.05 0.17,0.15 0,-1.66 -2.63,-2.06 2.65,-2.04 0,-1.66 z m 5.85,0 0,1.66 2.63,2.04 -2.63,2.06 0,1.64 0.18,-0.13 3.9,-3.04 0.26,-0.2 0,-0.63 -0.25,-0.2 -3.9,-3.05 -0.18,-0.14 z m 7.03,3.7 c 0,2.76 -1.12,5.24 -2.92,7.05 -1.8,1.8 -4.28,2.9 -7.03,2.9 -2.75,0 -5.23,-1.1 -7.03,-2.9 -1.8,-1.82 -2.9,-4.3 -2.9,-7.06 0,-2.76 1.09,-5.23 2.89,-7.03 1.8,-1.8 4.28,-2.93 7.03,-2.93 2.75,0 5.24,1.13 7.04,2.93 1.8,1.8 2.92,4.3 2.92,7.04 l 1.45,0 c 0,-3.15 -1.28,-6 -3.34,-8.08 C 22,5.9 19.16,4.62 16,4.62 12.86,4.62 10,5.9 7.94,7.96 5.88,10.03 4.6,12.89 4.6,16.04 c 0,3.16 1.28,6.02 3.34,8.08 2.06,2.08 4.92,3.35 8.06,3.35 3.15,0 6,-1.28 8.06,-3.35 2.06,-2.06 3.34,-4.92 3.34,-8.08 l -1.46,0 z"
+         id="path3346" />
+    </g>
+    <text
+       xml:space="preserve"
+       style="font-style:normal;font-weight:normal;font-size:40px;line-height:125%;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+       x="36.1922"
+       y="1038.7441"
+       id="text3370"
+       sodipodi:linespacing="125%"><tspan
+         sodipodi:role="line"
+         id="tspan3372"
+         x="36.1922"
+         y="1038.7441"
+         style="font-size:15px;fill:#ff6600">Google Summer of Code Project</tspan></text>
+  </g>
+</svg>
