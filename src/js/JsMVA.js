@@ -24,7 +24,7 @@
             'JsRootCore': JSROOT_source_dir+'JSRootCore.min',
             'nn': url+'NeuralNetwork.min',
             'dtree': url+'DecisionTree.min',
-            'NetworkDesigner': url+'NetworkDesigner'
+            'NetworkDesigner': url+'NetworkDesigner.min'
         }
     });
 

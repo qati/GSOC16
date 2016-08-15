@@ -3,7 +3,7 @@
     margin: 0;
 }
 
-#nd_menu_div ul#nd_menu{
+#nd_menu_div ul#nd_menu {
     list-style-type: none;
     margin: 0;
     padding: 0;
@@ -23,7 +23,7 @@
     float: left;
 }
 
-.nd_menu_element div, .nd_menu_dropdown div{
+.nd_menu_element div, .nd_menu_dropdown div {
     display: inline-block;
     color: #333333;//#777;
     text-align: center;
@@ -47,10 +47,12 @@
     z-index: 99;
     overflow: hidden;
 }
+
 .nd_menu_dropdown_content li div {
     text-align: left;
     width: 100%;
 }
+
 .nd_menu_dropdown_content li div:hover {
     background-color: #fafafa;
 }
@@ -102,6 +104,7 @@
     -ms-user-select: none;
     user-select: none;
 }
+
 .layer_box input.button_layer{
     position: absolute;
     top: 5px;
@@ -110,7 +113,7 @@
     font-size: 16px;
 }
 
-.layer_box input.button_layer_output{
+.layer_box input.button_layer_output {
     position: absolute;
     bottom: 3px;
     left: 23%;
@@ -118,7 +121,7 @@
     font-size: 16px;
 }
 
-.layer_box center{
+.layer_box center {
     font-size: 20px;
     font-weight: bold;
     padding: 5px;
@@ -130,7 +133,7 @@
     user-select: none;
 }
 
-#ts_link{
+#ts_link {
     margin-top: 10px;
 }
 
@@ -138,7 +141,7 @@
     width: 100px;
 }
 
-#neuronnum_layer_dialog label{
+#neuronnum_layer_dialog label {
     padding-right: 5px;
 }
 
@@ -146,7 +149,7 @@
     float: right;
 }
 
-#globopts_dialog tr td:first-child{
+#globopts_dialog tr td:first-child {
     float: right;
 }
 
