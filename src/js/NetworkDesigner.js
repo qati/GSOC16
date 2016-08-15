@@ -127,6 +127,9 @@
                 Multithreading: true
             }
         };
+        if (type.toLowerCase().indexOf("output")!=-1){
+            layers[i]["func"]
+        }
     };
 
     var connectLayers  = function(target){
@@ -713,7 +716,7 @@
     NetworkDesigner.draw = function(id){
         containerID = id;
         layersID    = 0;
-        $("#"+containerID).empty();
+        //$("#"+containerID).empty();
         $("#"+containerID).css({"z-index": 90, "position": "relative"});
 
         connection_queue = [];
