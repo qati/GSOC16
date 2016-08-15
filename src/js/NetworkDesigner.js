@@ -730,6 +730,7 @@
 
         connection_queue = [];
         helpMessages     = [];
+        layers = Array();
 
         helpMessages.push(new MessageBox("connect_layer", "Connect layers",
             "To connect two layer double click on first layer, grab the arrow and move inside the other layer."));
