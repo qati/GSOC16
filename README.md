@@ -7,5 +7,5 @@
 </tr></table>
 
 <div style="position: relative;">
-<a href="https://summerofcode.withgoogle.com/projects/#5735600967647232"><img src="https://summerofcode.withgoogle.com/static/img/summer-of-code-logo.svg"  style="padding-bottom: 20px; width: 100px;"/><span style="font-size: 44px; padding-left: 10px;">Google Summer of Code Project</span></a>
+<a href="https://summerofcode.withgoogle.com/projects/#5735600967647232"><img src="https://summerofcode.withgoogle.com/static/img/summer-of-code-logo.svg"  style="padding-bottom: 20px; min-width: 100px;"/><span style="font-size: 44px; padding-left: 10px;">Google Summer of Code Project</span></a>
 </div>
