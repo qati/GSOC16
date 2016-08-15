@@ -260,6 +260,9 @@
             d.data("formID", $("#neuronnum_layer_dialog").data("buttonID"));
             d.dialog("open");
         });
+        $("#neuronnum_layer_dialog form input").on("keypress keydown keyup", function(e) {
+            e.stopPropagation();
+        });
     };
 
     var outputLayerOptionsDialog = function(){
