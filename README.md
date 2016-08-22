@@ -24,7 +24,7 @@
 The aim of this project is to make TMVA well integrated in Jupyter notebook environment. 
 
 ## Source code
-  * <a href="https://github.com/qati/GSOC16/src/">github.com/qati/GSOC16/src</a>
+  * <a href="https://github.com/qati/GSOC16/tree/master/src">github.com/qati/GSOC16/tree/master/src</a>
   * <a href="https://github.com/qati/DeepNetworkDesigner">github.com/qati/DeepNetworkDesigner</a>
   * C++ part can be seen in the<a href="https://github.com/root-mirror/root/pull/208"> pull request</a>
   
