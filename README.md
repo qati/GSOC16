@@ -23,7 +23,12 @@
 
 The aim of this project is to make TMVA well integrated in Jupyter notebook environment. 
 
-## What is done
+## Source code
+  * <a href="https://github.com/qati/GSOC16/src/">github.com/qati/GSOC16/src</a>
+  * <a href="https://github.com/qati/DeepNetworkDesigner">github.com/qati/DeepNetworkDesigner</a>
+  * C++ part can be seen in the<a href="https://github.com/root-mirror/root/pull/208"> pull request</a>
+  
+## Tutorials: what is done
 * Pythonic user interface: <a href="http://nbviewer.jupyter.org/github/qati/GSOC16/blob/master/notebooks/ROOTbooks-TMVA-JsMVA-UserInterface.ipynb">tutorial</a>
 * JavaScript visualization for features available in TMVA Graphical User Interface: <a href="http://nbviewer.jupyter.org/github/qati/GSOC16/blob/master/notebooks/ROOTbooks-TMVA-Input.ipynb">tutorial 1</a>, <a href="http://nbviewer.jupyter.org/github/qati/GSOC16/blob/master/notebooks/ROOTbooks-TMVA-EvaluateMethods.ipynb#Classifier-Output-Distributions">tutorial 2</a>
 * Vizualization for neural networks, deep neural networks and decision trees: <a href="http://nbviewer.jupyter.org/github/qati/GSOC16/blob/master/notebooks/ROOTbooks-TMVA-NeuralNetwork-DecisionTree-Visualization.ipynb">tutorial</a>
@@ -36,4 +41,3 @@ The aim of this project is to make TMVA well integrated in Jupyter notebook envi
 
 Pull request <a href="https://github.com/root-mirror/root/pull/208">here</a>.
 
-## Commitments after GSoC
