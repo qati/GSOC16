@@ -27,7 +27,7 @@ The aim of this project is to make TMVA well integrated in Jupyter notebook envi
   * <a href="https://github.com/qati/GSOC16/tree/master/src">github.com/qati/GSOC16/tree/master/src</a>
   * C++ part can be seen in the<a href="https://github.com/root-mirror/root/pull/208"> pull request</a>
   
-## Tutorials: what is done
+## What is done
 * Pythonic user interface: <a href="http://nbviewer.jupyter.org/github/qati/GSOC16/blob/master/notebooks/ROOTbooks-TMVA-JsMVA-UserInterface.ipynb">tutorial</a>
 * JavaScript visualization for features available in TMVA Graphical User Interface: <a href="http://nbviewer.jupyter.org/github/qati/GSOC16/blob/master/notebooks/ROOTbooks-TMVA-Input.ipynb">tutorial 1</a>, <a href="http://nbviewer.jupyter.org/github/qati/GSOC16/blob/master/notebooks/ROOTbooks-TMVA-EvaluateMethods.ipynb#Classifier-Output-Distributions">tutorial 2</a>
 * Vizualization for neural networks, deep neural networks and decision trees: <a href="http://nbviewer.jupyter.org/github/qati/GSOC16/blob/master/notebooks/ROOTbooks-TMVA-NeuralNetwork-DecisionTree-Visualization.ipynb">tutorial</a>
