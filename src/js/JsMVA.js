@@ -68,7 +68,7 @@
                 .attr("height", "50px")
                 .style({"position":"absolute", "top": "8px", "right": "8px"});
             var attr = {
-                "pos": {"x": 150, "y": 10},
+                "pos": {"x": 150, "y": 0},
                 "rect": {"width": 10, "height":10},
                 "dy": 20,
                 "padding": 10
