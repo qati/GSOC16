@@ -125,5 +125,28 @@
       });
     };
 
+    JsMVA.outputShowCorrelationMatrix = function(divid){
+        require(['jquery', 'jquery-ui'], function($){
+            var th2 = JSROOT.parse($("#"+divid).html());
+            if (!$("#dialog_"+divid).length || $("#dialog_"+divid).length < 1) {
+                $("#" + divid).parent().append("<div id='dialog_" + divid + "' title='" + th2.fTitle + "'></div>");
+                JSROOT.draw("dialog_" + divid, th2, "colz;PAL50;text");
+            }
+            $("#dialog_" + divid).dialog({
+                autoOpen: true,
+                width: 600,
+                show: {
+                    effect: "blind",
+                    duration: 1000
+                },
+                hide: {
+                    effect: "explode",
+                    duration: 500
+                }
+            });
+
+        });
+    };
+
     return JsMVA;
 }));

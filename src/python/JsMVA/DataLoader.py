@@ -4,7 +4,7 @@
 # @authors Attila Bagoly <battila93@gmail.com>
 
 
-from ROOT import TH1F, TMVA
+from ROOT import TH1F, TMVA, TBufferJSON
 import JPyInterface
 
 
@@ -61,6 +61,22 @@ def GetInputVariableHist(dl, className, variableName, numBin, processTrfs=""):
             h.Fill(event.GetValue(ivar))
     return (h)
 
+
+## Get correlation matrix in JSON format
+# This function is used by OutputTransformer
+# @param dl the object pointer
+# @param className Signal/Background
+def GetCorrelationMatrixInJSON(dl, className):
+    th2 = dl.GetCorrelationMatrix(className)
+    th2.SetMarkerSize(1.5)
+    th2.SetMarkerColor(0)
+    labelSize = 0.040
+    th2.GetXaxis().SetLabelSize(labelSize)
+    th2.GetYaxis().SetLabelSize(labelSize)
+    th2.LabelsOption("d")
+    th2.SetLabelOffset(0.011)
+    dat = TBufferJSON.ConvertToJSON(th2)
+    return str(dat).replace("\n", "")
 
 ## Draw correlation matrix
 # This function uses the TMVA::DataLoader::GetCorrelationMatrix function added newly to root
