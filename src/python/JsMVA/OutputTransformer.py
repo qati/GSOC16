@@ -122,14 +122,17 @@ class transformTMVAOutputToHTML:
     def __correlationMatrix(self, title, className):
         id = "jsmva_outputtansformer_events_"+str(self.__eventsUID)+"_onclick"
         self.__eventsUID += 1
-        loaders = JPyInterface.functions.captureObjects(TMVA.DataLoader)["TMVA::DataLoader"]
-        for ldl in loaders:
+        JsMVA_OutputTransformer = JPyInterface.functions.captureObjects(TMVA.DataLoader)["TMVA::DataLoader"]
+        JsMVA_OutputTransformer_DataLoader = None
+        for JsMVA_OutputTransformer_ldl in JsMVA_OutputTransformer:
             try:
-                if ldl.GetName()==self.__lastDataSetName:
-                    loader = ldl
+                if JsMVA_OutputTransformer_ldl.GetName()==self.__lastDataSetName:
+                    JsMVA_OutputTransformer_DataLoader = JsMVA_OutputTransformer_ldl
             except TypeError:
                 pass
-        json = DataLoader.GetCorrelationMatrixInJSON(loader, className)
+        if not JsMVA_OutputTransformer_DataLoader:
+            return ""
+        json = DataLoader.GetCorrelationMatrixInJSON(JsMVA_OutputTransformer_DataLoader, className)
         jsCall = "require(['JsMVA'],function(jsmva){jsmva.outputShowCorrelationMatrix('"+id+"');});"
         rstr = "<div id='"+id+"' style='display: none;'>"+json+"</div>"
         rstr += self.__processGroupContentLine("<a onclick=\""+jsCall+"\" class='tmva_output_corrmat_link'>" + title + " (" + className + ")</a>")
