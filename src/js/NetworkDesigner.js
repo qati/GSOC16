@@ -681,7 +681,7 @@
     };
 
     var handle_save_net_output = function(out){
-        $("<div>"+out.content.text+"</div>").insertAfter("#"+containerID);
+        $("<div>"+out.content.data["text/html"]+"</div>").insertAfter("#"+containerID);
     };
 
     var save_net = function(){

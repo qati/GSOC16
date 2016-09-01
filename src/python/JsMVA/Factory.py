@@ -593,6 +593,19 @@ def ChangeTrainAllMethods(fac):
 
 ## Rewrite the constructor of TMVA::Factory
 def ChangeCallOriginal__init__(*args,  **kwargs):
+    hasColor = False
+    args = list(args)
+    for arg_idx in xrange(len(args)):
+        if isinstance(args[arg_idx], basestring) and args[arg_idx].find(":")!=-1:
+            if args[arg_idx].find("Color")!=-1:
+                hasColor = True
+                if args[arg_idx].find("!Color")==-1:
+                    args[arg_idx] = args[arg_idx].replace("Color", "!Color")
+            else:
+                kwargs["Color"] = False
+    args = tuple(args)
+    if not hasColor:
+        kwargs["Color"] = False
     try:
         args, kwargs = JPyInterface.functions.ConvertSpecKwargsToArgs(["JobName", "TargetFile"], *args, **kwargs)
     except AttributeError:

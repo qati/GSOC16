@@ -9,6 +9,7 @@
     border-left: 1px solid white;
     border-right: 1px solid white;
     border-bottom: 1px solid #595959;
+    word-break: break-all;
 }
 
 .tmva_output_table tbody:last-child tr:first-child td:first-child, .tmva_output_table tbody:last-child tr:last-child td {
@@ -37,6 +38,7 @@
 
 .tmva_output_table tr td.tmva_output_header {
     vertical-align: top;
+    width: 160px !important;
 }
 
 .tmva_output_dataset {
@@ -49,11 +51,12 @@
 }
 
 .tmva_output_dataset tbody:hover {
-    background-color: rgba(0, 150, 179, 0.4);
+    //background-color: rgba(0, 150, 179, 0.4);
+    background-color: rgba(0, 179, 0, 0.4);
 }
 
 .tmva_output_dataset tbody:hover tr:hover td {
-    background-color: rgba(0, 0, 179, 0.4);
+    background-color: rgba(0, 0, 179, 0.1);
 }
 
 .tmva_output_traintestevents td {
@@ -64,7 +67,7 @@
 }
 
 .tmva_output_traintestevents tbody:hover {
-    background-color: rgba(0, 0, 179, 0.4);
+    background-color: rgba(0, 179, 0, 0.4);
 }
 
 .tmva_output_varmeanrms td {
@@ -72,7 +75,7 @@
 }
 
 .tmva_output_varmeanrms tbody:hover tr {
-    background-color: rgba(0, 0, 179, 0.4);
+    background-color: rgba(0, 179, 0, 0.4);
 }
 
 .tmva_output_hidden_td {
@@ -81,4 +84,16 @@
 
 .tmva_output_corrmat_link {
     cursor: pointer;
+}
+
+.tmva_output_warning {
+    background-color: rgba(179, 0, 0, 0.2);
+}
+
+.tmva_output_error {
+    background-color: rgba(179, 0, 0, 0.5);
+}
+
+.tmva_output_fatal {
+    background-color: rgba(179, 0, 0, 0.9);
 }

@@ -6,6 +6,7 @@
 import JPyInterface
 import DataLoader
 from ROOT import TMVA
+import cgi
 import re
 
 class transformTMVAOutputToHTML:
@@ -18,7 +19,9 @@ class transformTMVAOutputToHTML:
             return ""
         if line.find("Booking method")!=-1:
             line = "Booking method: <b>" + line.split(":")[1].replace("\x1b[1m", "").replace("[0m", "")+"</b>"
-        return "<td>"+str(line)+"</td>"
+        if len(self.__outputFlagClass)>1:
+            line = cgi.escape(str(line))
+        return "<td"+self.__outputFlagClass+">"+str(line)+"</td>"
 
     def __isEmpty(self, line):
         return re.match(r"^\s*:?\s*-*$", line)!=None
@@ -97,7 +100,7 @@ class transformTMVAOutputToHTML:
             if self.__isEmpty(nextline):
                 count += 1
                 continue
-            VariableMean = re.match(r"\s*:?\s*(\w+):?\s*(-?\d*\.?\d*)\s*(-?\d*\.?\d*)\s*\[\s*(-?\d*\.?\d*)\s*(-?\d*\.?\d*)\s*\].*", nextline, re.I)
+            VariableMean = re.match(r"\s*:\s*([\w\d]+)\s*:\s*(-?\d*\.?\d*)\s*(-?\d*\.?\d*)\s*\[\s*(-?\d*\.?\d*)\s*(-?\d*\.?\d*)\s*\]", nextline, re.I)
             if VariableMean:
                 count += 1
                 tmp = []
@@ -132,6 +135,19 @@ class transformTMVAOutputToHTML:
         rstr += self.__processGroupContentLine("<a onclick=\""+jsCall+"\" class='tmva_output_corrmat_link'>" + title + " (" + className + ")</a>")
         return rstr
 
+    def addClassForOutputFlag(self):
+        if self.__currentType==None:
+            self.__outputFlagClass = ""
+            return
+        if self.__currentType.find("WARNING") != -1:
+            self.__outputFlagClass = " class='tmva_output_warning'"
+        elif self.__currentType.find("ERROR") !=-1:
+            self.__outputFlagClass = " class='tmva_output_error'"
+        elif self.__currentType.find("FATAL") !=-1:
+            self.__outputFlagClass = " class='tmva_output_fatal'"
+        else:
+            self.__outputFlagClass = ""
+
     def __transformOneGroup(self, firstLine):
         tmp_str = ""
         processed_lines = 0
@@ -141,11 +157,12 @@ class transformTMVAOutputToHTML:
                 nextline = firstLine
             else:
                 nextline = self.lines[self.lineIndex + j]
-            Header = re.match(r"^(\w+.*\s+)(\s+)(:)\s*(.*)", nextline)
+            Header = re.match(r"^\s*(<\w+>\s*)*\s*(\w+.*\s+)(\s+)(:)\s*(.*)", nextline, re.I)
             DatasetName = re.match(r".*(\[.*\])\s*:\s*(.*)", nextline)
             NumEvents = re.match(r"(.*)(number\sof\straining\sand\stesting\sevents)", nextline, re.I)
-            CorrelationMatrixHeader = re.match(r"\s*:?\s*(correlation\s*matrix)\s*\((\w+)\)\s*:\s*", nextline, re.I)
-            VariableMeanHeader = re.match(r"\s*:?\s*(variable)\s*(mean)\s*(rms)\s*\[\s*(min)\s*(max)\s*\].*", nextline, re.I)
+            CorrelationMatrixHeader = re.match(r".*\s*:?\s*(correlation\s*matrix)\s*\((\w+)\)\s*:\s*", nextline, re.I)
+            VariableMeanHeader = re.match(r".*\s*:?\s*(variable)\s*(mean)\s*(rms)\s*\[\s*(min)\s*(max)\s*\].*", nextline, re.I)
+            WelcomeHeader = re.match(r"^\s*:?\s*(.*ROOT\s*version:.*)", nextline, re.I)
             if Header == None or j==0:
                 if j!=0:
                     processed_lines += 1
@@ -177,10 +194,26 @@ class transformTMVAOutputToHTML:
                             lineIter.next()
                         else:
                             break
+                elif WelcomeHeader:
+                    kw=0
+                    while True:
+                        nextline = self.lines[self.lineIndex + j + kw]
+                        EndWelcome = re.match(r"\s*:?\s*_*\s*(TMVA\s*Version\s*.*)", nextline, re.I)
+                        if EndWelcome or re.match(r"[\s_/|]*", nextline)==None:
+                            break
+                        kw += 1
+                        self.iterLines.next()
+                        lineIter.next()
+                    tmp_str += "<td><b>"+WelcomeHeader.group(1) + "</b></td></tr>"
+                    tmp_str += "<tr><td><img src='https://rawgit.com/qati/GSOC16/master/img/tmva-logo.svg' width='100%' /><br />"
+                    tmp_str += "<center><b>"+EndWelcome.group(1)+"</b></center></td></tr>"
                 else:
-                    lmatch = re.match(r"\s*:\s*(.*)", nextline)
+                    lmatch = re.match(r"\s*(<\w+>\s*)*\s*:\s*(.*)", nextline)
                     if lmatch:
-                        tmp_str += self.__processGroupContentLine(lmatch.group(1))
+                        if lmatch.group(1):
+                            self.__currentType = lmatch.group(1)
+                            self.addClassForOutputFlag()
+                        tmp_str += self.__processGroupContentLine(lmatch.group(2))
                     else:
                         tmp_str += self.__processGroupContentLine(nextline)
                 tmp_str += "</tr>"
@@ -201,9 +234,13 @@ class transformTMVAOutputToHTML:
         self.iterLines = iter(xrange(len(self.lines)))
         for self.lineIndex in self.iterLines:
             line = self.lines[self.lineIndex]
-            Header = re.match(r"^(\w+.*\s+)(\s+)(:)\s*(.*)", line)
+            Header = re.match(r"^\s*(<\w+>\s*)*\s*(\w+.*\s+)(\s+)(:)\s*(.*)", line, re.I)
             if Header:
-                self.__currentHeaderName = Header.group(1)
-                self.__transformOneGroup(Header.group(4))
+                self.__currentType = Header.group(1)
+                self.addClassForOutputFlag()
+                self.__currentHeaderName = Header.group(2)
+                self.__transformOneGroup(Header.group(5))
+            else:
+                self.out += line
         self.out += "</table>"
         return (self.out, self.err, "html")
