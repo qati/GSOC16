@@ -154,7 +154,7 @@ class functions:
         functions.__register(ROOT.TMVA.Factory, Factory, "BookDNN")
         outputTransformer = OutputTransformer.transformTMVAOutputToHTML()
         transformers.append(outputTransformer.transform)
-        JsDraw.InsertCSS("TMVAHTMLOutput.min.css")
+        JsDraw.InitJsMVA()
 
     ## This function will remove all functions which name contains "Draw" from TMVA.DataLoader and TMVA.Factory
     # if the function was inserted from DataLoader and Factory modules
@@ -198,13 +198,19 @@ class JsDraw:
     __jsCode = Template("""
 <div id="$divid" style="width: ${width}px; height:${height}px"></div>
 <script>
+    require(['JsMVA'],function(jsmva){
+        jsmva.$funcName('$divid','$dat');
+    });
+</script>
+""")
+
+    ## Template containing requirejs configuration with JsMVA location
+    __jsCodeRequireJSConfig = Template("""
+<script type="text/javascript">
     require.config({
         paths: {
             'JsMVA':'$PATH/JsMVA.min'
         }
-    });
-    require(['JsMVA'],function(jsmva){
-        jsmva.$funcName('$divid','$dat');
     });
 </script>
 """)
@@ -223,6 +229,14 @@ jsmva.$funcName('$divid', '$dat');
 });
 </script>""")
 
+    ## Inserts requirejs config script
+    @staticmethod
+    def InitJsMVA():
+        display(HTML(JsDraw.__jsCodeRequireJSConfig.substitute({
+            'PATH': JsDraw.__jsMVASourceDir
+        })))
+        JsDraw.InsertCSS("TMVAHTMLOutput.min.css")
+
     ## Inserts the draw area and drawing JavaScript to output
     # @param obj ROOT object (will be converted to JSON) or JSON string containing the data to be drawed
     # @param jsDrawMethod the JsMVA JavaScrip object method name to be used for drawing
@@ -239,7 +253,6 @@ jsmva.$funcName('$divid', '$dat');
             'funcName': jsDrawMethod,
             'divid':'jstmva_'+str(JsDraw.__divUID),
             'dat': dat,
-            'PATH': JsDraw.__jsMVASourceDir,
             'width': JsDraw.jsCanvasWidth,
             'height': JsDraw.jsCanvasHeight
          })))

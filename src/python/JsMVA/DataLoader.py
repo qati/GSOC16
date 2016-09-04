@@ -6,6 +6,7 @@
 
 from ROOT import TH1F, TMVA, TBufferJSON
 import JPyInterface
+import ROOT
 
 
 ## Creates the input variable histogram and perform the transformations if necessary
@@ -66,8 +67,21 @@ def GetInputVariableHist(dl, className, variableName, numBin, processTrfs=""):
 # This function is used by OutputTransformer
 # @param dl the object pointer
 # @param className Signal/Background
-def GetCorrelationMatrixInJSON(dl, className):
-    th2 = dl.GetCorrelationMatrix(className)
+def GetCorrelationMatrixInJSON(className, varNames, matrix):
+    m = ROOT.TMatrixD(len(matrix), len(matrix))
+    for i in xrange(len(matrix)):
+        for j in xrange(len(matrix)):
+            m[i][j] = matrix[i][j]
+    th2 = ROOT.TH2D(m)
+    th2.SetTitle("Correlation matrix ("+className+")")
+    for i in xrange(len(varNames)):
+        th2.GetXaxis().SetBinLabel(i+1, varNames[i])
+        th2.GetYaxis().SetBinLabel(i+1, varNames[i])
+    th2.Scale(100.0)
+    for i in xrange(len(matrix)):
+        for j in xrange(len(matrix)):
+            th2.SetBinContent(i+1, j+1, int(th2.GetBinContent(i+1, j+1)))
+    th2.SetStats(0)
     th2.SetMarkerSize(1.5)
     th2.SetMarkerColor(0)
     labelSize = 0.040
@@ -75,6 +89,8 @@ def GetCorrelationMatrixInJSON(dl, className):
     th2.GetYaxis().SetLabelSize(labelSize)
     th2.LabelsOption("d")
     th2.SetLabelOffset(0.011)
+    th2.SetMinimum(-100.0)
+    th2.SetMaximum(+100.0)
     dat = TBufferJSON.ConvertToJSON(th2)
     return str(dat).replace("\n", "")
 

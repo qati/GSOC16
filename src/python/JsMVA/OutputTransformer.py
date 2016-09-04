@@ -119,20 +119,10 @@ class transformTMVAOutputToHTML:
         rstr += "</table>"
         return (count, rstr)
 
-    def __correlationMatrix(self, title, className):
+    def __correlationMatrix(self, title, className, varNames, matrix):
         id = "jsmva_outputtansformer_events_"+str(self.__eventsUID)+"_onclick"
         self.__eventsUID += 1
-        JsMVA_OutputTransformer = JPyInterface.functions.captureObjects(TMVA.DataLoader)["TMVA::DataLoader"]
-        JsMVA_OutputTransformer_DataLoader = None
-        for JsMVA_OutputTransformer_ldl in JsMVA_OutputTransformer:
-            try:
-                if JsMVA_OutputTransformer_ldl.GetName()==self.__lastDataSetName:
-                    JsMVA_OutputTransformer_DataLoader = JsMVA_OutputTransformer_ldl
-            except TypeError:
-                pass
-        if not JsMVA_OutputTransformer_DataLoader:
-            return ""
-        json = DataLoader.GetCorrelationMatrixInJSON(JsMVA_OutputTransformer_DataLoader, className)
+        json = DataLoader.GetCorrelationMatrixInJSON(className, varNames, matrix)
         jsCall = "require(['JsMVA'],function(jsmva){jsmva.outputShowCorrelationMatrix('"+id+"');});"
         rstr = "<div id='"+id+"' style='display: none;'>"+json+"</div>"
         rstr += self.__processGroupContentLine("<a onclick=\""+jsCall+"\" class='tmva_output_corrmat_link'>" + title + " (" + className + ")</a>")
@@ -187,16 +177,33 @@ class transformTMVAOutputToHTML:
                         self.iterLines.next()
                     tmp_str += self.__processGroupContentLine(tmp)
                 elif CorrelationMatrixHeader:
-                    tmp_str += self.__correlationMatrix(CorrelationMatrixHeader.group(1), CorrelationMatrixHeader.group(2))
+                    self.iterLines.next()
+                    lineIter.next()
                     ik = 1
+                    matrixLines = []
                     while True:
-                        corrMatLine = re.match(r"\s*:\s*(var\d+)|(var\d+[+-]var\d+):\s*\+(\S*)+", self.lines[self.lineIndex+j+ik])
-                        if corrMatLine or self.__isEmpty(self.lines[self.lineIndex+j+ik]):
-                            ik += 1
-                            self.iterLines.next()
-                            lineIter.next()
-                        else:
+                        self.iterLines.next()
+                        lineIter.next()
+                        ik += 1
+                        if self.__isEmpty(self.lines[self.lineIndex+j+ik]):
                             break
+                        ltmp = re.match(r"\s*:\s*(.*)", self.lines[self.lineIndex + j + ik]).group(1)
+                        if ltmp.find(":")!=-1:
+                            matrixLines.append(ltmp.split(":"))
+                    rmatch = "^\s*"
+                    for ii in xrange(len(matrixLines)):
+                        rmatch += r"(\+\d+\.?\d*|-\d+\.?\d*)\s*"
+                    rmatch += "$"
+                    matrix = []
+                    varNames = []
+                    for ii in xrange(len(matrixLines)):
+                        varNames.append(matrixLines[ii][0])
+                        ll = re.match(rmatch, matrixLines[ii][1])
+                        mline = []
+                        for jj in xrange(len(matrixLines)):
+                            mline.append(float(ll.group(jj+1)))
+                        matrix.append(mline)
+                    tmp_str += self.__correlationMatrix(CorrelationMatrixHeader.group(1), CorrelationMatrixHeader.group(2), varNames, matrix)
                 elif WelcomeHeader:
                     kw=0
                     while True:
