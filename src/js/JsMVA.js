@@ -129,7 +129,7 @@
         require(['jquery', 'jquery-ui'], function($){
             var th2 = JSROOT.parse($("#"+divid).html());
             if (!$("#dialog_"+divid).length || $("#dialog_"+divid).length < 1) {
-                $("#" + divid).parent().append("<div id='dialog_" + divid + "' title='" + th2.fTitle + "' style='width: 600px; height: 350px;'></div>");
+                $("#" + divid).parent().append("<div id='dialog_" + divid + "' title='" + th2.fTitle + "' style='width: 600px; height: 340px;'></div>");
                 JSROOT.draw("dialog_" + divid, th2, "colz;PAL50;text");
             }
             $("#dialog_" + divid).dialog({

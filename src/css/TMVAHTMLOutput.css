@@ -39,10 +39,19 @@
 .tmva_output_table tr td.tmva_output_header {
     vertical-align: top;
     width: 160px !important;
+    font-family: Arial;
+    font-size: 18px;
+    font-weight: bold;
 }
 
 .tmva_output_dataset {
     border-collapse: collapse;
+}
+
+.tmva_output_dataset tr:first-child td:first-child {
+    font-size: 16px;
+    font-weight: bold;
+    color: rgb(0, 0, 179);
 }
 
 .tmva_output_dataset td {
@@ -96,4 +105,12 @@
 
 .tmva_output_fatal {
     background-color: rgba(179, 0, 0, 0.9);
+}
+
+.tmva_output_silent {
+    background-color: rgba(0, 179, 0, 0.2);
+}
+
+.tmva_output_debug {
+    background-color: rgba(0, 0, 179, 0.2);
 }

@@ -17,11 +17,20 @@ class transformTMVAOutputToHTML:
     def __processGroupContentLine(self, line):
         if re.match(r"^\s*:?\s*-*\s*$", line)!=None:
             return ""
-        if line.find("Booking method")!=-1:
-            line = "Booking method: <b>" + line.split(":")[1].replace("\x1b[1m", "").replace("[0m", "")+"</b>"
-        if len(self.__outputFlagClass)>1:
+        if len(self.__outputFlagClass) > 1:
             line = cgi.escape(str(line))
-        return "<td"+self.__outputFlagClass+">"+str(line)+"</td>"
+        self.addClassForOutputFlag(line)
+        if line.find("Booking method")!=-1:
+            line = "Booking method: <b>" + line.split(":")[1].replace("\033[1m", "").replace("[0m", "")+"</b>"
+        if line.find("time")!=-1:
+            lr = line.split(":")
+            line = "<b>" + lr[0] + " : <b style='color:rgb(0,0,179)'>" +  lr[1].replace("\033[1;31m", "").replace("[0m", "") +"</b></b>"
+        outFlag = self.__outputFlagClass
+        if line.find("\033[0;36m")!=-1:
+            line = "<b style='color:#006666'>" + line.replace("\033[0;36m", "").replace("[0m", "") + "</b>"
+        if line.find("\033[1m")!=-1:
+            line = "<b>" + line.replace("\033[1m", "").replace("[0m", "") + "</b>"
+        return "<td"+outFlag+">"+str(line)+"</td>"
 
     def __isEmpty(self, line):
         return re.match(r"^\s*:?\s*-*$", line)!=None
@@ -76,7 +85,7 @@ class transformTMVAOutputToHTML:
             else:
                 break
         rstr = "<table class='tmva_output_traintestevents'>"
-        rstr += "<tr><td colspan='3'><center>"+firstLine+"</center></td></tr>"
+        rstr += "<tr><td colspan='3'><center><b>"+firstLine+"</b></center></td></tr>"
         for key in tmpmap:
             rstr += "<tr>"
             rstr += "<td rowspan='"+str(len(tmpmap[key]))+"'>"+key+"</td>"
@@ -119,34 +128,82 @@ class transformTMVAOutputToHTML:
         rstr += "</table>"
         return (count, rstr)
 
+    def __transformLittleTables(self, firstLine, startIndex, maxlen):
+        count = 0
+        table =[]
+        table.append(firstLine.split(":"))
+        for l in xrange(1, maxlen):
+            nextline  = self.lines[startIndex+l]
+            if self.__isEmpty(nextline):
+                count += 1
+                continue
+            LittleTable = re.match(r"([^:].)*:([^:].)*:([^:].):([^:].)", nextline, re.I)
+            if LittleTable:
+                count += 1
+                table.append(nextline.split(":"))
+            else:
+                break
+        rstr = "<table>"
+        for i in xrange(0, len(table)):
+            rstr += "<tr>"
+            for j in xrange(1, len(table[i])):
+                rstr += "<td>" + table[i][j] + "</td>"
+            rstr += "</tr>"
+        rstr += "</table>"
+        return (count, rstr)
+
     def __correlationMatrix(self, title, className, varNames, matrix):
         id = "jsmva_outputtansformer_events_"+str(self.__eventsUID)+"_onclick"
         self.__eventsUID += 1
         json = DataLoader.GetCorrelationMatrixInJSON(className, varNames, matrix)
         jsCall = "require(['JsMVA'],function(jsmva){jsmva.outputShowCorrelationMatrix('"+id+"');});"
-        rstr = "<div id='"+id+"' style='display: none;'>"+json+"</div>"
+        rstr = "<div id='"+id+"' style='display: none; width: 600px; height:350'>"+json+"</div>"
         rstr += self.__processGroupContentLine("<a onclick=\""+jsCall+"\" class='tmva_output_corrmat_link'>" + title + " (" + className + ")</a>")
         return rstr
 
-    def addClassForOutputFlag(self):
+    def addClassForOutputFlag(self, line):
         if self.__currentType==None:
             self.__outputFlagClass = ""
+            if line.find("\033[1;31m") != -1:
+                self.__outputFlagClass = " class='tmva_output_warning'"
+            elif line.find("\033[31m") !=-1:
+                self.__outputFlagClass = " class='tmva_output_error'"
+            elif line.find("\033[37;41;1m") !=-1:
+                self.__outputFlagClass = " class='tmva_output_fatal'"
+            elif line.find("\033[37;41;1m") !=-1:
+                self.__outputFlagClass = " class='tmva_output_silent'"
+            elif line.find("\033[34m") !=-1:
+                self.__outputFlagClass = " class='tmva_output_debug'"
             return
-        if self.__currentType.find("WARNING") != -1:
+        if self.__currentType.find("WARNING") != -1 or line.find("\033[1;31m")!=-1:
             self.__outputFlagClass = " class='tmva_output_warning'"
         elif self.__currentType.find("ERROR") !=-1:
             self.__outputFlagClass = " class='tmva_output_error'"
         elif self.__currentType.find("FATAL") !=-1:
             self.__outputFlagClass = " class='tmva_output_fatal'"
+        elif self.__currentType.find("SILENT") !=-1:
+            self.__outputFlagClass = " class='tmva_output_silent'"
+        elif self.__currentType.find("DEBUG") !=-1:
+            self.__outputFlagClass = " class='tmva_output_debug'"
         else:
             self.__outputFlagClass = ""
+
+    def __match(self, line):
+        self.Header = re.match(r"^\s*(<\w+>\s*)*\s*(\w+.*\s+)(\s+)(:)\s*(.*)", line, re.I)
+        self.DatasetName = re.match(r".*(\[.*\])\s*:\s*(.*)", line)
+        self.NumEvents = re.match(r"(.*)(number\sof\straining\sand\stesting\sevents)", line, re.I)
+        self.CorrelationMatrixHeader = re.match(r".*\s*:?\s*(correlation\s*matrix)\s*\((\w+)\)\s*:\s*", line, re.I)
+        self.VariableMeanHeader = re.match(r".*\s*:?\s*(variable)\s*(mean)\s*(rms)\s*\[\s*(min)\s*(max)\s*\].*", line, re.I)
+        self.WelcomeHeader = re.match(r"^\s*:?\s*(.*ROOT\s*version:.*)", line, re.I)
+        self.LittleTable = None  # re.match(r"\s*:[\w\s\-@]*:[\w\s\-@]*:[\w\s\-@]*", line, re.I)
+        self.NewGroup = re.match(r"^\s*:\s*$", line)
 
     def __transformOneGroup(self, firstLine):
         tmp_str = ""
         processed_lines = 0
         lineIter = iter(xrange(len(self.lines) - self.lineIndex))
         for j in lineIter:
-            if j==0:
+            if j == 0:
                 nextline = firstLine
             else:
                 nextline = self.lines[self.lineIndex + j]
@@ -156,8 +213,8 @@ class transformTMVAOutputToHTML:
             CorrelationMatrixHeader = re.match(r".*\s*:?\s*(correlation\s*matrix)\s*\((\w+)\)\s*:\s*", nextline, re.I)
             VariableMeanHeader = re.match(r".*\s*:?\s*(variable)\s*(mean)\s*(rms)\s*\[\s*(min)\s*(max)\s*\].*", nextline, re.I)
             WelcomeHeader = re.match(r"^\s*:?\s*(.*ROOT\s*version:.*)", nextline, re.I)
-            if Header == None or j==0:
-                if j!=0:
+            if Header == None or j == 0:
+                if j != 0:
                     processed_lines += 1
                     self.iterLines.next()
                     tmp_str += "<tr>"
@@ -185,10 +242,10 @@ class transformTMVAOutputToHTML:
                         self.iterLines.next()
                         lineIter.next()
                         ik += 1
-                        if self.__isEmpty(self.lines[self.lineIndex+j+ik]):
+                        if self.__isEmpty(self.lines[self.lineIndex + j + ik]):
                             break
                         ltmp = re.match(r"\s*:\s*(.*)", self.lines[self.lineIndex + j + ik]).group(1)
-                        if ltmp.find(":")!=-1:
+                        if ltmp.find(":") != -1:
                             matrixLines.append(ltmp.split(":"))
                     rmatch = "^\s*"
                     for ii in xrange(len(matrixLines)):
@@ -201,28 +258,28 @@ class transformTMVAOutputToHTML:
                         ll = re.match(rmatch, matrixLines[ii][1])
                         mline = []
                         for jj in xrange(len(matrixLines)):
-                            mline.append(float(ll.group(jj+1)))
+                            mline.append(float(ll.group(jj + 1)))
                         matrix.append(mline)
-                    tmp_str += self.__correlationMatrix(CorrelationMatrixHeader.group(1), CorrelationMatrixHeader.group(2), varNames, matrix)
+                    tmp_str += self.__correlationMatrix(CorrelationMatrixHeader.group(1),
+                                                        CorrelationMatrixHeader.group(2), varNames, matrix)
                 elif WelcomeHeader:
-                    kw=0
+                    kw = 0
                     while True:
                         nextline = self.lines[self.lineIndex + j + kw]
                         EndWelcome = re.match(r"\s*:?\s*_*\s*(TMVA\s*Version\s*.*)", nextline, re.I)
-                        if EndWelcome or re.match(r"[\s_/|]*", nextline)==None:
+                        if EndWelcome or re.match(r"[\s_/|]*", nextline) == None:
                             break
                         kw += 1
                         self.iterLines.next()
                         lineIter.next()
-                    tmp_str += "<td><b>"+WelcomeHeader.group(1) + "</b></td></tr>"
+                    tmp_str += "<td><b>" + WelcomeHeader.group(1) + "</b></td></tr>"
                     tmp_str += "<tr><td><img src='https://rawgit.com/qati/GSOC16/master/img/tmva-logo.svg' width='100%' /><br />"
-                    tmp_str += "<center><b>"+EndWelcome.group(1)+"</b></center></td></tr>"
+                    tmp_str += "<center><b>" + EndWelcome.group(1) + "</b></center></td></tr>"
                 else:
                     lmatch = re.match(r"\s*(<\w+>\s*)*\s*:\s*(.*)", nextline)
                     if lmatch:
                         if lmatch.group(1):
                             self.__currentType = lmatch.group(1)
-                            self.addClassForOutputFlag()
                         tmp_str += self.__processGroupContentLine(lmatch.group(2))
                     else:
                         tmp_str += self.__processGroupContentLine(nextline)
@@ -245,11 +302,41 @@ class transformTMVAOutputToHTML:
         for self.lineIndex in self.iterLines:
             line = self.lines[self.lineIndex]
             Header = re.match(r"^\s*(<\w+>\s*)*\s*(\w+.*\s+)(\s+)(:)\s*(.*)", line, re.I)
+            NewGroup = re.match(r"^\s*:\s*$", line)
+
             if Header:
                 self.__currentType = Header.group(1)
-                self.addClassForOutputFlag()
+                self.addClassForOutputFlag(Header.group(5))
                 self.__currentHeaderName = Header.group(2)
                 self.__transformOneGroup(Header.group(5))
+            elif NewGroup:
+                kw = 1
+                lines = []
+                while True:
+                    if (self.lineIndex + kw) >=len(self.lines):
+                        break
+                    nextline = self.lines[self.lineIndex + kw]
+                    kw += 1
+                    if re.match(r"^\s*:\s*$", nextline):
+                        Header = re.match(r"^\s*(<\w+>\s*)*\s*(\w+.*\s+)(\s+)(:)\s*(.*)", self.lines[self.lineIndex+kw], re.I)
+                        if Header:
+                            self.iterLines.next()
+                        break
+                    self.iterLines.next()
+                    if self.__isEmpty(nextline):
+                        continue
+                    lre = re.match(r"\s*:\s*(.*)", nextline)
+                    if lre:
+                        lines.append(lre.group(1))
+                    else:
+                        lines.append(nextline)
+                if len(lines)==0:
+                    continue
+                if len(lines) > 1:
+                    tbodyclass = " class='tmva_output_tbody_multiple_row'"
+                self.out += "<tbody"+tbodyclass+"><tr><td rowspan='"+str(len(lines))+"'><td>"+lines[0]+"</td></tr>"
+                for ii in xrange(1, len(lines)):
+                    self.out += "<tr><td>"+lines[ii]+"</td></tr>"
             else:
                 self.out += line
         self.out += "</table>"
