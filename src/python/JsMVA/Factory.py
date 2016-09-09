@@ -38,7 +38,7 @@ def GetMethodObject(fac, datasetName, methodName):
 
 ## Reads deep neural network weights from file and returns it in JSON format
 # @param xml_file path to DNN weight file
-def GetDeepNetwork(xml_file):
+def GetDeepNetwork(xml_file, returnObj=False):
     tree = ElementTree()
     tree.parse(xml_file)
     roottree = tree.getroot()
@@ -67,6 +67,8 @@ def GetDeepNetwork(xml_file):
         if len(tmp)>1:
             synapses["synapses"].append(tmp)
     network["synapses"] = synapses
+    if returnObj:
+        return network
     return json.dumps(network)
 
 ## Reads neural network weights from file and returns it in JSON format
@@ -695,3 +697,73 @@ def BookDNN(self, loader, title="DNN"):
     clear_output()
     JPyInterface.JsDraw.InsertCSS("NetworkDesigner.min.css")
     JPyInterface.JsDraw.Draw("", "NetworkDesigner", True)
+
+##
+def CreateWeightHist(net, selectedLayers):
+    weightStartIndex = 0
+    numberOfWeights = 0
+    firstLayer=int(selectedLayers.split("->")[0])
+    for i in xrange(firstLayer):
+        n1=int(net["layers"][i-1]["Nodes"])
+        n2=int(net["layers"][i]["Nodes"])
+        weightStartIndex += int(n1*n2)
+    n1 = 1
+    n2 = 1
+    if firstLayer>0:
+        n1 = int(net["layers"][firstLayer-1]["Nodes"])
+        n2 = int(net["layers"][firstLayer]["Nodes"])
+    else:
+        n2 = int(net["layers"][firstLayer]["Nodes"])
+    numberOfWeights = n1*n2
+    m = ROOT.TMatrixD(n1, n2)
+    for i in xrange(n1):
+        for j in xrange(n2):
+            idx = j+n2*i
+            if idx>numberOfWeights:
+                print("Something is wrong...")
+                continue
+            m[i][j] = float(net["synapses"]["synapses"][weightStartIndex+idx])
+    th2 = ROOT.TH2D(m)
+    th2.SetTitle("Weight map for DNN")
+    for i in xrange(n2):
+        th2.GetXaxis().SetBinLabel(i + 1, str(i))
+    for i in xrange(n1):
+        th2.GetYaxis().SetBinLabel(i + 1, str(i))
+    th2.GetXaxis().SetTitle("Layer: "+str(firstLayer+1))
+    th2.GetYaxis().SetTitle("Layer: "+str(firstLayer))
+    th2.SetStats(0)
+    th2.SetMarkerSize(1.5)
+    th2.SetMarkerColor(0)
+    labelSize = 0.040
+    th2.GetXaxis().SetLabelSize(labelSize)
+    th2.GetYaxis().SetLabelSize(labelSize)
+    th2.LabelsOption("d")
+    th2.SetLabelOffset(0.011)
+    clear_output()
+    JPyInterface.JsDraw.Draw(th2, 'drawDNNMap')
+    pass
+
+## Show DNN weights in a heat map
+def DrawDNNWeights(fac, datasetName, methodName="DNN"):
+    m = GetMethodObject(fac, datasetName, methodName)
+    if m == None:
+        return None
+    net = GetDeepNetwork(str(m.GetWeightFileName()), True)
+    numOfLayers = len(net["layers"])
+    options = []
+    vals=[]
+    for layer in xrange(numOfLayers):
+        options.append(str(layer)+"->"+str(layer+1))
+        vals.append(layer)
+    selectLayer=widgets.Dropdown(
+        options=options,
+        value=options[0],
+        description='Layer'
+    )
+    def drawWrapper(e):
+        CreateWeightHist(net, selectLayer.value)
+        pass
+    button = widgets.Button(description="Draw", font_weight="bold", font_size="16")
+    button.on_click(drawWrapper)
+    box = widgets.HBox([selectLayer, button])
+    display(box)

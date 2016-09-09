@@ -30,6 +30,9 @@ class transformTMVAOutputToHTML:
             line = "<b style='color:#006666'>" + line.replace("\033[0;36m", "").replace("[0m", "") + "</b>"
         if line.find("\033[1m")!=-1:
             line = "<b>" + line.replace("\033[1m", "").replace("[0m", "") + "</b>"
+        lre = re.match(r"(\s*using\s*input\s*file\s*):?\s*(.*)", line, re.I)
+        if lre:
+            line = lre.group(1)+":"+"<b>"+lre.group(2)+"</b>"
         return "<td"+outFlag+">"+str(line)+"</td>"
 
     def __isEmpty(self, line):
@@ -185,18 +188,10 @@ class transformTMVAOutputToHTML:
             self.__outputFlagClass = " class='tmva_output_silent'"
         elif self.__currentType.find("DEBUG") !=-1:
             self.__outputFlagClass = " class='tmva_output_debug'"
+        elif self.__currentType=="impHead":
+            self.__outputFlagClass = " class='tmva_output_imphead'"
         else:
             self.__outputFlagClass = ""
-
-    def __match(self, line):
-        self.Header = re.match(r"^\s*(<\w+>\s*)*\s*(\w+.*\s+)(\s+)(:)\s*(.*)", line, re.I)
-        self.DatasetName = re.match(r".*(\[.*\])\s*:\s*(.*)", line)
-        self.NumEvents = re.match(r"(.*)(number\sof\straining\sand\stesting\sevents)", line, re.I)
-        self.CorrelationMatrixHeader = re.match(r".*\s*:?\s*(correlation\s*matrix)\s*\((\w+)\)\s*:\s*", line, re.I)
-        self.VariableMeanHeader = re.match(r".*\s*:?\s*(variable)\s*(mean)\s*(rms)\s*\[\s*(min)\s*(max)\s*\].*", line, re.I)
-        self.WelcomeHeader = re.match(r"^\s*:?\s*(.*ROOT\s*version:.*)", line, re.I)
-        self.LittleTable = None  # re.match(r"\s*:[\w\s\-@]*:[\w\s\-@]*:[\w\s\-@]*", line, re.I)
-        self.NewGroup = re.match(r"^\s*:\s*$", line)
 
     def __transformOneGroup(self, firstLine):
         tmp_str = ""
@@ -207,7 +202,7 @@ class transformTMVAOutputToHTML:
                 nextline = firstLine
             else:
                 nextline = self.lines[self.lineIndex + j]
-            Header = re.match(r"^\s*(<\w+>\s*)*\s*(\w+.*\s+)(\s+)(:)\s*(.*)", nextline, re.I)
+            Header = re.match(r"^\s*-*\s*(<\w+>\s*)*\s*(\w+.*\s+)(\s+)(:)\s*(.*)", nextline, re.I)
             DatasetName = re.match(r".*(\[.*\])\s*:\s*(.*)", nextline)
             NumEvents = re.match(r"(.*)(number\sof\straining\sand\stesting\sevents)", nextline, re.I)
             CorrelationMatrixHeader = re.match(r".*\s*:?\s*(correlation\s*matrix)\s*\((\w+)\)\s*:\s*", nextline, re.I)
@@ -289,7 +284,10 @@ class transformTMVAOutputToHTML:
         tbodyclass = ""
         if processed_lines > 0:
             tbodyclass = " class='tmva_output_tbody_multiple_row'"
-        self.out += "<tbody"+tbodyclass+"><tr><td rowspan='" + str(processed_lines + 1) + "' class='tmva_output_header'>" + self.__currentHeaderName + "</td>"
+        extraHeaderClass=""
+        if self.__currentType=="impHead":
+            extraHeaderClass = " tmva_output_imphead"
+        self.out += "<tbody"+tbodyclass+"><tr><td rowspan='" + str(processed_lines + 1) + "' class='tmva_output_header"+extraHeaderClass+"'>" + self.__currentHeaderName + "</td>"
         self.out += tmp_str + "</tbody>"
 
     def transform(self, output, error):
@@ -301,11 +299,14 @@ class transformTMVAOutputToHTML:
         self.iterLines = iter(xrange(len(self.lines)))
         for self.lineIndex in self.iterLines:
             line = self.lines[self.lineIndex]
-            Header = re.match(r"^\s*(<\w+>\s*)*\s*(\w+.*\s+)(\s+)(:)\s*(.*)", line, re.I)
+            Header = re.match(r"^\s*-*\s*(<\w+>\s*)*\s*(\w+.*\s+)(\s+)(:)\s*(.*)", line, re.I)
             NewGroup = re.match(r"^\s*:\s*$", line)
 
             if Header:
-                self.__currentType = Header.group(1)
+                if re.match(r"^\s*-+\s*(<\w+>\s*)*\s*(\w+.*\s+)(\s+)(:)\s*(.*)", line, re.I):
+                    self.__currentType = "impHead"
+                else:
+                    self.__currentType = Header.group(1)
                 self.addClassForOutputFlag(Header.group(5))
                 self.__currentHeaderName = Header.group(2)
                 self.__transformOneGroup(Header.group(5))
@@ -318,7 +319,7 @@ class transformTMVAOutputToHTML:
                     nextline = self.lines[self.lineIndex + kw]
                     kw += 1
                     if re.match(r"^\s*:\s*$", nextline):
-                        Header = re.match(r"^\s*(<\w+>\s*)*\s*(\w+.*\s+)(\s+)(:)\s*(.*)", self.lines[self.lineIndex+kw], re.I)
+                        Header = re.match(r"^\s*-*\s*(<\w+>\s*)*\s*(\w+.*\s+)(\s+)(:)\s*(.*)", self.lines[self.lineIndex+kw], re.I)
                         if Header:
                             self.iterLines.next()
                         break

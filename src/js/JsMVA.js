@@ -39,6 +39,11 @@
         JSROOT.draw(divid, obj, "colz;PAL50;text");
     };
 
+    JsMVA.drawDNNMap = function(divid, dat_json){
+        var obj = JSROOT.parse(dat_json);
+        JSROOT.draw(divid, obj, "colz;PAL50");
+    };
+
     JsMVA.draw = function(divid, dat_json){
         var obj = JSROOT.parse(dat_json);
         JSROOT.draw(divid, obj);

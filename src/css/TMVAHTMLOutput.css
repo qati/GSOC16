@@ -114,3 +114,7 @@
 .tmva_output_debug {
     background-color: rgba(0, 0, 179, 0.2);
 }
+
+.tmva_output_imphead {
+    background-color: rgba(0, 179, 0, 0.3);
+}
