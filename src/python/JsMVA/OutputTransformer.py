@@ -29,7 +29,8 @@ class transformTMVAOutputToHTML:
             line = "Booking method: <b>" + line.split(":")[1].replace("\033[1m", "").replace("[0m", "")+"</b>"
         if line.find("time")!=-1:
             lr = line.split(":")
-            line = "<b>" + lr[0] + " : <b style='color:rgb(0,0,179)'>" +  lr[1].replace("\033[1;31m", "").replace("[0m", "") +"</b></b>"
+            if len(lr)==2:
+                line = "<b>" + lr[0] + " : <b style='color:rgb(0,0,179)'>" +  lr[1].replace("\033[1;31m", "").replace("[0m", "") +"</b></b>"
         outFlag = self.__outputFlagClass
         if line.find("\033[0;36m")!=-1:
             line = "<b style='color:#006666'>" + line.replace("\033[0;36m", "").replace("[0m", "") + "</b>"
@@ -214,12 +215,13 @@ class transformTMVAOutputToHTML:
             else:
                 nextline = self.lines[self.lineIndex + j]
             Header = re.match(r"^\s*-*\s*(<\w+>\s*)*\s*(\w+.*\s+)(\s+)(:)\s*(.*)", nextline, re.I)
+            EmptyHeader = re.match(r"\s*-*\s*(<\w+>\s*)+\s*:\s*(.*)", nextline, re.I)
             DatasetName = re.match(r".*(\[.*\])\s*:\s*(.*)", nextline)
             NumEvents = re.match(r"(.*)(number\sof\straining\sand\stesting\sevents)", nextline, re.I)
             CorrelationMatrixHeader = re.match(r".*\s*:?\s*(correlation\s*matrix)\s*\((\w+)\)\s*:\s*", nextline, re.I)
             VariableMeanHeader = re.match(r".*\s*:?\s*(variable)\s*(mean)\s*(rms)\s*\[\s*(min)\s*(max)\s*\].*", nextline, re.I)
             WelcomeHeader = re.match(r"^\s*:?\s*(.*ROOT\s*version:.*)", nextline, re.I)
-            if Header == None or j == 0:
+            if (Header == None and EmptyHeader ==None) or j == 0:
                 if j != 0:
                     processed_lines += 1
                     self.iterLines.next()
@@ -279,7 +281,7 @@ class transformTMVAOutputToHTML:
                         self.iterLines.next()
                         lineIter.next()
                     tmp_str += "<td><b>" + WelcomeHeader.group(1) + "</b></td></tr>"
-                    tmp_str += "<tr><td><img src='https://rawgit.com/qati/GSOC16/master/img/tmva-logo.svg' width='100%' /><br />"
+                    tmp_str += "<tr><td><img src='https://rawgit.com/root-mirror/root/master/tutorials/tmva/tmva_logo.svg' width='100%' /><br />"
                     tmp_str += "<center><b>" + EndWelcome.group(1) + "</b></center></td></tr>"
                 else:
                     lmatch = re.match(r"\s*(<\w+>\s*)*\s*:\s*(.*)", nextline)
@@ -310,12 +312,14 @@ class transformTMVAOutputToHTML:
         self.err = ""
         if str(error).find(", time left:")==-1:
             self.err = error
-        self.out = "<table class='tmva_output_table'>"
+        self.out = ""
         self.lines = output.splitlines()
         self.iterLines = iter(xrange(len(self.lines)))
         for self.lineIndex in self.iterLines:
             line = self.lines[self.lineIndex]
             Header = re.match(r"^\s*-*\s*(<\w+>\s*)*\s*(\w+.*\s+)(\s+)(:)\s*(.*)", line, re.I)
+            DSHeader = re.match(r"^\s*-*\s*(<\w+>\s*)*:?\s*(\[.+\])(\s+)(:)\s*(.*)", line, re.I)
+            EmptyHeader = re.match(r"\s*-*\s*(<\w+>\s*)+\s*:\s*(.*)", line, re.I)
             NewGroup = re.match(r"^\s*:\s*$", line)
 
             if Header:
@@ -326,6 +330,16 @@ class transformTMVAOutputToHTML:
                 self.addClassForOutputFlag(Header.group(5))
                 self.__currentHeaderName = Header.group(2)
                 self.__transformOneGroup(Header.group(5))
+            elif DSHeader:
+                self.__currentType = DSHeader.group(1)
+                self.addClassForOutputFlag(DSHeader.group(5))
+                self.__currentHeaderName = DSHeader.group(2)
+                self.__transformOneGroup(DSHeader.group(5))
+            elif EmptyHeader:
+                self.__currentType = EmptyHeader.group(1)
+                self.addClassForOutputFlag(EmptyHeader.group(2))
+                self.__currentHeaderName = ""
+                self.__transformOneGroup(EmptyHeader.group(2))
             elif NewGroup:
                 kw = 1
                 lines = []
@@ -355,6 +369,12 @@ class transformTMVAOutputToHTML:
                 for ii in xrange(1, len(lines)):
                     self.out += "<tr><td>"+lines[ii]+"</td></tr>"
             else:
-                self.out += line
-        self.out += "</table>"
+                lre = re.match(r"\s*:\s*(.*)", line)
+                if lre:
+                    self.out += "<tr><td>" + lre.group(1) + "</td></tr>"
+                else:
+                    self.out += "<tr><td>" + line + "</td></tr>"
+        if len(self.out) < 1 and len(self.err) < 1:
+            return ("", "", "")
+        self.out = "<table class='tmva_output_table'>" + self.out + "</table>"
         return (self.out, self.err, "html")

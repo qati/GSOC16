@@ -142,7 +142,7 @@ class functions:
     ## This function will register all functions which name contains "Draw" to TMVA.DataLoader and TMVA.Factory
     # from DataLoader and Factory modules
     @staticmethod
-    def register():
+    def register(noOutput=False):
         from JupyROOT.utils import transformers
         functions.__register(ROOT.TMVA.DataLoader, DataLoader, *functions.__getMethods(DataLoader, "Draw"))
         functions.__register(ROOT.TMVA.Factory,    Factory,    *functions.__getMethods(Factory,    "Draw"))
@@ -152,10 +152,14 @@ class functions:
             for func in functions.ThreadedFunctions[key]:
                 setattr(getattr(getattr(ROOT.TMVA, key), func), "_threaded", True)
         functions.__register(ROOT.TMVA.Factory, Factory, "BookDNN")
-        outputTransformer = OutputTransformer.transformTMVAOutputToHTML()
-        transformers.append(outputTransformer.transform)
-        JsDraw.InitJsMVA()
-
+        if not noOutput:
+            outputTransformer = OutputTransformer.transformTMVAOutputToHTML()
+            transformers.append(outputTransformer.transform)
+            JsDraw.InitJsMVA()
+        else:
+            def noOutputFunc(out, err):
+                return ("", "", "html")
+            transformers.append(noOutputFunc)
     ## This function will remove all functions which name contains "Draw" from TMVA.DataLoader and TMVA.Factory
     # if the function was inserted from DataLoader and Factory modules
     @staticmethod
@@ -204,16 +208,17 @@ class JsDraw:
 </script>
 """)
 
-    ## Template containing requirejs configuration with JsMVA location
-    __jsCodeRequireJSConfig = Template("""
-<script type="text/javascript">
-    require.config({
-        paths: {
-            'JsMVA':'$PATH/JsMVA.min'
-        }
-    });
-</script>
-""")
+    ## Template containing JsMVA initialization code (adding JsMVA script location, and CSS)
+    __JsMVAInitCode = Template("""
+    <script type="text/javascript">
+        require.config({
+            paths: {
+                'JsMVA':'$PATH/JsMVA.min'
+            }
+        });
+    </script>
+    <link rel="stylesheet" href="$CSSFile"></link>
+    """)
 
     ## Template containing data insertion JavaScript code
     __jsCodeForDataInsert = Template("""<script id="dataInserterScript">
@@ -229,13 +234,13 @@ jsmva.$funcName('$divid', '$dat');
 });
 </script>""")
 
-    ## Inserts requirejs config script
+    ## Inserts initialization codes to notebook
     @staticmethod
     def InitJsMVA():
-        display(HTML(JsDraw.__jsCodeRequireJSConfig.substitute({
-            'PATH': JsDraw.__jsMVASourceDir
+        display(HTML(JsDraw.__JsMVAInitCode.substitute({
+            'PATH': JsDraw.__jsMVASourceDir,
+            'CSSFile': JsDraw.__jsMVACSSDir + '/TMVAHTMLOutput.min.css'
         })))
-        JsDraw.InsertCSS("TMVAHTMLOutput.min.css")
 
     ## Inserts the draw area and drawing JavaScript to output
     # @param obj ROOT object (will be converted to JSON) or JSON string containing the data to be drawed
