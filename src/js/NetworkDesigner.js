@@ -50,8 +50,7 @@
         WeightInitialization: "XAVIER",
         CreateMVAPdfs: false,
         IgnoreNegWeightsInTraining: false,
-        SignalWeightsSum: 1000.0,
-        BackgroundWeightsSum: 1000.0
+        Architecture: "STANDARD"
     };
 
     var layers = Array();
@@ -65,6 +64,7 @@
         LINEAR: "layer_linear",
         GAUSS: "layer_gauss"
     };
+    var trainingStrategies = Array();
 
     var connection_queue = [];
 
@@ -115,6 +115,22 @@
         $("#div_"+id).connections({to: "#drawConnectionHelper"});
     };
 
+    var initTrainingStrategy = function(i){
+        trainingStrategies[i] = {
+            LearningRate: 1e-3,
+                Momentum: 0.3,
+            Repetitions: 3,
+            ConvergenceSteps: 100,
+            BatchSize: 30,
+            TestRepetitions: 7,
+            WeightDecay: 0.0,
+            Regularization: "NONE",
+            DropConfig: "",
+            DropRepetitions: 3,
+            Multithreading: true
+        };
+    };
+
     var initLayer = function(i, type){
         layers[ i ] = {
             type: type,
@@ -122,19 +138,6 @@
             connected: {
                 before: null,
                 after: null
-            },
-            trainingStrategy: {
-                LearningRate: 1e-5,
-                Momentum: 0.3,
-                Repetitions: 3,
-                ConvergenceSteps: 100,
-                BatchSize: 30,
-                TestRepetitions: 7,
-                WeightDecay: 0.0,
-                Regularization: "NONE",
-                DropConfig: "",
-                DropRepetitions: 3,
-                Multithreading: true
             }
         };
         if (type.toLowerCase().indexOf("output")!=-1){
@@ -231,10 +234,7 @@
 
     var addNeuronsToLayer = function(){
         $("#"+containerID).append("<div id='neuronnum_layer_dialog' title='Add neurons' style='display: none'>\
-            <form>\
-            <label>Number of neurons: </label><input type='text'>\
-            </form>\
-            <div id='ts_link'><input id='training_strategy_button' type='button' class='ui-button' value='Training Strategy' /></div>\
+            <form><label>Number of neurons: </label><input type='text'></form>\
             </div>");
         $("#neuronnum_layer_dialog").dialog({
             autoOpen: false,
@@ -265,11 +265,6 @@
                 }
             }
         }).data('buttonID', '-1');
-        $("#neuronnum_layer_dialog").on("click", "#training_strategy_button", function () {
-            var d = $("#trainingstrategy_dialog");
-            d.data("formID", $("#neuronnum_layer_dialog").data("buttonID"));
-            d.dialog("open");
-        });
         $("#neuronnum_layer_dialog form input").on("keypress keydown keyup", function(e) {
             e.stopPropagation();
         });
@@ -283,7 +278,6 @@
         layertype += "</select>";
         $("#"+containerID).append("<div id='output_layer_dialog' title='Layer type' style='display: none'>\
             <form><label>Type of layer: </label>"+layertype+"</form>\
-            <div id='ts_link'><input id='training_strategy_button' type='button' class='ui-button' value='Training Strategy' /></div>\
             </div>");
         $("#output_layer_dialog").dialog({
             autoOpen: false,
@@ -314,11 +308,6 @@
                 }
             }
         }).data('buttonID', '-1');
-        $("#output_layer_dialog").on("click", "#training_strategy_button", function () {
-            var d = $("#trainingstrategy_dialog");
-            d.data("formID", $("#output_layer_dialog").data("buttonID"));
-            d.dialog("open");
-        });
     };
 
     var createForm = function(id, form){
@@ -402,7 +391,9 @@
             type: "checkbox"
         });
         $("#"+containerID).append("<div id='trainingstrategy_dialog' title='Training Strategy' style='display: none'>"
-            + createForm("trainingstrategy", form)+ "</div>");
+            + createForm("trainingstrategy", form)
+            + "<div id='ts_link'><input id='training_strategy_removebutton' type='button' class='ui-button' value='Remove' /></div>"
+            + "</div>");
         $("#trainingstrategy_dialog").dialog({
             autoOpen: false,
             width: 400,
@@ -415,26 +406,25 @@
                 duration: 500
             },
             open: function(){
-                var arr = $(this).data("formID").split("_");
-                var i   = Number(arr[arr.length-1]);
-                syncForm("trainingstrategy", form, layers[i].trainingStrategy);
+                var i   = Number($(this).data("tsformID"));
+                syncForm("trainingstrategy", form, trainingStrategies[i]);
             },
             buttons: {
                 "OK": function(){
-                    var arr = $(this).data("formID").split("_");
-                    var idx   = Number(arr[arr.length-1]);
+                    var idx   = Number($(this).data("tsformID"));
                     arr = $("#trainingstrategy_dialog input, #trainingstrategy_dialog select");
                     var id;
                     for(var i=0;i<arr.length;i++){
+                        if (arr[i].id=="training_strategy_removebutton") continue;
                         id = arr[i].id.split("_")[1];
                         if (form.get(id)["type"]=="checkbox"){
                             if (Number(arr[i].value)==1){
-                                layers[idx].trainingStrategy[id] = true;
+                                trainingStrategies[idx][id] = true;
                             } else {
-                                layers[idx].trainingStrategy[id] = false;
+                                trainingStrategies[idx][id] = false;
                             }
                         } else {
-                            layers[idx].trainingStrategy[id] = arr[i].value;
+                            trainingStrategies[idx][id] = arr[i].value;
                         }
                     }
                     $(this).dialog("close");
@@ -443,7 +433,14 @@
                     $(this).dialog("close");
                 }
             }
-        }).data('formID', '-1');
+        }).data('tsformID', '-1');
+        $("#training_strategy_removebutton").on("click", function(){
+            var tfi= Number($("#trainingstrategy_dialog").data("tsformID"));
+            trainingStrategies[tfi] = undefined;
+            $("#jsmvatsmenuentry_"+tfi).remove();
+            $("#trainingstrategy_dialog").dialog("close");
+
+        });
         $("#trainingstrategy_dialog input").on("keypress keydown keyup", function(e) {
             e.stopPropagation();
         });
@@ -474,20 +471,19 @@
         });
         form.set("ErrorStrategy", {
             type: "select",
-            options: ["CROSSENTROPY", "SUMOFSQUARES", "MUTUALEXCLUSIVE", "CHECKGRADIENTS"]
+            options: ["CROSSENTROPY", "SUMOFSQUARES"]
         });
         form.set("WeightInitialization", {
             type: "select",
             options: ["XAVIER", "XAVIERUNIFORM", "LAYERSIZE"]
         });
-        form.set("SignalWeightsSum", {
-            type: "text"
-        });
-        form.set("BackgroundWeightsSum", {
-            type: "text"
+        form.set("Architecture", {
+            type: "select",
+            options: ["STANDARD", "CPU", "GPU", "OPENCL"]
         });
         $("#"+containerID).append("<div id='globopts_dialog' title='Global options' style='display: none'>"
-            + createForm("globopts", form) + "</div>");
+            + createForm("globopts", form)
+            + "</div>");
         $("#globopts_dialog").dialog({
             autoOpen: false,
             width: 440,
@@ -582,6 +578,10 @@
 
         html += "<li class='nd_menu_element'><div id='globopts_menu'>Global options</div></li>";
 
+        html += "<li class='nd_menu_dropdown'><div>Training strategies</div><ul class='nd_menu_dropdown_content' id='trainingstrategy_menu'>";
+        html += "<li id='add_trainingstrategy_menu'><div>New</div></li>";
+        html += "</ul></li>";
+
         html += "<li class='nd_menu_dropdown'><div>Add layer</div><ul class='nd_menu_dropdown_content'>";
         for(var i in layer_ids){
             html += "<li id='"+layer_ids[i]+"'><div>"+getText(layer_ids[i])+"</div></li>";
@@ -640,7 +640,7 @@
         }
     };
 
-    var genTrainingStrategyStringOneLayer = function(input){
+    var genOneTrainingStrategyString = function(input){
         var str = "";
         for(var key in input){
             if (String(input[key]).length<1) continue;
@@ -649,13 +649,13 @@
         return str.substr(0, str.length-1);
     };
 
-    var genTrainingStrategyString = function(input){
-        if (input===undefined || input.type===undefined) return "";
-        if (input.type=="output") return genTrainingStrategyStringOneLayer(input.trainingStrategy);
-        if (input.type=="input") return "" + genTrainingStrategyString(layers[input.connected.after]);
-        if (input.type!="input" && input.type!="output"){
-            return genTrainingStrategyStringOneLayer(input.trainingStrategy)+"|"+genTrainingStrategyString(layers[input.connected.after]);
+    var genTrainingStrategyString = function(){
+        var str = "";
+        for(var i=0;i<trainingStrategies.length;i++){
+            if (trainingStrategies[i]===undefined) continue;
+            str += genOneTrainingStrategyString(trainingStrategies[i]) + "|";
         }
+        return str.substr(0, str.length-1);
     };
 
     var genOptString = function(){
@@ -673,7 +673,7 @@
         }
         var input_layer = getInputLayer();
         var layout = genLayerString(input_layer);
-        var training_strategy = genTrainingStrategyString(input_layer);
+        var training_strategy = genTrainingStrategyString();
         if (layout.length<2 || training_strategy.length<2){
             getMessageBox("warning_nonet").show();
             console.log("Layout="+layout);
@@ -682,9 +682,6 @@
         }
         if (layout[layout.length-1]==","){
             layout = layout.substr(0, layout.length-1);
-        }
-        if (training_strategy[training_strategy.length-1]=="|"){
-            training_strategy = training_strategy.substr(0, training_strategy.length-1);
         }
         opt += "Layout="+layout + ":TrainingStrategy="+training_strategy;
         return opt;
@@ -727,6 +724,25 @@
         $("#globopts_menu").on("click", function(){
            $("#globopts_dialog").dialog("open");
         });
+        $("#add_trainingstrategy_menu").on("click", function () {
+            var d = $("#trainingstrategy_dialog");
+            if (d.dialog("isOpen")===true) return;
+            trainingStrategies.push(undefined);
+            var idx = trainingStrategies.length-1;
+            initTrainingStrategy(idx);
+            $("#trainingstrategy_menu").append("<li value='"+idx+"' id='jsmvatsmenuentry_"+idx+"'><div>"+(idx+1)+". Training strategy</div></li>");
+            $("#jsmvatsmenuentry_"+idx).on("click", function(){
+                var dd = $("#trainingstrategy_dialog");
+                if (dd.dialog("isOpen")===true){
+                    alert("Dialog already open! Please close before you try to open a new one.");
+                    return;
+                }
+                dd.data("tsformID", idx);
+                dd.dialog("open");
+            });
+            d.data("tsformID", trainingStrategies.length-1);
+            d.dialog("open");
+        });
         $("#scale_layer_color").on("click", scale_colors);
         $("#save_net").on("click", save_net);
         $.repeat().add('connection').each($).connections('update').wait(0);
@@ -735,17 +751,18 @@
     NetworkDesigner.draw = function(id){
         containerID = id;
         layersID    = 0;
-        //$("#"+containerID).empty();
         $("#"+containerID).css({"z-index": 90, "position": "relative"});
 
         connection_queue = [];
         helpMessages     = [];
         layers = Array();
+        trainingStrategies = Array();
 
         helpMessages.push(new MessageBox("connect_layer", "Connect layers",
             "To connect two layer double click on first layer, grab the arrow and move inside the other layer."));
-        helpMessages.push(new MessageBox("warning_nonet", "No network",
-            "You didn't build a network or it's not valid. The first layer needs to connect to input layer and the last to output layer!"));
+        helpMessages.push(new MessageBox("warning_nonet", "No network/training strategy",
+            "You haven't built a network (no valid network found:  the first layer needs to connect to input layer and the last to output layer) " +
+            "or you didn't add at least one training strategy!"));
 
         createMenu();
 
