@@ -4,7 +4,7 @@ MAINTAINER Attila Bagoly <battila93@gmail.com>
 
 USER root
 
-RUN apt-get -y update && apt-get install -y libx11-6 libxext6 libxft2 libxpm4 
+RUN apt-get -y update && apt-get install -y libx11-6 libxext6 libxft2 libxpm4 libopenblas-dev 
 
 WORKDIR /opt
 
